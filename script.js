@@ -9,17 +9,27 @@ const GOOGLE_SHEET_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxxNhK
 // DỮ LIỆU SẢN PHẨM
 // =====================================================
 // Bạn có thể sửa tên sản phẩm, giá, quy cách, ghi chú tại đây.
-let PRODUCTS = []; // Đổi từ const thành let để có thể cập nhật dữ liệu mới
+let PRODUCTS = [];
 
-// Gọi hàm tự động tải sản phẩm từ Google Sheets
 async function fetchProducts() {
   try {
-  // Lưu ý: Dán link Web App của Anh vào giữa 2 dấu ngoặc kép
-    const response = await fetch("https://script.google.com/macros/s/AKfycbxxNhKcTgxtPQCVtl1brMMF0Wr0jtYZex1ueG74WJpRfa6AyabrOuzOZX8bcM5aLFdMVA/exec");
+    const response = await fetch("https://script.google.com/macros/s/AKfycbxxNhKcTgxtPQCvtl1brMMF0Wr0jtYZex1ueG74WJpRfa6AyabrOuzOZX8bcM5aLFdMVA/exec");
     const data = await response.json();
-    PRODUCTS = data;
     
-    // Gọi hàm vẽ sản phẩm ra màn hình
+    // BỘ CHỐNG LỖI: Lọc bỏ dòng trống và tự động điền danh mục nếu trong Sheets lỡ quên
+    PRODUCTS = data.filter(item => item.id && item.name).map(item => {
+        return {
+            id: item.id,
+            name: item.name,
+            price: Number(item.price) || 0,
+            unit: item.unit || "Hộp",
+            image: item.image || "",
+            category: item.category || "Tất cả", // Rất quan trọng: Thiếu cái này web sẽ ẩn SP
+            tag: item.tag || "",
+            note: item.note || ""
+        };
+    });
+    
     renderProducts();
   } catch (error) {
     console.error("Lỗi tải dữ liệu kho hàng:", error);
