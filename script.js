@@ -309,15 +309,6 @@ async function submitOrder(event) {
     showSubmitStatus("error", "Vui lòng điền đủ họ tên, số điện thoại và địa chỉ giao hàng.");
     return;
   }
-
-  if (GOOGLE_SHEET_WEB_APP_URL.includes("https://script.google.com/macros/s/AKfycbyBHZZypb8bNGnbC8UenQUWYY5F0xHTJ6kknlcEP9AeGRwBAj_nZhySq_AjA1s6I6R7tQ/exec")) {
-    showSubmitStatus(
-        "error",
-        "Chưa cấu hình URL Google Apps Script..."
-    );
-    return;
-}  
-
   const orderCode = `DH-${Date.now()}`;
 
   const orderPayload = {
