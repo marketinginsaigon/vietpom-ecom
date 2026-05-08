@@ -5,7 +5,6 @@
 // dán URL vào biến bên dưới.
 // Ví dụ: const GOOGLE_SHEET_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx.../exec";
 const GOOGLE_SHEET_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxxNhKcTgxtPQCVtl1brMMF0Wr0jtYZex1ueG74WJpRfa6AyabrOuzOZX8bcM5aLFdMVA/exec";
-
 // =====================================================
 // DỮ LIỆU SẢN PHẨM
 // =====================================================
