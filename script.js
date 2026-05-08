@@ -9,63 +9,24 @@ const GOOGLE_SHEET_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxxNhK
 // DỮ LIỆU SẢN PHẨM
 // =====================================================
 // Bạn có thể sửa tên sản phẩm, giá, quy cách, ghi chú tại đây.
-const PRODUCTS = [
-  {
-    id: "p1",
-    name: "Oresol bù nước & điện giải",
-    category: "Hỗ trợ sức khỏe",
-    price: 45000,
-    unit: "Hộp 10 gói",
-    tag: "Bán chạy",
-    note: "Dùng theo hướng dẫn của dược sĩ hoặc nhãn sản phẩm.",
-  },
-  {
-    id: "p2",
-    name: "Vitamin C 500mg",
-    category: "Vitamin & khoáng chất",
-    price: 68000,
-    unit: "Tuýp 20 viên",
-    tag: "Ưu đãi",
-    note: "Sản phẩm hỗ trợ, không thay thế thuốc điều trị.",
-  },
-  {
-    id: "p3",
-    name: "Nước muối sinh lý NaCl 0.9%",
-    category: "Chăm sóc cá nhân",
-    price: 12000,
-    unit: "Chai 500ml",
-    tag: "Thiết yếu",
-    note: "Phù hợp vệ sinh ngoài da, mũi, họng theo hướng dẫn.",
-  },
-  {
-    id: "p4",
-    name: "Men vi sinh hỗ trợ tiêu hóa",
-    category: "Tiêu hóa",
-    price: 95000,
-    unit: "Hộp 20 gói",
-    tag: "Khuyên dùng",
-    note: "Cần đọc kỹ hướng dẫn trước khi sử dụng.",
-  },
-  {
-    id: "p5",
-    name: "Siro ho thảo dược",
-    category: "Hô hấp",
-    price: 79000,
-    unit: "Chai 100ml",
-    tag: "Dịu nhẹ",
-    note: "Không tự ý dùng kéo dài nếu triệu chứng không cải thiện.",
-  },
-  {
-    id: "p6",
-    name: "Dung dịch sát khuẩn tay",
-    category: "Phòng ngừa",
-    price: 52000,
-    unit: "Chai 250ml",
-    tag: "Tiện dụng",
-    note: "Dùng ngoài da, tránh tiếp xúc trực tiếp với mắt.",
-  },
-];
+let PRODUCTS = []; // Đổi từ const thành let để có thể cập nhật dữ liệu mới
 
+// Gọi hàm tự động tải sản phẩm từ Google Sheets
+async function fetchProducts() {
+  try {
+  // Lưu ý: Dán link Web App của Anh vào giữa 2 dấu ngoặc kép
+    const response = await fetch("https://script.google.com/macros/s/AKfycbxxNhKcTgxtPQCVtl1brMMF0Wr0jtYZex1ueG74WJpRfa6AyabrOuzOZX8bcM5aLFdMVA/exec");
+    const data = await response.json();
+    PRODUCTS = data;
+    
+    // Gọi hàm vẽ sản phẩm ra màn hình
+    renderProducts();
+  } catch (error) {
+    console.error("Lỗi tải dữ liệu kho hàng:", error);
+  }
+}
+
+fetchProducts();
 const state = {
   cart: {},
   search: "",
