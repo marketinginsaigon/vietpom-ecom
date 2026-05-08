@@ -4,7 +4,7 @@
 // Sau khi deploy Google Apps Script thành Web App,
 // dán URL vào biến bên dưới.
 // Ví dụ: const GOOGLE_SHEET_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx.../exec";
-const GOOGLE_SHEET_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxxNhKcTgxtPQCVtl1brMMF0Wr0jtYZex1ueG74WJpRfa6AyabrOuzOZX8bcM5aLFdMVA/exec";
+const GOOGLE_SHEET_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyBHZZypb8bNGnbC8UenQUWYY5F0xHTJ6kknlcEP9AeGRwBAj_nZhySq_AjA1s6I6R7tQ/exec";
 // =====================================================
 // DỮ LIỆU SẢN PHẨM
 // =====================================================
@@ -13,7 +13,7 @@ let PRODUCTS = [];
 
 async function fetchProducts() {
   try {
-    const response = await fetch("https://script.google.com/macros/s/AKfycbxxNhKcTgxtPQCvtl1brMMF0Wr0jtYZex1ueG74WJpRfa6AyabrOuzOZX8bcM5aLFdMVA/exec");
+    const response = await fetch("https://script.google.com/macros/s/AKfycbyBHZZypb8bNGnbC8UenQUWYY5F0xHTJ6kknlcEP9AeGRwBAj_nZhySq_AjA1s6I6R7tQ/exec");
     const data = await response.json();
     
     // BỘ CHỐNG LỖI: Lọc bỏ dòng trống và tự động điền danh mục nếu trong Sheets lỡ quên
