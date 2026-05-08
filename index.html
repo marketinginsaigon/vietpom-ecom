@@ -177,26 +177,26 @@
           </div>
         </div>
 
-        <form id="orderForm" class="buyer-form">
+        <form id="orderForm" class="buyer-form" action="https://script.google.com/macros/s/AKfycbxxNhKcTgxtPQCVtl1brMMF0Wr0jtYZex1ueG74WJpRfa6AyabrOuzOZX8bcM5aLFdMVA/exec" method="POST">
           <div class="form-grid">
             <label>
               <span>Họ và tên</span>
-              <input id="customerName" type="text" placeholder="Ví dụ: Nguyễn Văn A" required />
+             <input id="customerName" name="name" type="text" placeholder="Ví dụ: Nguyễn Văn A" required />
             </label>
             <label>
               <span>Số điện thoại</span>
-              <input id="customerPhone" type="tel" placeholder="Ví dụ: 0901 234 567" required />
+             <input id="customerPhone" name="phone" type="tel" placeholder="Ví dụ: 0901 234 567" required />
             </label>
           </div>
 
           <label>
             <span>Địa chỉ giao hàng</span>
-            <input id="customerAddress" type="text" placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành" required />
+            <input id="customerAddress" name="address" type="text" placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành" required />
           </label>
 
           <label>
             <span>Ghi chú thêm</span>
-            <textarea id="customerNote" rows="4" placeholder="Ví dụ: Giao giờ hành chính, cần tư vấn thêm về sản phẩm..."></textarea>
+           <textarea id="customerNote" name="note" rows="4" placeholder="Ví dụ: Giao giờ hành chính, cần tư vấn thêm về sản phẩm..."></textarea>
           </label>
 
           <div class="quick-summary">
