@@ -310,13 +310,13 @@ async function submitOrder(event) {
     return;
   }
 
-  if (GOOGLE_SHEET_WEB_APP_URL.includes("https://script.google.com/macros/s/AKfycbyBHZZypb8bNGnbC8UenQUWYY5F0xHTJ6kknlcEP9AeGRwBAj_nZhySq_AjA1s6I6R7tQ/exec")) {
+  if (GOOGLE_SHEET_WEB_APP_URL.includes("https://script.google.com/macros/s/...")) {
     showSubmitStatus(
-      "error",
-      "Chưa cấu hình URL Google Apps Script. Hãy dán Web App URL vào biến GOOGLE_SHEET_WEB_APP_URL trong file script.js."
+        "error",
+        "Chưa cấu hình URL Google Apps Script..."
     );
     return;
-  }
+}  
 
   const orderCode = `DH-${Date.now()}`;
 
