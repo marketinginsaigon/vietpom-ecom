@@ -13,7 +13,7 @@ let PRODUCTS = [];
 
 async function fetchProducts() {
   try {
-    const response = await fetch("hhttps://script.google.com/macros/s/AKfycbyBHZZypb8bNGnbC8UenQUWYY5F0xHTJ6kknlcEP9AeGRwBAj_nZhySq_AjA1s6I6R7tQ/exec");
+    const response = await fetch(GOOGLE_SHEET_WEB_APP_URL);
     const data = await response.json();
     
     // BỘ CHỐNG LỖI: Lọc bỏ dòng trống và tự động điền danh mục nếu trong Sheets lỡ quên
