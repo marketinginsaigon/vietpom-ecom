@@ -187,11 +187,7 @@ function renderProducts() {
           <div class="product-inner">
             <div class="product-img-wrap">
               <div class="product-tag">${product.tag}</div>
-              <div class="product-img-placeholder">
-                <div>✚</div>
-                <strong>Khu vực đặt hình sản phẩm</strong>
-                <span>Có thể thay bằng ảnh thật</span>
-              </div>
+              <img src="${product.image}" alt="${product.name}" style="width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 8px;">
             </div>
 
             <div class="product-meta">
