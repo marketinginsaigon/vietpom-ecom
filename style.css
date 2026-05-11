@@ -1082,56 +1082,28 @@ textarea {
   }
 }
 /* =========================================
-   TỐI ƯU GIAO DIỆN MOBILE - BẢN CHỐT HẠ
+   TỐI ƯU MOBILE - ÉP RỚT DÒNG BẰNG MỌI GIÁ
    ========================================= */
 @media (max-width: 768px) {
-  /* 1. Chia 2 cột đều nhau, chống tràn */
-  #products .container, .section-inner {
-    display: flex !important;
-    flex-direction: column !important;
-  }
+  /* 1. Vẫn giữ 2 cột */
+  #products .container, .section-inner { display: flex !important; flex-direction: column !important; }
   div:has(> .product-card), #productList, .products-grid {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 8px !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
+    display: grid !important; grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; width: 100% !important; box-sizing: border-box !important;
   }
+  .product-card { padding: 8px !important; display: flex !important; flex-direction: column !important; overflow: hidden !important; }
+  .product-card img { height: 120px !important; width: 100% !important; object-fit: contain !important; }
   
-  /* 2. Ép thẻ sản phẩm gọn gàng */
-  .product-card {
-    padding: 8px !important;
-    display: flex !important;
-    flex-direction: column !important;
-    box-sizing: border-box !important;
-    overflow: hidden !important; 
-  }
-  .product-card img {
-    height: 120px !important; 
-    width: 100% !important;
-    object-fit: contain !important;
-  }
-  .product-card h3 {
-    font-size: 13px !important;
-    line-height: 1.4 !important;
-    margin-bottom: 8px !important;
-  }
-
-  /* 3. BẺ GÃY HÀNG NGANG: ÉP GIÁ VÀ NÚT THÀNH HÀNG DỌC */
-  .product-card > div:last-of-type,
-  .product-card > div:has(.add-btn) {
-      display: block !important; /* Đây là lệnh đập nát hàng ngang */
-      width: 100% !important;
-  }
+  /* 2. THẢ ĐẠI BÁC: ÉP NÚT XUỐNG DÒNG */
+  .product-card div { flex-wrap: wrap !important; } 
   
-  /* 4. Định dạng lại Nút Mua / Cụm tăng giảm số lượng */
   .product-card .add-btn,
   .product-card .quantity-wrapper {
-      display: flex !important;
+      min-width: 100% !important; /* Bắt buộc phình to 100% */
+      flex: 0 0 100% !important; /* Cấm mọi hành vi co cụm ngang */
       width: 100% !important;
-      margin-top: 12px !important; /* Tạo khoảng cách với chữ Giá Bán ở trên */
+      margin-top: 15px !important; /* Tạo khoảng cách với chữ Giá */
       margin-left: 0 !important;
+      margin-right: 0 !important;
       justify-content: center !important;
-      box-sizing: border-box !important;
   }
 }
