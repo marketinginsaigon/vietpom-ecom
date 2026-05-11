@@ -1153,3 +1153,49 @@ textarea {
       transform: scale(1.15) !important; /* Tuyệt chiêu: Phóng to ảnh lên 15% để lấp đầy khoảng trắng */
   }
 }
+/* =========================================
+   NHUỘM TOÀN BỘ GIAO DIỆN SANG TÔNG XANH DƯƠNG VIETPOM
+   ========================================= */
+
+/* 1. Đổi màu Header (Thanh điều hướng trên cùng) và các Nút bấm */
+.site-header, 
+.add-btn, 
+.cart-badge, 
+.checkout-btn,
+button[type="submit"] {
+    background-color: #15558D !important; /* Mã màu Xanh Dương đậm chuẩn theo ảnh */
+    color: #ffffff !important;
+}
+
+/* 2. Đổi màu khi di chuột vào Nút (Đậm hơn một chút) */
+.add-btn:hover, 
+.checkout-btn:hover, 
+button[type="submit"]:hover {
+    background-color: #0F4373 !important;
+}
+
+/* 3. Đổi màu bảng Khuyến mãi (Chiết khấu 15%) sang dải màu Xanh Dương cực sang */
+.promo-box {
+    background: linear-gradient(135deg, #1A6BBA, #15558D) !important;
+    color: #ffffff !important;
+}
+
+/* 4. Đổi màu Chữ nổi bật (Giá tiền, Tiêu đề) */
+.price, 
+h2, 
+.text-primary,
+.product-card h3 {
+    color: #15558D !important;
+}
+
+/* 5. Đổi màu nền nhạt phía sau hình ảnh Hộp thuốc (Từ xanh lá nhạt sang xanh dương cực nhạt) */
+.product-card > div:first-child {
+    background-color: #F2F7FB !important; 
+}
+
+/* 6. Đổi màu Viền các nút hoặc ô nhập liệu (nếu có) */
+input:focus, 
+textarea:focus {
+    border-color: #15558D !important;
+    outline: none !important;
+}
