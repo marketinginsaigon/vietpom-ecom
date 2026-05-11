@@ -1107,3 +1107,32 @@ textarea {
       justify-content: center !important;
   }
 }
+/* =========================================
+   TUYỆT CHIÊU CĂN ĐỀU THẺ SẢN PHẨM THẲNG TẮP
+   ========================================= */
+/* 1. Bắt các thẻ phải dãn chiều cao bằng nhau chằn chặn */
+.product-card {
+    height: 100% !important;
+}
+
+/* 2. Đóng khung chuẩn cho phần hình ảnh (Nền xanh nhạt) */
+.product-card > div:first-child {
+    aspect-ratio: 1 / 1 !important; /* Khung nền luôn vuông vức */
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Ép ảnh nằm vừa vặn giữa khung, không bị méo */
+.product-card img {
+    max-height: 100% !important;
+    width: 100% !important;
+    object-fit: contain !important;
+}
+
+/* 3. BÍ KÍP CHỐT HẠ: Đẩy cụm Giá và Nút luôn luôn dính sát xuống đáy */
+.product-card > div:last-of-type,
+.product-card > div:has(.add-btn) {
+    margin-top: auto !important; 
+}
