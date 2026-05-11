@@ -1136,3 +1136,20 @@ textarea {
 .product-card > div:has(.add-btn) {
     margin-top: auto !important; 
 }
+/* =========================================
+   PHÓNG TO ẢNH SẢN PHẨM MOBILE
+   ========================================= */
+@media (max-width: 768px) {
+  /* 1. Nới viền xung quanh để lấy không gian cho ảnh */
+  .product-card > div:first-child {
+      padding: 5px !important; 
+  }
+  
+  /* 2. Ép ảnh cao lên và dùng lúp phóng to 15% */
+  .product-card img {
+      height: 160px !important; /* Kéo dài chiều cao từ 120px lên 160px */
+      max-height: 160px !important;
+      padding: 0 !important;
+      transform: scale(1.15) !important; /* Tuyệt chiêu: Phóng to ảnh lên 15% để lấp đầy khoảng trắng */
+  }
+}
