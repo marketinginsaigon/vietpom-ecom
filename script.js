@@ -330,7 +330,7 @@ async function submitOrder(event) {
     state.isSubmitting = true;
     elements.submitButton.disabled = true;
     elements.submitButton.textContent = "Đang gửi đơn hàng...";
-    showSubmitStatus("loading", "Đang gửi đơn hàng về Google Sheet...");
+    showSubmitStatus("loading", "Đang gửi đơn hàng ...");
 
     await fetch(GOOGLE_SHEET_WEB_APP_URL, {
       method: "POST",
@@ -343,7 +343,7 @@ async function submitOrder(event) {
 
     showSubmitStatus(
       "success",
-      `Đã gửi đơn hàng ${orderCode}. Vui lòng kiểm tra file Google Sheet trong Google Drive.`
+      `Đơn hàng ${orderCode} đã đặt thành công. Xin Cám Ơn.`
     );
 
     state.cart = {};
