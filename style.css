@@ -1082,40 +1082,40 @@ textarea {
   }
 }
 /* =========================================
-   TỐI ƯU GIAO DIỆN MOBILE - 2 SẢN PHẨM/DÒNG 
+   TỐI ƯU GIAO DIỆN MOBILE - BẢN VÁ LỖI
    ========================================= */
 @media (max-width: 768px) {
-  /* 1. Ép chia 2 cột đều nhau */
-  #products .container {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 10px !important; /* Khoảng cách giữa 2 hộp thuốc */
-    padding: 10px !important;
+  /* 1. Trả lại vị trí: Chữ nằm phía trên, Sản phẩm nằm phía dưới */
+  #products .container, .section-inner {
+    display: flex !important;
+    flex-direction: column !important;
   }
 
-  /* 2. Ép viền thẻ sản phẩm mỏng lại cho đỡ tốn diện tích */
+  /* 2. CHỈ nhắm vào đúng cái hộp chứa sản phẩm để bẻ 2 cột */
+  div:has(> .product-card), #productList, .products-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+
+  /* 3. Tối ưu lại kích thước cho vừa vặn không bị tràn */
   .product-card {
     padding: 8px !important;
   }
-
-  /* 3. Thu gọn chiều cao ảnh (vì khung ngang đã bị hẹp đi 1 nửa) */
   .product-card img {
     height: 120px !important; 
     padding: 5px !important;
   }
-
-  /* 4. Thu nhỏ cỡ chữ tên thuốc cho vừa vặn */
   .product-card h3 {
     font-size: 13px !important;
     line-height: 1.4 !important;
     margin-bottom: 8px !important;
   }
-
-  /* 5. Thu nhỏ nút "Chọn mua" */
   .add-btn {
     padding: 6px 10px !important;
     font-size: 12px !important;
-    width: 100% !important; /* Cho nút tràn viền nhìn sang hơn */
+    width: 100% !important; 
     justify-content: center !important;
   }
 }
