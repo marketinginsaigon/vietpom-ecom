@@ -1082,9 +1082,10 @@ textarea {
   }
 }
 /* =========================================
-   TỐI ƯU GIAO DIỆN MOBILE - BẢN VÁ LỖI
+   TỐI ƯU GIAO DIỆN MOBILE - BẢN TRỊ ZALO
    ========================================= */
 @media (max-width: 768px) {
+  /* Khung và Chia 2 cột */
   #products .container, .section-inner {
     display: flex !important;
     flex-direction: column !important;
@@ -1095,6 +1096,8 @@ textarea {
     gap: 10px !important;
     width: 100% !important;
   }
+  
+  /* Tối ưu ảnh và chữ */
   .product-card {
     padding: 8px !important;
   }
@@ -1107,19 +1110,17 @@ textarea {
     line-height: 1.4 !important;
     margin-bottom: 8px !important;
   }
-  .product-card > div:has(.add-btn), 
+
+  /* ĐÂY LÀ ĐOẠN ÉP RỚT DÒNG (Hỗ trợ 100% trình duyệt) */
   .product-card > div:last-child {
-      display: flex !important;
-      flex-direction: column !important;
-      align-items: flex-start !important;
-      gap: 10px !important; 
-      width: 100% !important;
+      flex-wrap: wrap !important; /* Cho phép các thành phần rớt xuống hàng */
   }
+  .product-card > div:last-child > *:last-child,
   .add-btn {
-      width: 100% !important; 
-      justify-content: center !important; 
+      flex: 1 1 100% !important; /* Ép cái nút phình to 100% để rớt xuống dưới */
+      width: 100% !important;
+      margin-top: 8px !important;
       margin-left: 0 !important;
-      padding: 6px 10px !important;
-      font-size: 12px !important;
+      justify-content: center !important;
   }
 }
