@@ -187,7 +187,7 @@ function renderProducts() {
           <div class="product-inner">
             <div class="product-img-wrap">
               <div class="product-tag">${product.tag}</div>
-              <img src="${product.image}" alt="${product.name}" style="width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 8px;">
+              <img src="${product.image}" alt="${product.name}" style="width: 100%; height: 180px; object-fit: contain; border-radius: 8px; padding: 10px; background-color: #ffffff; box-sizing: border-box;">
             </div>
 
             <div class="product-meta">
