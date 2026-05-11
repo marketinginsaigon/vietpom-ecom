@@ -77,6 +77,29 @@
           </div>
 
           <div class="mini-products" id="miniProducts"></div>
+          <style>
+  .my-slider-container { width: 100%; height: 320px; position: relative; overflow: hidden; border-radius: 12px; margin-top: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+  .my-slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.8s ease-in-out; }
+  .my-slide.show { opacity: 1; }
+</style>
+
+<div class="my-slider-container">
+    <img class="my-slide show" src="https://dummyimage.com/800x400/09a158/fff&text=Banner+Khuyen+Mai+1" alt="Banner 1">
+    <img class="my-slide" src="https://dummyimage.com/800x400/ff7b00/fff&text=Banner+Khuyen+Mai+2" alt="Banner 2">
+    <img class="my-slide" src="https://dummyimage.com/800x400/007bff/fff&text=Banner+Khuyen+Mai+3" alt="Banner 3">
+</div>
+
+<script>
+    let myIndex = 0;
+    const mySlides = document.querySelectorAll('.my-slide');
+    if(mySlides.length > 0) {
+        setInterval(() => {
+            mySlides[myIndex].classList.remove('show');
+            myIndex = (myIndex + 1) % mySlides.length;
+            mySlides[myIndex].classList.add('show');
+        }, 3000); // 3000 = 3 giây đổi ảnh một lần
+    }
+</script>
         </aside>
       </div>
     </section>
