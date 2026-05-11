@@ -1108,94 +1108,46 @@ textarea {
   }
 }
 /* =========================================
-   TUYỆT CHIÊU CĂN ĐỀU THẺ SẢN PHẨM THẲNG TẮP
+   1. ĐỔI MÀU XANH DƯƠNG (ÁP DỤNG MỌI MÀN HÌNH)
    ========================================= */
-/* 1. Bắt các thẻ phải dãn chiều cao bằng nhau chằn chặn */
-.product-card {
-    height: 100% !important;
+.site-header, .add-btn, .cart-badge, .checkout-btn, button[type="submit"] {
+    background-color: #15558D !important; color: #ffffff !important;
 }
-
-/* 2. Đóng khung chuẩn cho phần hình ảnh (Nền xanh nhạt) */
-.product-card > div:first-child {
-    aspect-ratio: 1 / 1 !important; /* Khung nền luôn vuông vức */
-    width: 100% !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-}
-
-/* Ép ảnh nằm vừa vặn giữa khung, không bị méo */
-.product-card img {
-    max-height: 100% !important;
-    width: 100% !important;
-    object-fit: contain !important;
-}
-
-/* 3. BÍ KÍP CHỐT HẠ: Đẩy cụm Giá và Nút luôn luôn dính sát xuống đáy */
-.product-card > div:last-of-type,
-.product-card > div:has(.add-btn) {
-    margin-top: auto !important; 
-}
-/* =========================================
-   PHÓNG TO ẢNH SẢN PHẨM MOBILE
-   ========================================= */
-@media (max-width: 768px) {
-  /* 1. Nới viền xung quanh để lấy không gian cho ảnh */
-  .product-card > div:first-child {
-      padding: 5px !important; 
-  }
-  
-  /* 2. Ép ảnh cao lên và dùng lúp phóng to 15% */
-  .product-card img {
-      height: 160px !important; /* Kéo dài chiều cao từ 120px lên 160px */
-      max-height: 160px !important;
-      padding: 0 !important;
-      transform: scale(1.15) !important; /* Tuyệt chiêu: Phóng to ảnh lên 15% để lấp đầy khoảng trắng */
-  }
-}
-/* =========================================
-   NHUỘM TOÀN BỘ GIAO DIỆN SANG TÔNG XANH DƯƠNG VIETPOM
-   ========================================= */
-
-/* 1. Đổi màu Header (Thanh điều hướng trên cùng) và các Nút bấm */
-.site-header, 
-.add-btn, 
-.cart-badge, 
-.checkout-btn,
-button[type="submit"] {
-    background-color: #15558D !important; /* Mã màu Xanh Dương đậm chuẩn theo ảnh */
-    color: #ffffff !important;
-}
-
-/* 2. Đổi màu khi di chuột vào Nút (Đậm hơn một chút) */
-.add-btn:hover, 
-.checkout-btn:hover, 
-button[type="submit"]:hover {
+.add-btn:hover, .checkout-btn:hover, button[type="submit"]:hover {
     background-color: #0F4373 !important;
 }
-
-/* 3. Đổi màu bảng Khuyến mãi (Chiết khấu 15%) sang dải màu Xanh Dương cực sang */
 .promo-box {
-    background: linear-gradient(135deg, #1A6BBA, #15558D) !important;
-    color: #ffffff !important;
+    background: linear-gradient(135deg, #1A6BBA, #15558D) !important; color: #ffffff !important;
 }
-
-/* 4. Đổi màu Chữ nổi bật (Giá tiền, Tiêu đề) */
-.price, 
-h2, 
-.text-primary,
-.product-card h3 {
+.price, h2, .text-primary, .product-card h3 {
     color: #15558D !important;
 }
-
-/* 5. Đổi màu nền nhạt phía sau hình ảnh Hộp thuốc (Từ xanh lá nhạt sang xanh dương cực nhạt) */
 .product-card > div:first-child {
     background-color: #F2F7FB !important; 
 }
+input:focus, textarea:focus {
+    border-color: #15558D !important; outline: none !important;
+}
 
-/* 6. Đổi màu Viền các nút hoặc ô nhập liệu (nếu có) */
-input:focus, 
-textarea:focus {
-    border-color: #15558D !important;
-    outline: none !important;
+/* =========================================
+   2. TỐI ƯU HÌNH ẢNH (CHỈ NHỐT TRONG MOBILE)
+   ========================================= */
+@media (max-width: 768px) {
+  /* Ép chiều cao các thẻ bằng nhau */
+  .product-card { height: 100% !important; }
+  
+  /* Căn hình ảnh vuông vức, phóng to 15% */
+  .product-card > div:first-child { 
+      aspect-ratio: 1 / 1 !important; width: 100% !important; display: flex !important; 
+      align-items: center !important; justify-content: center !important; padding: 5px !important; 
+  }
+  .product-card img { 
+      height: 160px !important; max-height: 160px !important; width: 100% !important; 
+      object-fit: contain !important; transform: scale(1.15) !important; 
+  }
+  
+  /* Ghim giá và nút mua xuống đáy */
+  .product-card > div:last-of-type, .product-card > div:has(.add-btn) { 
+      margin-top: auto !important; 
+  }
 }
