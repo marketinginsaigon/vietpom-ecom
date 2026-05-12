@@ -9,46 +9,41 @@
   
   <style>
     /* ============================================================
-       BỘ MÃ GIAO DIỆN CHUẨN UX/UI - VIETPOM MEDICAL BLUE
+       BỘ MÃ GIAO DIỆN CHUẨN UX/UI (BẢN BỌC THÉP MÃ MÀU TRỰC TIẾP)
        ============================================================ */
-    :root {
-      --primary-color: #15558D !important;
-      --primary-hover: #0F4373 !important;
-      --red-alert: #E60000 !important;
-    }
 
     /* 1. TRIỆT TIÊU MẢNG SÁNG XANH LÁ LỖI Ở GÓC MÀN HÌNH */
     .hero-bg, .hero-bg-left, .hero-bg-right { 
         display: none !important; 
     }
 
-    /* 2. CHỈNH NÚT "ĐIỀN THÔNG TIN" (BTN-OUTLINE) CHO RÕ NÉT */
+    /* 2. CHỈNH NÚT "ĐIỀN THÔNG TIN" CHO RÕ NÉT (ĐÃ KHÓA MÃ MÀU CHẾT) */
     .btn-outline {
         background-color: transparent !important; 
-        color: var(--primary-color) !important; 
-        border: 2px solid var(--primary-color) !important; 
+        color: #15558D !important; 
+        border: 2px solid #15558D !important; 
         font-weight: bold !important;
     }
     .btn-outline:hover {
-        background-color: var(--primary-color) !important; 
+        background-color: #15558D !important; 
         color: #ffffff !important; 
     }
 
     /* 3. ĐỒNG BỘ MÀU XANH DƯƠNG CHO TẤT CẢ NÚT BẤM & TAG */
     .btn-primary, .btn-green, .btn-dark, .cart-pill, .label-pill, .add-btn, .checkout-btn, .order-icon {
-      background-color: var(--primary-color) !important;
+      background-color: #15558D !important;
       color: #ffffff !important;
       border: none !important;
     }
     .btn-primary:hover, .add-btn:hover {
-      background-color: var(--primary-hover) !important;
+      background-color: #0F4373 !important;
       box-shadow: 0 4px 12px rgba(21, 85, 141, 0.3) !important;
     }
     .btn-primary *, .add-btn *, .checkout-btn * { color: #ffffff !important; }
 
     /* 4. TIÊU ĐỀ & CHỮ NHẤN MẠNH */
     h1, h2, h3, h4, .price, .section-kicker, .buyer-kicker, .summary-kicker, .text-success, .text-green {
-      color: var(--primary-color) !important;
+      color: #15558D !important;
     }
 
     /* 5. KHỐI NỀN ĐẬM (ƯU ĐÃI & FORM THÔNG TIN) */
@@ -71,12 +66,12 @@
     .summary-card *:not(.btn):not(.btn *), .cart-summary *:not(.btn):not(.btn *) { 
       color: #333333 !important; 
     }
-    .summary-card h3, .summary-total strong { color: var(--primary-color) !important; }
+    .summary-card h3, .summary-total strong { color: #15558D !important; }
 
-    /* 7. THẺ SẢN PHẨM & GIÁ GẠCH NGANG (OLDPRICE) */
+    /* 7. THẺ SẢN PHẨM & GIÁ GẠCH NGANG */
     .product-card > div:first-child { background-color: #F0F6FA !important; }
     #productGrid span[class*="absolute"], #productGrid span[class*="tag"] {
-      color: var(--red-alert) !important;
+      color: #E60000 !important;
       font-weight: 900 !important;
       background: rgba(255,255,255,0.9) !important;
       padding: 2px 6px !important;
@@ -144,7 +139,17 @@
           </div>
 
           <div class="mini-products" id="miniProducts"></div>
+          
+          <style>
+            .my-slider-container { width: 100%; aspect-ratio: 16 / 9; position: relative; overflow: hidden; border-radius: 12px; margin-top: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); background-color: #ffffff; }
+            .my-slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; opacity: 0; transition: opacity 0.8s ease-in-out; }
+            .my-slide.show { opacity: 1; }
+          </style>
           <div class="my-slider-container"><img class="my-slide show" src="https://i.postimg.cc/FKdnqL2H/banner-1.jpg"></div>
+          <script>
+            let myIndex = 0; const mySlides = document.querySelectorAll('.my-slide');
+            if(mySlides.length > 0) setInterval(() => { mySlides[myIndex].classList.remove('show'); myIndex = (myIndex + 1) % mySlides.length; mySlides[myIndex].classList.add('show'); }, 3000);
+          </script>
         </aside>
       </div>
     </section>
@@ -213,6 +218,6 @@
     <div class="container footer-inner"><strong>© 2026 VietPOM</strong><span>VietPOM thương mại điện tử ngành dược phẩm.</span></div>
   </footer>
 
-  <script src="script.js?v=999111"></script>
+  <script src="script.js?v=888888"></script>
 </body>
 </html>
