@@ -3,12 +3,11 @@
 // =====================================================
 // Sau khi deploy Google Apps Script thành Web App,
 // dán URL vào biến bên dưới.
-// Ví dụ: const GOOGLE_SHEET_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx.../exec";
 const GOOGLE_SHEET_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyBHZZypb8bNGnbC8UenQUWYY5F0xHTJ6kknlcEP9AeGRwBAj_nZhySq_AjA1s6I6R7tQ/exec";
+
 // =====================================================
 // DỮ LIỆU SẢN PHẨM
 // =====================================================
-// Bạn có thể sửa tên sản phẩm, giá, quy cách, ghi chú tại đây.
 let PRODUCTS = [];
 
 async function fetchProducts() {
@@ -53,7 +52,7 @@ const elements = {
   headerCartCount: document.getElementById("headerCartCount"),
   subtotalText: document.getElementById("subtotalText"),
   shippingText: document.getElementById("shippingText"),
-  discountText: document.getElementById("discountText"),
+  /* Đã xóa biến discountText vì không dùng đến nữa */
   totalText: document.getElementById("totalText"),
   quickProductCount: document.getElementById("quickProductCount"),
   quickTotalText: document.getElementById("quickTotalText"),
@@ -85,8 +84,13 @@ function getCartItems() {
 function getTotals() {
   const cartItems = getCartItems();
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  
+  // Vẫn giữ logic Freeship cho đơn từ 1.200.000đ
   const shippingFee = subtotal >= 1200000 || subtotal === 0 ? 0 : 30000;
-  const discount = subtotal >= 1200000 ? Math.round(subtotal * 0.15) : 0;
+  
+  // ĐÃ KHÓA CHIẾT KHẤU: Ép về 0đ vĩnh viễn
+  const discount = 0; 
+  
   const total = Math.max(subtotal + shippingFee - discount, 0);
 
   return {
@@ -129,6 +133,7 @@ function removeItem(id) {
 }
 
 function renderMiniProducts() {
+  if(!elements.miniProducts) return;
   elements.miniProducts.innerHTML = PRODUCTS.slice(0, 4)
     .map((product) => {
       return `
@@ -256,12 +261,14 @@ function renderCart() {
 }
 
 function renderTotals() {
-  const { cartItems, subtotal, shippingFee, discount, total } = getTotals();
+  const { cartItems, subtotal, shippingFee, total } = getTotals();
 
   elements.headerCartCount.textContent = cartItems.length;
   elements.subtotalText.textContent = formatCurrency(subtotal);
   elements.shippingText.textContent = shippingFee === 0 ? "Miễn phí" : formatCurrency(shippingFee);
-  elements.discountText.textContent = discount > 0 ? `- ${formatCurrency(discount)}` : "0đ";
+  
+  /* Đã khóa phần xuất chữ Chiết khấu ra màn hình */
+
   elements.totalText.textContent = formatCurrency(total);
 
   elements.quickProductCount.textContent = cartItems.length;
