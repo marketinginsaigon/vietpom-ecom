@@ -1196,41 +1196,51 @@ input:focus, textarea:focus {
   }
 }
 /* =========================================
-   DIỆT CỎ TẬN GỐC XANH LÁ + NHẤN ĐỎ TAG SẢN PHẨM
+   BẢN VÁ TỐI THƯỢNG: TRỊ MÀU ĐỎ TRÀN LAN & DIỆT XANH LÁ CỨNG ĐẦU
    ========================================= */
 
-/* 1. HÌNH 2: Đổi màu chữ các thẻ "HD", "Tất cả" thành ĐỎ */
-.product-card > div:first-child span,
-.product-card .badge,
-.product-badge {
-    color: #E60000 !important; /* Màu đỏ đậm, rõ nét */
+/* --- KHUNG ĐỎ 1: SẢN PHẨM (Sửa màu đỏ bị lem) --- */
+/* 1. Trả lại toàn bộ Giá, Tên thuốc, Phân loại về đúng màu Xanh Dương */
+.product-card > div:last-child *,
+.product-card > div:has(.add-btn) * {
+    color: #15558D !important; 
+}
+/* Trừ chữ bên trong Nút "Chọn mua" phải giữ màu Trắng */
+.product-card .add-btn, .product-card .add-btn * {
+    color: #ffffff !important; 
+}
+/* 2. BẮN TỈA ĐÚNG MỤC TIÊU: Chỉ Thẻ "HD", "Tất cả" trên góc ảnh mới được màu ĐỎ */
+.product-card > div:first-child span {
+    color: #E60000 !important;
     font-weight: 800 !important;
 }
 
-/* 2. Quét sạch Xanh lá ở Tiêu đề nhỏ (TỔNG HỢP ĐƠN HÀNG, TẠM TÍNH, Giá 0đ) */
-h5, h6, .subtitle, .small-title, 
-.cart-section span, .cart-summary span, 
-.cart-summary strong, .cart-summary b,
-.text-success, .text-green {
-    color: #15558D !important;
+/* --- KHUNG ĐỎ 2: GÓC TRÊN CÙNG (Logo & Tag UX rõ ràng) --- */
+/* 1. Ép Logo tròn thành Xanh Dương */
+.brand div, .brand .rounded-circle, .site-header a[href="#"] div {
+    background-color: #15558D !important;
 }
-
-/* 3. Đồng bộ luôn cái Tag "✓ UX rõ ràng..." trên cùng cho tone-sur-tone */
-.hero-tag, .badge-light-green {
-    background-color: #EBF4FA !important; /* Nền xanh dương cực nhạt */
+/* 2. Ép Tag "UX Rõ ràng..." thành viền Xanh Dương, nền xanh nhạt */
+.hero-card span:first-child, 
+span[class*="bg-green"], span[class*="text-green"] {
+    background-color: #EBF4FA !important;
     color: #15558D !important;
     border: 1px solid #15558D !important;
 }
 
-/* 4. Đổi màu Nút vuông Giỏ hàng bị sót màu Xanh lá */
-.cart-section button, 
-#selectedProducts button,
-.action-btn, .btn-success {
+/* --- KHUNG ĐỎ 3: GIỎ HÀNG (Tổng hợp đơn hàng) --- */
+/* 1. Đổi chữ "TỔNG HỢP ĐƠN HÀNG" thành Xanh Dương */
+.section-head h6, .section-head span, 
+#buyer .text-success, #buyer .text-green {
+    color: #15558D !important;
+}
+/* 2. Đổi Nút Giỏ Hàng nhỏ xíu kế bên thành Xanh Dương */
+.section-head button, .mini-cart-btn, 
+button:has(> i.fa-cart-shopping), #buyer button.bg-green-500 {
     background-color: #15558D !important;
     color: #ffffff !important;
     border: none !important;
 }
-.cart-section button:hover, 
-#selectedProducts button:hover {
+.section-head button:hover {
     background-color: #0F4373 !important;
 }
