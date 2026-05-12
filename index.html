@@ -9,14 +9,21 @@
   
   <style>
     /* ============================================================
-       BỘ MÃ XANH DƯƠNG Y TẾ (BẢN VÁ LỖI AN TOÀN 100%)
+       BỘ MÃ XANH DƯƠNG Y TẾ (BẢN FULL CHỐT HẠ - NỀN TRẮNG SẠCH SẼ)
        ============================================================ */
     :root {
       --primary-color: #15558D !important;
       --primary-hover: #0F4373 !important;
+      --red-alert: #E60000 !important;
     }
 
-    /* 1. ĐỔI XANH DƯƠNG MỌI NÚT BẤM VÀ TAG (Bảo vệ chữ trắng) */
+    /* 1. DIỆT TẬN GỐC HIỆU ỨNG MẢNG SÁNG XANH LÁ Ở GÓC MÀN HÌNH */
+    .hero-bg, .hero-bg-left, .hero-bg-right {
+      display: none !important;
+      background: transparent !important;
+    }
+
+    /* 2. NÚT BẤM VÀ TAG: Xanh Dương, chữ Trắng */
     .btn-primary, .btn-green, .btn-dark, .cart-pill, .label-pill, .add-btn, .checkout-btn, .order-icon {
       background-color: var(--primary-color) !important;
       color: #ffffff !important;
@@ -24,22 +31,29 @@
     }
     .btn-primary:hover, .btn-green:hover, .add-btn:hover {
       background-color: var(--primary-hover) !important;
+      box-shadow: 0 4px 12px rgba(21, 85, 141, 0.3) !important;
     }
-    .btn *, .add-btn *, .checkout-btn * { color: #ffffff !important; }
+    .btn, .btn *, .add-btn, .add-btn *, .checkout-btn * { color: #ffffff !important; }
 
-    /* 2. ĐỔI XANH DƯƠNG TIÊU ĐIỂM */
+    /* 3. CHỮ TIÊU ĐIỂM: Xanh Dương */
     h1, h2, h3, h4, .price, .section-kicker, .buyer-kicker, .summary-kicker, .text-success, .text-green {
       color: var(--primary-color) !important;
     }
 
-    /* 3. KHỐI NỀN ĐẬM (Bảng ưu đãi, Thông tin) */
+    /* 4. KHỐI NỀN LỚN (Bảng ưu đãi, Cột thông tin) */
     .promo-box, .buyer-info {
-      background-image: linear-gradient(135deg, #1A6BBA, #0F4373) !important;
-      background-color: var(--primary-color) !important;
+      background: linear-gradient(135deg, #1A6BBA, #0F4373) !important;
+      border: none !important;
     }
     .promo-box *, .buyer-info * { color: #ffffff !important; }
 
-    /* 4. GIỎ HÀNG SẠCH SẼ (Bảo vệ nút bấm không bị đen) */
+    /* Làm trong suốt cái nền của danh sách để lộ nền xanh dương đậm */
+    .buyer-info .info-list > div, section[id="buyer"] div.info-list div {
+      background-color: rgba(255, 255, 255, 0.1) !important; 
+      border-color: rgba(255, 255, 255, 0.2) !important; 
+    }
+
+    /* 5. GIỎ HÀNG: Nền trắng xám, chữ đen (Trừ nút bấm) */
     .summary-card, .cart-summary {
       background-color: #F8FAFC !important;
       border: 1px solid #E2E8F0 !important;
@@ -49,13 +63,25 @@
     }
     .summary-card h3, .summary-total strong { color: var(--primary-color) !important; }
 
-    /* 5. TỐI ƯU MOBILE 2 CỘT GỌN GÀNG */
+    /* 6. THẺ SẢN PHẨM: Nền nhạt, Thẻ HD màu Đỏ */
+    .product-card > div:first-child { background-color: #F0F6FA !important; }
+    #productGrid span[class*="absolute"], #productGrid span[class*="text-green"], #productGrid span[class*="text-teal"] {
+      color: var(--red-alert) !important;
+      font-weight: 900 !important;
+      background: rgba(255,255,255,0.9) !important;
+      padding: 2px 6px !important;
+      border-radius: 4px !important;
+    }
+
+    /* 7. TỐI ƯU MOBILE: 2 cột gọn gàng */
     @media (max-width: 768px) {
       #productGrid { display: grid !important; grid-template-columns: repeat(2, 1fr) !important; gap: 10px !important; }
       .product-card { height: 100% !important; display: flex !important; flex-direction: column !important; padding: 8px !important; }
       .product-card img { height: 120px !important; object-fit: contain !important; width: 100% !important; transform: scale(1.1) !important;}
       .product-card > div:last-child { margin-top: auto !important; display: block !important; width: 100% !important; }
       .add-btn { width: 100% !important; margin-top: 10px !important; margin-left: 0 !important; justify-content: center !important; }
+      .hero-grid { grid-template-columns: 1fr !important; }
+      .site-header .container { justify-content: space-between !important; }
     }
   </style>
 </head>
