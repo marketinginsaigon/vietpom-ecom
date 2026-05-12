@@ -1108,72 +1108,6 @@ textarea {
   }
 }
 /* =========================================
-   ĐẠI CHUẨN HÓA GIAO DIỆN: TÔNG XANH DƯƠNG Y TẾ CỰC SẠCH
-   ========================================= */
-
-/* 1. XÓA SỔ XANH LÁ: Đổi toàn bộ Nút, Huy hiệu, Logo tròn sang Xanh Dương */
-.add-btn, .checkout-btn, button[type="submit"], 
-.cart-badge, .btn, .step-number, .icon-circle,
-.site-header .brand div /* Ép cái logo tròn màu xanh lá thành xanh dương */ {
-    background-color: #15558D !important;
-    color: #ffffff !important;
-    border: none !important;
-}
-.add-btn:hover, .checkout-btn:hover, button[type="submit"]:hover {
-    background-color: #0F4373 !important;
-    box-shadow: 0 4px 12px rgba(21, 85, 141, 0.3) !important;
-}
-
-/* 2. ĐỒNG BỘ CHỮ NHẤN: Giá tiền, Tiêu đề chính */
-h1, h2, h3, h4, .price, .text-primary, .total-price, 
-.site-header a, .site-header span {
-    color: #15558D !important;
-}
-
-/* 3. CỨU NÉT "CHỮ CHÌM": Bảng Khuyến Mãi & Cột Thông Tin Form */
-/* Đổ nền Xanh Dương Gradient cực sang */
-.promo-box, .hero-card, .info-section, .form-info, 
-div[class*="info"], section[class*="info"] {
-    background: linear-gradient(135deg, #1A6BBA, #0F4373) !important;
-    border: none !important;
-}
-/* BẮT BUỘC toàn bộ chữ trong các bảng nền đậm này phải là MÀU TRẮNG */
-.promo-box *, .hero-card *, .info-section *, .form-info *, 
-div[class*="info"] *, section[class*="info"] * {
-    color: #ffffff !important;
-}
-
-/* 4. ĐẬP BỎ HỘP ĐEN GIỎ HÀNG: Trả lại sự sạch sẽ cho ngành Dược */
-/* Biến cái hộp "Tạm tính" đen thui thành hộp Xám Trắng bo góc sang trọng */
-.cart-summary, .summary-box, .cart-sidebar, aside, 
-div[class*="summary"] {
-    background-color: #F8FAFC !important; /* Nền xám xanh cực sáng và sạch */
-    border: 1px solid #E2E8F0 !important;
-    border-radius: 12px !important;
-}
-/* Chữ trong hộp Giỏ hàng thành màu Tối dễ đọc, chữ Tạm tính thành Xanh */
-.cart-summary *, .summary-box *, .cart-sidebar *, aside *, 
-div[class*="summary"] * {
-    color: #333333 !important;
-}
-.cart-summary h3, .summary-box h3, .total-amount,
-div[class*="summary"] h3 {
-    color: #15558D !important;
-}
-
-/* 5. NỀN HÌNH ẢNH SẢN PHẨM: Xanh dương pastel */
-.product-card > div:first-child {
-    background-color: #F0F6FA !important; 
-}
-
-/* 6. Fix nốt các viền Input khi bấm vào */
-input:focus, textarea:focus {
-    border-color: #15558D !important;
-    box-shadow: 0 0 0 3px rgba(21, 85, 141, 0.1) !important;
-    outline: none !important;
-}
-
-/* =========================================
    2. TỐI ƯU HÌNH ẢNH (CHỈ NHỐT TRONG MOBILE)
    ========================================= */
 @media (max-width: 768px) {
@@ -1196,51 +1130,44 @@ input:focus, textarea:focus {
   }
 }
 /* =========================================
-   BẢN VÁ TỐI THƯỢNG: TRỊ MÀU ĐỎ TRÀN LAN & DIỆT XANH LÁ CỨNG ĐẦU
+   BẢN FIX CUỐI: DỌN SẠCH LỖI VÀ LÊN MÀU Y KHOA CHUẨN
    ========================================= */
 
-/* --- KHUNG ĐỎ 1: SẢN PHẨM (Sửa màu đỏ bị lem) --- */
-/* 1. Trả lại toàn bộ Giá, Tên thuốc, Phân loại về đúng màu Xanh Dương */
-.product-card > div:last-child *,
-.product-card > div:has(.add-btn) * {
-    color: #15558D !important; 
-}
-/* Trừ chữ bên trong Nút "Chọn mua" phải giữ màu Trắng */
-.product-card .add-btn, .product-card .add-btn * {
-    color: #ffffff !important; 
-}
-/* 2. BẮN TỈA ĐÚNG MỤC TIÊU: Chỉ Thẻ "HD", "Tất cả" trên góc ảnh mới được màu ĐỎ */
-.product-card > div:first-child span {
-    color: #E60000 !important;
-    font-weight: 800 !important;
-}
-
-/* --- KHUNG ĐỎ 2: GÓC TRÊN CÙNG (Logo & Tag UX rõ ràng) --- */
-/* 1. Ép Logo tròn thành Xanh Dương */
-.brand div, .brand .rounded-circle, .site-header a[href="#"] div {
+/* 1. Đổi các nút bấm và Bảng Ưu Đãi sang Xanh Dương */
+.add-btn, .checkout-btn, button[type="submit"], .cart-badge, .promo-box {
     background-color: #15558D !important;
+    color: #ffffff !important;
 }
-/* 2. Ép Tag "UX Rõ ràng..." thành viền Xanh Dương, nền xanh nhạt */
-.hero-card span:first-child, 
-span[class*="bg-green"], span[class*="text-green"] {
-    background-color: #EBF4FA !important;
+.promo-box * { color: #ffffff !important; }
+
+/* 2. Đổi các Tiêu đề, Giá tiền sang Xanh Dương */
+h1, h2, h3, h4, .price, .product-card h3 {
     color: #15558D !important;
-    border: 1px solid #15558D !important;
 }
 
-/* --- KHUNG ĐỎ 3: GIỎ HÀNG (Tổng hợp đơn hàng) --- */
-/* 1. Đổi chữ "TỔNG HỢP ĐƠN HÀNG" thành Xanh Dương */
-.section-head h6, .section-head span, 
-#buyer .text-success, #buyer .text-green {
+/* 3. TRUY VẾT VÀ DIỆT CHỮ XANH LÁ (Ví dụ: TỔNG HỢP ĐƠN HÀNG, UX rõ ràng...) */
+[class*="text-green"], [class*="text-success"], .text-primary {
     color: #15558D !important;
 }
-/* 2. Đổi Nút Giỏ Hàng nhỏ xíu kế bên thành Xanh Dương */
-.section-head button, .mini-cart-btn, 
-button:has(> i.fa-cart-shopping), #buyer button.bg-green-500 {
+
+/* 4. TRUY VẾT VÀ DIỆT NỀN XANH LÁ (Ví dụ: Nút Giỏ hàng nhỏ, Vòng tròn Logo...) */
+[class*="bg-green"], [class*="bg-success"], button[class*="bg-green"] {
     background-color: #15558D !important;
     color: #ffffff !important;
     border: none !important;
 }
-.section-head button:hover {
-    background-color: #0F4373 !important;
+
+/* 5. LÊN MÀU ĐỎ CHUẨN CHO THẺ "HD", "Tất cả" 
+   (Chỉ nhắm vào các thẻ dán đè lên ảnh, buông tha cho chữ Vitamin) */
+.product-card [class*="absolute"], .product-card .badge {
+    color: #E60000 !important;
+    font-weight: 800 !important;
 }
+
+/* 6. Trả lại sự trong sáng cho Form Giỏ Hàng (Không còn bị đen thui) */
+.cart-summary, .summary-box, aside {
+    background-color: #F8FAFC !important;
+    border: 1px solid #E2E8F0 !important;
+}
+.cart-summary *, .summary-box *, aside * { color: #333333 !important; }
+.cart-summary h3, aside h3 { color: #15558D !important; }
