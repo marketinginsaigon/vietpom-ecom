@@ -1108,25 +1108,69 @@ textarea {
   }
 }
 /* =========================================
-   1. ĐỔI MÀU XANH DƯƠNG (ÁP DỤNG MỌI MÀN HÌNH)
+   ĐẠI CHUẨN HÓA GIAO DIỆN: TÔNG XANH DƯƠNG Y TẾ CỰC SẠCH
    ========================================= */
-.site-header, .add-btn, .cart-badge, .checkout-btn, button[type="submit"] {
-    background-color: #15558D !important; color: #ffffff !important;
+
+/* 1. XÓA SỔ XANH LÁ: Đổi toàn bộ Nút, Huy hiệu, Logo tròn sang Xanh Dương */
+.add-btn, .checkout-btn, button[type="submit"], 
+.cart-badge, .btn, .step-number, .icon-circle,
+.site-header .brand div /* Ép cái logo tròn màu xanh lá thành xanh dương */ {
+    background-color: #15558D !important;
+    color: #ffffff !important;
+    border: none !important;
 }
 .add-btn:hover, .checkout-btn:hover, button[type="submit"]:hover {
     background-color: #0F4373 !important;
+    box-shadow: 0 4px 12px rgba(21, 85, 141, 0.3) !important;
 }
-.promo-box {
-    background: linear-gradient(135deg, #1A6BBA, #15558D) !important; color: #ffffff !important;
-}
-.price, h2, .text-primary, .product-card h3 {
+
+/* 2. ĐỒNG BỘ CHỮ NHẤN: Giá tiền, Tiêu đề chính */
+h1, h2, h3, h4, .price, .text-primary, .total-price, 
+.site-header a, .site-header span {
     color: #15558D !important;
 }
-.product-card > div:first-child {
-    background-color: #F2F7FB !important; 
+
+/* 3. CỨU NÉT "CHỮ CHÌM": Bảng Khuyến Mãi & Cột Thông Tin Form */
+/* Đổ nền Xanh Dương Gradient cực sang */
+.promo-box, .hero-card, .info-section, .form-info, 
+div[class*="info"], section[class*="info"] {
+    background: linear-gradient(135deg, #1A6BBA, #0F4373) !important;
+    border: none !important;
 }
+/* BẮT BUỘC toàn bộ chữ trong các bảng nền đậm này phải là MÀU TRẮNG */
+.promo-box *, .hero-card *, .info-section *, .form-info *, 
+div[class*="info"] *, section[class*="info"] * {
+    color: #ffffff !important;
+}
+
+/* 4. ĐẬP BỎ HỘP ĐEN GIỎ HÀNG: Trả lại sự sạch sẽ cho ngành Dược */
+/* Biến cái hộp "Tạm tính" đen thui thành hộp Xám Trắng bo góc sang trọng */
+.cart-summary, .summary-box, .cart-sidebar, aside, 
+div[class*="summary"] {
+    background-color: #F8FAFC !important; /* Nền xám xanh cực sáng và sạch */
+    border: 1px solid #E2E8F0 !important;
+    border-radius: 12px !important;
+}
+/* Chữ trong hộp Giỏ hàng thành màu Tối dễ đọc, chữ Tạm tính thành Xanh */
+.cart-summary *, .summary-box *, .cart-sidebar *, aside *, 
+div[class*="summary"] * {
+    color: #333333 !important;
+}
+.cart-summary h3, .summary-box h3, .total-amount,
+div[class*="summary"] h3 {
+    color: #15558D !important;
+}
+
+/* 5. NỀN HÌNH ẢNH SẢN PHẨM: Xanh dương pastel */
+.product-card > div:first-child {
+    background-color: #F0F6FA !important; 
+}
+
+/* 6. Fix nốt các viền Input khi bấm vào */
 input:focus, textarea:focus {
-    border-color: #15558D !important; outline: none !important;
+    border-color: #15558D !important;
+    box-shadow: 0 0 0 3px rgba(21, 85, 141, 0.1) !important;
+    outline: none !important;
 }
 
 /* =========================================
