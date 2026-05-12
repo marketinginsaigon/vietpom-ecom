@@ -11,13 +11,8 @@
     /* ============================================================
        BỘ MÃ GIAO DIỆN CHUẨN UX/UI (BẢN BỌC THÉP MÃ MÀU TRỰC TIẾP)
        ============================================================ */
+    .hero-bg, .hero-bg-left, .hero-bg-right { display: none !important; }
 
-    /* 1. TRIỆT TIÊU MẢNG SÁNG XANH LÁ LỖI Ở GÓC MÀN HÌNH */
-    .hero-bg, .hero-bg-left, .hero-bg-right { 
-        display: none !important; 
-    }
-
-    /* 2. CHỈNH NÚT "ĐIỀN THÔNG TIN" CHO RÕ NÉT (ĐÃ KHÓA MÃ MÀU CHẾT) */
     .btn-outline {
         background-color: transparent !important; 
         color: #15558D !important; 
@@ -29,7 +24,6 @@
         color: #ffffff !important; 
     }
 
-    /* 3. ĐỒNG BỘ MÀU XANH DƯƠNG CHO TẤT CẢ NÚT BẤM & TAG */
     .btn-primary, .btn-green, .btn-dark, .cart-pill, .label-pill, .add-btn, .checkout-btn, .order-icon {
       background-color: #15558D !important;
       color: #ffffff !important;
@@ -41,12 +35,10 @@
     }
     .btn-primary *, .add-btn *, .checkout-btn * { color: #ffffff !important; }
 
-    /* 4. TIÊU ĐỀ & CHỮ NHẤN MẠNH */
     h1, h2, h3, h4, .price, .section-kicker, .buyer-kicker, .summary-kicker, .text-success, .text-green {
       color: #15558D !important;
     }
 
-    /* 5. KHỐI NỀN ĐẬM (ƯU ĐÃI & FORM THÔNG TIN) */
     .promo-box, .buyer-info {
       background: linear-gradient(135deg, #1A6BBA, #0F4373) !important;
       border: none !important;
@@ -58,7 +50,6 @@
       border-color: rgba(255, 255, 255, 0.2) !important; 
     }
 
-    /* 6. GIỎ HÀNG SẠCH SẼ */
     .summary-card, .cart-summary {
       background-color: #F8FAFC !important;
       border: 1px solid #E2E8F0 !important;
@@ -68,7 +59,6 @@
     }
     .summary-card h3, .summary-total strong { color: #15558D !important; }
 
-    /* 7. THẺ SẢN PHẨM & GIÁ GẠCH NGANG */
     .product-card > div:first-child { background-color: #F0F6FA !important; }
     #productGrid span[class*="absolute"], #productGrid span[class*="tag"] {
       color: #E60000 !important;
@@ -78,7 +68,6 @@
       border-radius: 4px !important;
     }
 
-    /* 8. TỐI ƯU MOBILE 2 CỘT */
     @media (max-width: 768px) {
       #productGrid { display: grid !important; grid-template-columns: repeat(2, 1fr) !important; gap: 10px !important; }
       .product-card { height: 100% !important; display: flex !important; flex-direction: column !important; padding: 8px !important; }
@@ -114,7 +103,7 @@
           <div class="label-pill">✓ Sản Phẩm Chính Hãng · Hoá Đơn Đầy Đủ</div>
           <h1>VietPOM Phân Phối Dược Phẩm Chính Hãng.</h1>
           <p class="hero-desc">
-           VietPOM nơi hội tụ những sản phẩm chất lượng và trải nghiệm mua sắm thuận tiện.
+            VietPOM nơi hội tụ những sản phẩm chất lượng và trải nghiệm mua sắm thuận tiện.
           </p>
 
           <div class="hero-actions">
@@ -137,8 +126,6 @@
             <small>Chương trình có thể điều chỉnh theo chính sách từng nhà thuốc. Cần xác nhận lại trước khi giao hàng.</small>
           </div>
 
-          <div class="mini-products" id="miniProducts"></div>
-          
           <style>
             .my-slider-container { width: 100%; aspect-ratio: 16 / 9; position: relative; overflow: hidden; border-radius: 12px; margin-top: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); background-color: #ffffff; }
             .my-slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; opacity: 0; transition: opacity 0.8s ease-in-out; }
@@ -217,6 +204,6 @@
     <div class="container footer-inner"><strong>© 2026 VietPOM</strong><span>VietPOM thương mại điện tử ngành dược phẩm.</span></div>
   </footer>
 
-  <script src="script.js?v=888888"></script>
+  <script src="script.js?v=222333"></script>
 </body>
 </html>
