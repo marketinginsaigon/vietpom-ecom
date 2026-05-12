@@ -1195,3 +1195,42 @@ input:focus, textarea:focus {
       margin-top: auto !important; 
   }
 }
+/* =========================================
+   DIỆT CỎ TẬN GỐC XANH LÁ + NHẤN ĐỎ TAG SẢN PHẨM
+   ========================================= */
+
+/* 1. HÌNH 2: Đổi màu chữ các thẻ "HD", "Tất cả" thành ĐỎ */
+.product-card > div:first-child span,
+.product-card .badge,
+.product-badge {
+    color: #E60000 !important; /* Màu đỏ đậm, rõ nét */
+    font-weight: 800 !important;
+}
+
+/* 2. Quét sạch Xanh lá ở Tiêu đề nhỏ (TỔNG HỢP ĐƠN HÀNG, TẠM TÍNH, Giá 0đ) */
+h5, h6, .subtitle, .small-title, 
+.cart-section span, .cart-summary span, 
+.cart-summary strong, .cart-summary b,
+.text-success, .text-green {
+    color: #15558D !important;
+}
+
+/* 3. Đồng bộ luôn cái Tag "✓ UX rõ ràng..." trên cùng cho tone-sur-tone */
+.hero-tag, .badge-light-green {
+    background-color: #EBF4FA !important; /* Nền xanh dương cực nhạt */
+    color: #15558D !important;
+    border: 1px solid #15558D !important;
+}
+
+/* 4. Đổi màu Nút vuông Giỏ hàng bị sót màu Xanh lá */
+.cart-section button, 
+#selectedProducts button,
+.action-btn, .btn-success {
+    background-color: #15558D !important;
+    color: #ffffff !important;
+    border: none !important;
+}
+.cart-section button:hover, 
+#selectedProducts button:hover {
+    background-color: #0F4373 !important;
+}
