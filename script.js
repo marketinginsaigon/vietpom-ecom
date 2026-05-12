@@ -1,6 +1,3 @@
-// =====================================================
-// CẤU HÌNH GOOGLE SHEET & DỮ LIỆU SẢN PHẨM
-// =====================================================
 const GOOGLE_SHEET_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyBHZZypb8bNGnbC8UenQUWYY5F0xHTJ6kknlcEP9AeGRwBAj_nZhySq_AjA1s6I6R7tQ/exec";
 let PRODUCTS = [];
 
@@ -8,12 +5,10 @@ async function fetchProducts() {
   try {
     const response = await fetch(GOOGLE_SHEET_WEB_APP_URL);
     const data = await response.json();
-    
-    // Đã thêm lệnh lấy dữ liệu từ cột "oldPrice" trên Google Sheet
     PRODUCTS = data.filter(item => item.id && item.name).map(item => ({
       id: item.id, name: item.name, 
       price: Number(item.price) || 0,
-      oldPrice: Number(item.oldPrice) || 0, // Lấy giá gốc
+      oldPrice: Number(item.oldPrice) || 0,
       unit: item.unit || "Hộp", image: item.image || "",
       category: item.category || "Tất cả", tag: item.tag || "", note: item.note || ""
     }));
@@ -96,7 +91,6 @@ function renderProducts() {
       ? `<div class="qty-control"><button type="button" onclick="decrease('${product.id}')">−</button><span>${qty}</span><button type="button" onclick="increase('${product.id}')">+</button></div>`
       : `<button type="button" class="add-btn" onclick="increase('${product.id}')">🛒 Chọn mua</button>`;
       
-    // GIAO DIỆN GIÁ GẠCH NGANG & GIÁ ĐỎ (NẾU CÓ GIẢM GIÁ)
     const priceDisplay = (product.oldPrice > product.price) 
       ? `<div style="display: flex; flex-direction: column;">
            <del style="color: #94a3b8; font-size: 13px; line-height: 1; font-weight: 500;">${formatCurrency(product.oldPrice)}</del>
