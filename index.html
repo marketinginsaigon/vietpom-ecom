@@ -84,6 +84,26 @@
       .site-header .container { justify-content: space-between !important; }
     }
   </style>
+  /* ============================================================
+       CỨU NÚT "ĐIỀN THÔNG TIN" & XÓA NỀN XANH LÁ
+       ============================================================ */
+    
+    /* 1. XÓA MẢNG SÁNG XANH LÁ Ở GÓC TRÁI */
+    .hero-bg, .hero-bg-left, .hero-bg-right {
+        display: none !important;
+    }
+
+    /* 2. HIỆN CHỮ NÚT "ĐIỀN THÔNG TIN MUA HÀNG" DÒNG 122 CỦA ANH */
+    .btn-outline {
+        background-color: transparent !important; 
+        color: #15558D !important; 
+        border: 2px solid #15558D !important; 
+        font-weight: bold !important;
+    }
+    .btn-outline:hover {
+        background-color: #15558D !important; 
+        color: #ffffff !important; 
+    }
 </head>
 <body>
   <header class="site-header">
@@ -121,7 +141,7 @@
             <a href="#products" class="btn btn-primary">Xem sản phẩm ✨</a>
             <a href="#buyer" class="btn btn-outline">Điền thông tin mua hàng</a>
           </div>
-
+ 
           <div class="trust-grid">
             <div class="trust-card">
               <div class="trust-icon">📋</div>
