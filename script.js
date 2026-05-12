@@ -1,21 +1,8 @@
+// =====================================================
+// CẤU HÌNH GOOGLE SHEET & DỮ LIỆU SẢN PHẨM
+// =====================================================
 const GOOGLE_SHEET_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyBHZZypb8bNGnbC8UenQUWYY5F0xHTJ6kknlcEP9AeGRwBAj_nZhySq_AjA1s6I6R7tQ/exec";
 let PRODUCTS = [];
-
-async function fetchProducts() {
-  try {
-    const response = await fetch(GOOGLE_SHEET_WEB_APP_URL);
-    const data = await response.json();
-    PRODUCTS = data.filter(item => item.id && item.name).map(item => ({
-      id: item.id, name: item.name, 
-      price: Number(item.price) || 0,
-      oldPrice: Number(item.oldPrice) || 0,
-      unit: item.unit || "Hộp", image: item.image || "",
-      category: item.category || "Tất cả", tag: item.tag || "", note: item.note || ""
-    }));
-    renderProducts();
-  } catch (error) { console.error("Lỗi:", error); }
-}
-fetchProducts();
 
 const state = { cart: {}, search: "", category: "Tất cả", isSubmitting: false };
 
@@ -31,6 +18,55 @@ const getElements = () => ({
   customerAddress: document.getElementById("customerAddress"), customerNote: document.getElementById("customerNote"),
 });
 const elements = getElements();
+
+// HÀM FETCH ĐÃ ĐƯỢC TĂNG TỐC & THÊM HIỆU ỨNG LOADING
+async function fetchProducts() {
+  const CACHE_KEY = "vietpom_products_cache";
+
+  // 1. Hiển thị hiệu ứng Loading ngay lập tức để khách khỏi hoang mang
+  if(elements.productGrid) {
+    elements.productGrid.innerHTML = `
+      <div style="grid-column: 1/-1; text-align: center; padding: 50px 20px; color: #15558D; font-size: 16px;">
+        <span style="font-size: 24px; display: block; margin-bottom: 10px;">⏳</span>
+        <strong>Đang tải danh sách sản phẩm từ kho...</strong>
+        <p style="color: #64748b; font-size: 14px; margin-top: 5px;">Anh/Chị vui lòng chờ trong giây lát nhé!</p>
+      </div>`;
+  }
+
+  // 2. Tải siêu tốc từ bộ nhớ tạm (nếu khách đã từng vào web)
+  const cachedData = localStorage.getItem(CACHE_KEY);
+  if (cachedData) {
+    processData(JSON.parse(cachedData));
+  }
+
+  // 3. Vẫn âm thầm gọi Google Sheet để cập nhật giá/sản phẩm mới nhất
+  try {
+    const response = await fetch(GOOGLE_SHEET_WEB_APP_URL);
+    const data = await response.json();
+    
+    // Lưu dữ liệu mới vào bộ nhớ cho lần sau
+    localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+    processData(data); // Cập nhật lại giao diện với dữ liệu mới nhất
+  } catch (error) { 
+    console.error("Lỗi tải dữ liệu:", error);
+    if (!cachedData && elements.productGrid) {
+      elements.productGrid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: #E60000; padding: 40px;">❌ Lỗi kết nối hệ thống. Vui lòng tải lại trang (F5).</div>`;
+    }
+  }
+}
+
+// Xử lý dữ liệu thô thành dữ liệu chuẩn
+function processData(data) {
+  PRODUCTS = data.filter(item => item.id && item.name).map(item => ({
+    id: item.id, name: item.name, 
+    price: Number(item.price) || 0,
+    oldPrice: Number(item.oldPrice) || 0,
+    unit: item.unit || "Hộp", image: item.image || "",
+    category: item.category || "Tất cả", tag: item.tag || "", note: item.note || ""
+  }));
+  renderCategories();
+  renderProducts();
+}
 
 function formatCurrency(value) { return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(value); }
 
@@ -57,13 +93,13 @@ function getFilteredProducts() {
   });
 }
 
-function increase(id) { state.cart[id] = (state.cart[id] || 0) + 1; render(); }
+function increase(id) { state.cart[id] = (state.cart[id] || 0) + 1; renderCartAndTotals(); }
 function decrease(id) {
   const nextQuantity = (state.cart[id] || 0) - 1;
   if (nextQuantity <= 0) delete state.cart[id]; else state.cart[id] = nextQuantity;
-  render();
+  renderCartAndTotals();
 }
-function removeItem(id) { delete state.cart[id]; render(); }
+function removeItem(id) { delete state.cart[id]; renderCartAndTotals(); }
 
 function renderMiniProducts() {
   if(!elements.miniProducts) return;
@@ -121,6 +157,9 @@ function renderProducts() {
         </div>
       </article>`;
   }).join("");
+  
+  // Render lại 4 sản phẩm nhỏ ở mục Ưu đãi
+  renderMiniProducts();
 }
 
 function renderCart() {
@@ -144,7 +183,7 @@ function renderTotals() {
   if (elements.quickTotalText) elements.quickTotalText.textContent = formatCurrency(total);
 }
 
-function render() { renderProducts(); renderCart(); renderTotals(); }
+function renderCartAndTotals() { renderCart(); renderTotals(); renderProducts(); }
 
 function showSubmitStatus(type, message) {
   if(!elements.submitStatus) return;
@@ -172,8 +211,8 @@ async function submitOrder(event) {
   try {
     state.isSubmitting = true; elements.submitButton.disabled = true; elements.submitButton.textContent = "Đang gửi...";
     await fetch(GOOGLE_SHEET_WEB_APP_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(orderPayload) });
-    showSubmitStatus("success", `Đơn hàng ${orderCode} đã đặt thành công.`);
-    state.cart = {}; if(elements.orderForm) elements.orderForm.reset(); render();
+    showSubmitStatus("success", `Đơn hàng ${orderCode} đã đặt thành công. Cảm ơn Anh/Chị!`);
+    state.cart = {}; if(elements.orderForm) elements.orderForm.reset(); renderCartAndTotals();
   } catch (error) { showSubmitStatus("error", "Lỗi mạng. Vui lòng thử lại."); } 
   finally { state.isSubmitting = false; elements.submitButton.disabled = false; elements.submitButton.textContent = "Gửi đơn hàng"; }
 }
@@ -183,4 +222,8 @@ if(elements.categorySelect) elements.categorySelect.addEventListener("change", (
 if(elements.orderForm) elements.orderForm.addEventListener("submit", submitOrder);
 
 window.increase = increase; window.decrease = decrease; window.removeItem = removeItem;
-renderMiniProducts(); renderCategories(); render(); clearSubmitStatus();
+
+// Khởi chạy
+fetchProducts(); 
+renderCartAndTotals(); 
+clearSubmitStatus();
