@@ -6,6 +6,7 @@ let PRODUCTS = [];
 
 const state = { cart: {}, search: "", category: "Tất cả", isSubmitting: false };
 
+// Đã thêm biến customerTaxId vào hệ thống
 const getElements = () => ({
   miniProducts: document.getElementById("miniProducts"), productGrid: document.getElementById("productGrid"),
   categorySelect: document.getElementById("categorySelect"), searchInput: document.getElementById("searchInput"),
@@ -15,15 +16,15 @@ const getElements = () => ({
   quickTotalText: document.getElementById("quickTotalText"), orderForm: document.getElementById("orderForm"),
   submitButton: document.getElementById("submitButton"), submitStatus: document.getElementById("submitStatus"),
   customerName: document.getElementById("customerName"), customerPhone: document.getElementById("customerPhone"),
-  customerAddress: document.getElementById("customerAddress"), customerNote: document.getElementById("customerNote"),
+  customerAddress: document.getElementById("customerAddress"), 
+  customerTaxId: document.getElementById("customerTaxId"), // <-- BẮT DỮ LIỆU MÃ SỐ THUẾ
+  customerNote: document.getElementById("customerNote"),
 });
 const elements = getElements();
 
-// HÀM FETCH ĐÃ ĐƯỢC TĂNG TỐC & THÊM HIỆU ỨNG LOADING
 async function fetchProducts() {
   const CACHE_KEY = "vietpom_products_cache";
 
-  // 1. Hiển thị hiệu ứng Loading ngay lập tức để khách khỏi hoang mang
   if(elements.productGrid) {
     elements.productGrid.innerHTML = `
       <div style="grid-column: 1/-1; text-align: center; padding: 50px 20px; color: #15558D; font-size: 16px;">
@@ -33,20 +34,16 @@ async function fetchProducts() {
       </div>`;
   }
 
-  // 2. Tải siêu tốc từ bộ nhớ tạm (nếu khách đã từng vào web)
   const cachedData = localStorage.getItem(CACHE_KEY);
   if (cachedData) {
     processData(JSON.parse(cachedData));
   }
 
-  // 3. Vẫn âm thầm gọi Google Sheet để cập nhật giá/sản phẩm mới nhất
   try {
     const response = await fetch(GOOGLE_SHEET_WEB_APP_URL);
     const data = await response.json();
-    
-    // Lưu dữ liệu mới vào bộ nhớ cho lần sau
     localStorage.setItem(CACHE_KEY, JSON.stringify(data));
-    processData(data); // Cập nhật lại giao diện với dữ liệu mới nhất
+    processData(data);
   } catch (error) { 
     console.error("Lỗi tải dữ liệu:", error);
     if (!cachedData && elements.productGrid) {
@@ -55,7 +52,6 @@ async function fetchProducts() {
   }
 }
 
-// Xử lý dữ liệu thô thành dữ liệu chuẩn
 function processData(data) {
   PRODUCTS = data.filter(item => item.id && item.name).map(item => ({
     id: item.id, name: item.name, 
@@ -100,13 +96,6 @@ function decrease(id) {
   renderCartAndTotals();
 }
 function removeItem(id) { delete state.cart[id]; renderCartAndTotals(); }
-
-function renderMiniProducts() {
-  if(!elements.miniProducts) return;
-  elements.miniProducts.innerHTML = PRODUCTS.slice(0, 4).map((product) => `
-    <div class="mini-product"><div class="mini-img">Hình sản phẩm</div><strong>${product.name}</strong><span>${formatCurrency(product.price)}</span></div>
-  `).join("");
-}
 
 function renderCategories() {
   if(!elements.categorySelect) return;
@@ -157,9 +146,6 @@ function renderProducts() {
         </div>
       </article>`;
   }).join("");
-  
-  // Render lại 4 sản phẩm nhỏ ở mục Ưu đãi
-  renderMiniProducts();
 }
 
 function renderCart() {
@@ -197,9 +183,18 @@ function clearSubmitStatus() {
 async function submitOrder(event) {
   event.preventDefault();
   const { cartItems, subtotal, shippingFee, total } = getTotals();
-  const customer = { name: elements.customerName.value.trim(), phone: elements.customerPhone.value.trim(), address: elements.customerAddress.value.trim(), note: elements.customerNote.value.trim() };
+  
+  // GÓI LUÔN MÃ SỐ THUẾ VÀO ĐƠN HÀNG
+  const customer = { 
+    name: elements.customerName.value.trim(), 
+    phone: elements.customerPhone.value.trim(), 
+    address: elements.customerAddress.value.trim(), 
+    taxId: elements.customerTaxId ? elements.customerTaxId.value.trim() : "", // <-- DỮ LIỆU Ở ĐÂY
+    note: elements.customerNote.value.trim() 
+  };
+  
   if (cartItems.length === 0) return showSubmitStatus("error", "Vui lòng chọn sản phẩm.");
-  if (!customer.name || !customer.phone || !customer.address) return showSubmitStatus("error", "Vui lòng điền đủ thông tin.");
+  if (!customer.name || !customer.phone || !customer.address) return showSubmitStatus("error", "Vui lòng điền đủ thông tin bắt buộc.");
   
   const orderCode = `DH-${Date.now()}`;
   const orderPayload = {
