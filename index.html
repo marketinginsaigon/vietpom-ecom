@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-KBJVVFVV');</script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VietPOM - Danh Mục Sản Phẩm</title>
@@ -13,60 +18,26 @@
        ============================================================ */
     .hero-bg, .hero-bg-left, .hero-bg-right { display: none !important; }
 
-    .btn-outline {
-        background-color: transparent !important; 
-        color: #15558D !important; 
-        border: 2px solid #15558D !important; 
-        font-weight: bold !important;
-    }
-    .btn-outline:hover {
-        background-color: #15558D !important; 
-        color: #ffffff !important; 
-    }
+    .btn-outline { background-color: transparent !important; color: #15558D !important; border: 2px solid #15558D !important; font-weight: bold !important; }
+    .btn-outline:hover { background-color: #15558D !important; color: #ffffff !important; }
 
-    .btn-primary, .btn-green, .btn-dark, .cart-pill, .label-pill, .add-btn, .checkout-btn, .order-icon {
-      background-color: #15558D !important;
-      color: #ffffff !important;
-      border: none !important;
-    }
-    .btn-primary:hover, .add-btn:hover {
-      background-color: #0F4373 !important;
-      box-shadow: 0 4px 12px rgba(21, 85, 141, 0.3) !important;
-    }
+    .btn-primary, .btn-green, .btn-dark, .cart-pill, .label-pill, .add-btn, .checkout-btn, .order-icon { background-color: #15558D !important; color: #ffffff !important; border: none !important; }
+    .btn-primary:hover, .add-btn:hover { background-color: #0F4373 !important; box-shadow: 0 4px 12px rgba(21, 85, 141, 0.3) !important; }
     .btn-primary *, .add-btn *, .checkout-btn * { color: #ffffff !important; }
 
-    h1, h2, h3, h4, .price, .section-kicker, .buyer-kicker, .summary-kicker, .text-success, .text-green {
-      color: #15558D !important;
-    }
+    h1, h2, h3, h4, .price, .section-kicker, .buyer-kicker, .summary-kicker, .text-success, .text-green { color: #15558D !important; }
 
-    .promo-box, .buyer-info {
-      background: linear-gradient(135deg, #1A6BBA, #0F4373) !important;
-      border: none !important;
-    }
+    .promo-box, .buyer-info { background: linear-gradient(135deg, #1A6BBA, #0F4373) !important; border: none !important; }
     .promo-box *, .buyer-info * { color: #ffffff !important; }
     
-    .buyer-info .info-list > div, section[id="buyer"] div.info-list div {
-      background-color: rgba(255, 255, 255, 0.1) !important; 
-      border-color: rgba(255, 255, 255, 0.2) !important; 
-    }
+    .buyer-info .info-list > div, section[id="buyer"] div.info-list div { background-color: rgba(255, 255, 255, 0.1) !important; border-color: rgba(255, 255, 255, 0.2) !important; }
 
-    .summary-card, .cart-summary {
-      background-color: #F8FAFC !important;
-      border: 1px solid #E2E8F0 !important;
-    }
-    .summary-card *:not(.btn):not(.btn *), .cart-summary *:not(.btn):not(.btn *) { 
-      color: #333333 !important; 
-    }
+    .summary-card, .cart-summary { background-color: #F8FAFC !important; border: 1px solid #E2E8F0 !important; }
+    .summary-card *:not(.btn):not(.btn *), .cart-summary *:not(.btn):not(.btn *) { color: #333333 !important; }
     .summary-card h3, .summary-total strong { color: #15558D !important; }
 
     .product-card > div:first-child { background-color: #F0F6FA !important; }
-    #productGrid span[class*="absolute"], #productGrid span[class*="tag"] {
-      color: #E60000 !important;
-      font-weight: 900 !important;
-      background: rgba(255,255,255,0.9) !important;
-      padding: 2px 6px !important;
-      border-radius: 4px !important;
-    }
+    #productGrid span[class*="absolute"], #productGrid span[class*="tag"] { color: #E60000 !important; font-weight: 900 !important; background: rgba(255,255,255,0.9) !important; padding: 2px 6px !important; border-radius: 4px !important; }
 
     @media (max-width: 768px) {
       #productGrid { display: grid !important; grid-template-columns: repeat(2, 1fr) !important; gap: 10px !important; }
@@ -78,21 +49,19 @@
   </style>
 </head>
 <body>
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KBJVVFVV"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <header class="site-header">
     <div class="container header-inner">
       <a href="#" class="brand" style="display:flex; align-items:center; text-decoration: none;">
         <img src="logo-w.jpg" alt="VietPOM Logo" style="height: 45px; width: auto; object-fit: contain;" />
       </a>
-
       <nav class="desktop-nav">
         <a href="#products">Sản phẩm</a>
         <a href="#order">Đơn hàng</a>
         <a href="#buyer">Thông tin mua hàng</a>
       </nav>
-
-      <a href="#order" class="cart-pill">
-        🛒 <span id="headerCartCount">0</span>
-      </a>
+      <a href="#order" class="cart-pill">🛒 <span id="headerCartCount">0</span></a>
     </div>
   </header>
 
@@ -100,17 +69,13 @@
     <section class="hero">
       <div class="container hero-grid">
         <div class="hero-content">
-          <div class="label-pill">✓ Sản Phẩm Chính Hãng · Hoá Đơn Đầy Đủ</div>
-          <h1>Phân Phối Dược Phẩm Chính Hãng</h1>
-          <p class="hero-desc">
-            VietPOM nơi hội tụ những sản phẩm chất lượng và trải nghiệm mua sắm thuận tiện.
-          </p>
-
+          <div class="label-pill">✓ Cổng đặt hàng nội bộ dành cho Đối tác / Nhà thuốc</div>
+          <h1>Mua sản phẩm dược phẩm nhanh, rõ giá, dễ đặt hàng</h1>
+          <p class="hero-desc">Landing page được thiết kế theo phong cách nhà thuốc hiện đại: sản phẩm dễ nhìn, nút chọn mua nổi bật, đơn hàng tự động tổng hợp và form thông tin khách hàng rõ ràng.</p>
           <div class="hero-actions">
             <a href="#products" class="btn btn-primary">Xem sản phẩm ✨</a>
             <a href="#buyer" class="btn btn-outline">Điền thông tin mua hàng</a>
           </div>
-
           <div class="trust-grid">
             <div class="trust-card"><div class="trust-icon">📋</div><strong>Thông tin rõ</strong><span>Giá, quy cách, ghi chú</span></div>
             <div class="trust-card"><div class="trust-icon">☎</div><strong>Có tư vấn</strong><span>Dược sĩ xác nhận đơn</span></div>
@@ -120,12 +85,9 @@
 
         <aside class="hero-card">
           <div class="promo-box">
-            <span>Ưu đãi nhà thuốc</span>
-            <h2>Đơn từ 1.200.000đ</h2>
-            <p>Miễn phí giao hàng (Freeship)</p>
-            <small>Chương trình có thể điều chỉnh theo chính sách nhà thuốc. Cần xác nhận lại trước khi giao hàng.</small>
+            <span>Ưu đãi nhà thuốc</span><h2>Đơn từ 1.200.000đ</h2><p>Miễn phí giao hàng (Freeship)</p>
+            <small>Chương trình có thể điều chỉnh theo chính sách từng nhà thuốc. Cần xác nhận lại trước khi giao hàng.</small>
           </div>
-
           <style>
             .my-slider-container { width: 100%; aspect-ratio: 16 / 9; position: relative; overflow: hidden; border-radius: 12px; margin-top: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); background-color: #ffffff; }
             .my-slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; opacity: 0; transition: opacity 0.8s ease-in-out; }
@@ -144,10 +106,7 @@
       <div class="container">
         <div class="section-head">
           <div><p class="section-kicker">Ưu Đãi Đơn từ 1.200.000đ</p><h2>Chọn sản phẩm cần mua</h2></div>
-          <div class="filters">
-            <div class="search-box"><span>🔎</span><input id="searchInput" type="search" placeholder="Tìm sản phẩm..." /></div>
-            <select id="categorySelect"></select>
-          </div>
+          <div class="filters"><div class="search-box"><span>🔎</span><input id="searchInput" type="search" placeholder="Tìm sản phẩm..." /></div><select id="categorySelect"></select></div>
         </div>
         <div class="product-grid" id="productGrid"></div>
       </div>
@@ -161,10 +120,7 @@
         </div>
         <aside class="summary-card">
           <p class="summary-kicker">Tạm tính</p><h3>Chi tiết thanh toán</h3>
-          <div class="summary-lines">
-            <div><span>Tiền hàng</span><strong id="subtotalText">0đ</strong></div>
-            <div><span>Phí giao hàng</span><strong id="shippingText">Miễn phí</strong></div>
-          </div>
+          <div class="summary-lines"><div><span>Tiền hàng</span><strong id="subtotalText">0đ</strong></div><div><span>Phí giao hàng</span><strong id="shippingText">Miễn phí</strong></div></div>
           <div class="summary-total"><span>Tổng cộng</span><strong id="totalText">0đ</strong></div>
           <div class="summary-note"><strong>Ưu đãi hiện tại</strong><p>Đơn từ 1.200.000đ được miễn phí giao hàng (Freeship).</p></div>
           <a href="#buyer" class="btn btn-primary full-width">Tiếp tục điền thông tin 💬</a>
@@ -186,19 +142,10 @@
             <label><span>Họ và tên</span><input id="customerName" name="name" type="text" placeholder="Nguyễn Văn A" required /></label>
             <label><span>Số điện thoại</span><input id="customerPhone" name="phone" type="tel" placeholder="0901 234 567" required /></label>
           </div>
-          
           <label><span>Địa chỉ giao hàng</span><input id="customerAddress" name="address" type="text" placeholder="Địa chỉ chi tiết..." required /></label>
-          
-          <!-- TRƯỜNG MÃ SỐ THUẾ MỚI THÊM VÀO ĐÂY Á ANH -->
-          <label><span>Mã số thuế</span><input id="customerTaxId" name="taxId" type="text" placeholder="Nhập mã số thuế để xuất hoá đơn đỏ..." /></label>
-          
+          <label><span>Mã số thuế (Tùy chọn)</span><input id="customerTaxId" name="taxId" type="text" placeholder="Nhập mã số thuế để xuất hoá đơn đỏ..." /></label>
           <label><span>Ghi chú thêm</span><textarea id="customerNote" name="note" rows="3" placeholder="Giao giờ hành chính..."></textarea></label>
-          
-          <div class="quick-summary">
-            <strong>Tóm tắt nhanh</strong>
-            <div><span>Số sản phẩm</span><b id="quickProductCount">0</b></div>
-            <div><span>Tổng thanh toán</span><b id="quickTotalText">0đ</b></div>
-          </div>
+          <div class="quick-summary"><strong>Tóm tắt nhanh</strong><div><span>Số sản phẩm</span><b id="quickProductCount">0</b></div><div><span>Tổng thanh toán</span><b id="quickTotalText">0đ</b></div></div>
           <button id="submitButton" type="submit" class="btn btn-primary full-width">Gửi đơn hàng</button>
           <div id="submitStatus" class="submit-status hidden"></div>
         </form>
@@ -207,10 +154,12 @@
   </main>
 
   <footer class="site-footer">
-    <div class="container footer-inner"><strong>© 2026 VietPOM thương mại điện tử ngành dược phẩm</strong><span>Cổng thông tin đặt hàng nội bộ dành riêng cho Đối tác/Nhà thuốc.</span></div>
+    <div class="container footer-inner">
+      <strong>© 2026 VietPOM</strong>
+      <span>VietPOM thương mại điện tử ngành dược phẩm. Giấy CNDĐKKDD số: ... / Sở Y Tế cấp</span>
+    </div>
   </footer>
 
-  <!-- Cập nhật Version để xóa cache -->
-  <script src="script.js?v=MST999"></script>
+  <script src="script.js?v=GTM-READY"></script>
 </body>
 </html>
