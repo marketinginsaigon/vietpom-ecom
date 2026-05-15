@@ -11,11 +11,11 @@
   <title>VietPOM - Danh Mục Sản Phẩm</title>
   <meta name="description" content="Chọn sản phẩm, tổng hợp đơn hàng và gửi về Google Sheet." />
   
-  <link rel="stylesheet" href="style.css?v=2" />
+  <link rel="stylesheet" href="style.css?v=FINAL_DESKTOP_MOBILE" />
   
   <style>
     /* ============================================================
-       BỘ MÃ GIAO DIỆN CHUẨN UX/UI (BẢN FIX LỖI TRÀN VIỀN MOBILE)
+       BỘ MÃ GIAO DIỆN CHUẨN UX/UI (HOÀN THIỆN CẢ DESKTOP & MOBILE)
        ============================================================ */
     .hero-bg, .hero-bg-left, .hero-bg-right { display: none !important; }
 
@@ -32,19 +32,18 @@
 
     /* RESET ÉP KHUÔN NGHIÊM NGẶT - CHỐNG TRÀN */
     *, *::before, *::after { box-sizing: border-box !important; }
-    body { overflow-x: hidden !important; } /* Khóa kéo ngang màn hình */
+    body { overflow-x: hidden !important; }
 
     /* ============================================================
        MOBILE: ÉP CHẶT 2 CỘT, NGĂN TRÀN MÀN HÌNH TUYỆT ĐỐI
        ============================================================ */
     @media (max-width: 768px) {
-      /* Dùng minmax(0, 1fr) để bắt các cột không được phình to hơn container */
       #productGrid { 
         display: grid !important; 
         grid-template-columns: repeat(2, minmax(0, 1fr)) !important; 
         gap: 8px !important; 
         width: 100% !important;
-        padding: 0 4px !important; /* Gọt sạch padding thừa */
+        padding: 0 4px !important; 
         margin: 0 !important;
       }
       
@@ -66,7 +65,7 @@
         flex-direction: column !important; 
         flex-grow: 1 !important; 
         height: 100% !important;
-        min-width: 0 !important; /* Chìa khóa chống tràn text bên trong */
+        min-width: 0 !important; 
       }
       
       .product-img-wrap { 
@@ -190,14 +189,36 @@
           <div class="label-pill">✓ Đối tác cung ứng Dược phẩm & Sức khỏe</div>
           <h1>Đặt hàng nhanh, rõ giá, giao tận nơi</h1>
           <p class="hero-desc">Hệ thống danh mục sản phẩm dành riêng cho Nhà thuốc và Đại lý VietPOM.</p>
+          
           <div class="hero-actions">
             <a href="#products" class="btn btn-primary">Xem sản phẩm ✨</a>
+            <a href="#buyer" class="btn btn-outline">Điền thông tin mua hàng</a>
+          </div>
+          <div class="trust-grid">
+            <div class="trust-card"><div class="trust-icon">📋</div><strong>Thông tin rõ</strong><span>Giá, quy cách, ghi chú</span></div>
+            <div class="trust-card"><div class="trust-icon">☎</div><strong>Có tư vấn</strong><span>Dược sĩ xác nhận đơn</span></div>
+            <div class="trust-card"><div class="trust-icon">🚚</div><strong>Giao hàng</strong><span>Tổng đơn minh bạch</span></div>
           </div>
         </div>
+
         <aside class="hero-card">
           <div class="promo-box">
             <span>Ưu đãi vận chuyển</span><h2>Đơn từ 1.200.000đ</h2><p>Miễn phí giao hàng (Freeship)</p>
+            <small>Chương trình có thể điều chỉnh theo chính sách từng nhà thuốc.</small>
           </div>
+          
+          <style>
+            .my-slider-container { width: 100%; aspect-ratio: 16 / 9; position: relative; overflow: hidden; border-radius: 12px; margin-top: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); background-color: #ffffff; }
+            .my-slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.8s ease-in-out; }
+            .my-slide.show { opacity: 1; }
+          </style>
+          <div class="my-slider-container">
+            <img class="my-slide show" src="https://i.postimg.cc/FKdnqL2H/banner-1.jpg">
+          </div>
+          <script>
+            let myIndex = 0; const mySlides = document.querySelectorAll('.my-slide');
+            if(mySlides.length > 0) setInterval(() => { mySlides[myIndex].classList.remove('show'); myIndex = (myIndex + 1) % mySlides.length; mySlides[myIndex].classList.add('show'); }, 3000);
+          </script>
         </aside>
       </div>
     </section>
@@ -258,6 +279,6 @@
     </div>
   </footer>
 
-  <script src="script.js?v=CHONG_TRAN_VIEN"></script>
+  <script src="script.js?v=FINAL_DESKTOP_MOBILE"></script>
 </body>
 </html>
