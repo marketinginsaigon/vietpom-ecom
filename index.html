@@ -14,7 +14,7 @@
   
   <style>
     /* ============================================================
-       BỘ MÃ GIAO DIỆN CHUẨN UX/UI (BẢN SẠCH CHÍNH THỨC)
+       BỘ MÃ GIAO DIỆN CHUẨN UX/UI (BỌC THÉP CHỐNG LỖI HIỂN THỊ)
        ============================================================ */
     .hero-bg, .hero-bg-left, .hero-bg-right { display: none !important; }
 
@@ -39,30 +39,112 @@
     .product-card > div:first-child { background-color: #F0F6FA !important; }
     #productGrid span[class*="absolute"], #productGrid span[class*="tag"] { color: #E60000 !important; font-weight: 900 !important; background: rgba(255,255,255,0.9) !important; padding: 2px 6px !important; border-radius: 4px !important; }
 
+    /* KHÓA CHẶT CÁC PHẦN TỬ THỪA ĐANG BAY LUNG TUNG */
+    .product-card * { position: static !important; } 
+
     /* ============================================================
-       NÂNG CẤP GIAO DIỆN MOBILE: 2 CỘT MƯỢT MÀ, KHÔNG BỊ CẮT NÚT
+       NÂNG CẤP GIAO DIỆN MOBILE: ÉP KHUNG THÉP 2 CỘT TÂN TIẾN
        ============================================================ */
     @media (max-width: 768px) {
-      #productGrid { display: grid !important; grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; }
+      /* Khung lưới chính */
+      #productGrid { 
+        display: grid !important; 
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important; 
+        gap: 8px !important; 
+        width: 100% !important; 
+        padding: 0 !important;
+        box-sizing: border-box !important;
+        align-items: stretch !important;
+      }
       
-      .product-card { height: auto !important; min-height: 100% !important; padding: 8px !important; border-radius: 8px !important; display: flex !important; flex-direction: column !important; overflow: visible !important; }
-      .product-inner { display: flex !important; flex-direction: column !important; height: 100% !important; padding: 0 !important; }
+      /* Ép khuôn thẻ sản phẩm */
+      .product-card { 
+        position: relative !important;
+        display: flex !important; 
+        flex-direction: column !important; 
+        width: 100% !important; 
+        margin: 0 !important; 
+        padding: 0 !important; 
+        border-radius: 8px !important; 
+        background: #fff !important; 
+        border: 1px solid #e2e8f0 !important; 
+        overflow: hidden !important; 
+        box-sizing: border-box !important;
+      }
       
-      .product-img-wrap { height: 110px !important; min-height: 110px !important; display: flex !important; align-items: center !important; justify-content: center !important; margin-bottom: 8px !important; background: transparent !important; padding: 0 !important; }
-      .product-card img { max-height: 100px !important; width: auto !important; max-width: 100% !important; object-fit: contain !important; margin: 0 auto !important; }
+      .product-inner { 
+        display: flex !important; 
+        flex-direction: column !important; 
+        height: 100% !important; 
+        padding: 8px !important; 
+        width: 100% !important;
+        box-sizing: border-box !important;
+      }
       
+      /* Ép khuôn Ảnh */
+      .product-img-wrap { 
+        width: 100% !important;
+        height: 100px !important; 
+        display: flex !important; 
+        align-items: center !important; 
+        justify-content: center !important; 
+        margin-bottom: 8px !important; 
+        background: transparent !important; 
+        padding: 0 !important; 
+      }
+      .product-card img { 
+        max-height: 90px !important; 
+        width: auto !important; 
+        max-width: 100% !important; 
+        object-fit: contain !important; 
+        margin: 0 auto !important; 
+      }
+      
+      /* Ép khuôn Text */
       .product-meta { font-size: 11px !important; margin-bottom: 4px !important; }
-      
-      .product-card h3 { font-size: 13px !important; margin-bottom: 8px !important; line-height: 1.3 !important; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+      .product-card h3 { 
+        font-size: 13px !important; 
+        margin: 0 0 8px 0 !important; 
+        line-height: 1.3 !important; 
+        display: -webkit-box !important; 
+        -webkit-line-clamp: 2 !important; 
+        -webkit-box-orient: vertical !important; 
+        overflow: hidden !important; 
+      }
       .product-card .note { display: none !important; } 
       
-      .product-bottom { margin-top: auto !important; display: flex !important; flex-direction: column !important; }
+      /* Khu vực Đáy: Giá + Nút luôn dính liền nhau */
+      .product-bottom { 
+        margin-top: auto !important; 
+        display: flex !important; 
+        flex-direction: column !important; 
+        width: 100% !important;
+      }
       .price-label { display: none !important; } 
-      .product-card .price { font-size: 15px !important; text-align: left !important; color: #E60000 !important; margin-bottom: 6px !important; font-weight: bold !important; display: block !important;}
+      .product-card .price { 
+        font-size: 15px !important; 
+        text-align: left !important; 
+        color: #E60000 !important; 
+        margin-bottom: 6px !important; 
+        font-weight: bold !important; 
+        display: block !important;
+      }
       
-      .add-btn { width: 100% !important; margin: 0 !important; justify-content: center !important; padding: 8px !important; font-size: 13px !important; height: 34px !important; border-radius: 6px !important; }
-      .qty-control { margin: 0 !important; height: 34px !important; width: 100% !important; }
-      .qty-control button { width: 30px !important; height: 30px !important; }
+      /* Ép khuôn Nút Chọn Mua */
+      .add-btn { 
+        width: 100% !important; 
+        margin: 0 !important; 
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important; 
+        padding: 8px !important; 
+        font-size: 13px !important; 
+        height: 34px !important; 
+        border-radius: 6px !important; 
+        box-sizing: border-box !important;
+      }
+      .qty-control { margin: 0 !important; height: 34px !important; width: 100% !important; justify-content: center !important; }
+      .qty-control button { width: 30px !important; height: 30px !important; display: flex !important; align-items: center !important; justify-content: center !important; }
       
       .hero-grid { grid-template-columns: 1fr !important; }
     }
@@ -180,6 +262,6 @@
     </div>
   </footer>
 
-  <script src="script.js?v=FINAL_CLEAN"></script>
+  <script src="script.js?v=FINAL_CLEAN_V2"></script>
 </body>
 </html>
