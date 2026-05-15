@@ -11,14 +11,13 @@
   <title>VietPOM - Danh Mục Sản Phẩm</title>
   <meta name="description" content="Chọn sản phẩm, tổng hợp đơn hàng và gửi về Google Sheet." />
   
-  <link rel="stylesheet" href="style.css?v=CHOT_HA_100_PHAN_TRAM" />
+  <link rel="stylesheet" href="style.css?v=CHOT_MOBILE_100" />
   
   <style>
     /* ============================================================
-       BỘ MÃ GIAO DIỆN CHUẨN UX/UI (ĐẦY ĐỦ CẢ TRÊN LẪN DƯỚI)
+       BỘ MÃ GIAO DIỆN CHUẨN UX/UI (GIỮ NGUYÊN DESKTOP ĐÃ ĐẸP)
        ============================================================ */
     .hero-bg, .hero-bg-left, .hero-bg-right { display: none !important; }
-
     .btn-outline { background-color: transparent !important; color: #15558D !important; border: 2px solid #15558D !important; font-weight: bold !important; }
     .btn-outline:hover { background-color: #15558D !important; color: #ffffff !important; }
     .btn-primary, .btn-green, .btn-dark, .cart-pill, .label-pill, .add-btn, .checkout-btn, .order-icon { background-color: #15558D !important; color: #ffffff !important; border: none !important; }
@@ -27,30 +26,29 @@
     h1, h2, h3, h4, .price, .section-kicker, .buyer-kicker, .summary-kicker, .text-success, .text-green { color: #15558D !important; }
     .promo-box, .buyer-info { background: linear-gradient(135deg, #1A6BBA, #0F4373) !important; border: none !important; }
     .promo-box *, .buyer-info * { color: #ffffff !important; }
-    
-    /* Làm đẹp lại các hộp nhỏ bên trong khối màu xanh */
     .buyer-info .info-list > div, section[id="buyer"] div.info-list div { background-color: rgba(255, 255, 255, 0.1) !important; border-color: rgba(255, 255, 255, 0.2) !important; }
-
     .summary-card, .cart-summary { background-color: #F8FAFC !important; border: 1px solid #E2E8F0 !important; }
     .summary-card h3, .summary-total strong { color: #15558D !important; }
 
-    /* RESET ÉP KHUÔN NGHIÊM NGẶT - CHỐNG TRÀN */
+    /* RESET ÉP KHUÔN TOÀN TRANG */
     *, *::before, *::after { box-sizing: border-box !important; }
     body { overflow-x: hidden !important; }
 
     /* ============================================================
-       MOBILE: ÉP CHẶT 2 CỘT, NGĂN TRÀN MÀN HÌNH TUYỆT ĐỐI
+       ĐẶC TRỊ MOBILE: CHỮA BỆNH LỆCH KHUNG, MẤT NÚT, MẤT GIÁ
        ============================================================ */
     @media (max-width: 768px) {
+      /* Bố cục lưới cực chuẩn */
       #productGrid { 
         display: grid !important; 
         grid-template-columns: repeat(2, minmax(0, 1fr)) !important; 
         gap: 8px !important; 
         width: 100% !important;
-        padding: 0 4px !important; 
+        padding: 8px !important; 
         margin: 0 !important;
       }
       
+      /* Thẻ sản phẩm: Không giới hạn chiều cao, tự động bung ra chứa đủ nội dung */
       .product-card { 
         display: flex !important; 
         flex-direction: column !important; 
@@ -59,35 +57,44 @@
         background: #fff !important; 
         border: 1px solid #e2e8f0 !important; 
         border-radius: 8px !important; 
-        padding: 6px !important;
+        padding: 8px !important;
         position: relative !important;
         overflow: hidden !important; 
       }
+      
+      /* Diệt mầm mống gây lệch khung từ code template cũ */
+      .product-card::before, .product-card::after, .product-img-wrap::before, .product-img-wrap::after { display: none !important; }
       
       .product-inner { 
         display: flex !important; 
         flex-direction: column !important; 
         flex-grow: 1 !important; 
-        height: 100% !important;
-        min-width: 0 !important; 
+        width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
       }
       
+      /* Khung ảnh */
       .product-img-wrap { 
         position: relative !important;
         width: 100% !important;
-        height: 90px !important; 
+        height: 100px !important; 
         display: flex !important; 
         align-items: center !important; 
         justify-content: center !important; 
-        margin-bottom: 8px !important; 
+        margin: 0 0 8px 0 !important; 
+        padding: 0 !important;
+        background: transparent !important;
       }
       
       .product-card img { 
-        max-height: 80px !important; 
+        max-height: 90px !important; 
         max-width: 100% !important; 
         object-fit: contain !important; 
+        margin: 0 auto !important;
       }
       
+      /* Tem Sản Phẩm (HD) */
       .product-tag, span[class*="absolute"], span[class*="tag"] { 
         position: absolute !important; 
         top: 0 !important; 
@@ -101,16 +108,19 @@
         z-index: 10 !important;
       }
       
+      /* Danh mục (Thuốc/Vitamin) */
       .product-meta { 
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
         font-size: 10px !important; 
         color: #64748b !important;
-        margin-bottom: 4px !important; 
-        white-space: nowrap !important; 
-        overflow: hidden !important; 
-        text-overflow: ellipsis !important;
+        margin: 0 0 4px 0 !important; 
         width: 100% !important;
       }
+      .product-meta > * { white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; }
       
+      /* Tên sản phẩm: Chống tràn, khóa 2 dòng */
       .product-card h3 { 
         font-size: 12px !important; 
         line-height: 1.4 !important; 
@@ -120,16 +130,19 @@
         -webkit-line-clamp: 2 !important; 
         -webkit-box-orient: vertical !important; 
         overflow: hidden !important; 
-        word-wrap: break-word !important;
+        color: #15558D !important;
+        text-align: left !important;
       }
       
       .product-card .note { display: none !important; }
 
+      /* Cụm Đáy: Giá + Nút bấm (Luôn đẩy xuống đáy, ép hiển thị 100%) */
       .product-bottom { 
         margin-top: auto !important; 
         display: flex !important; 
         flex-direction: column !important; 
         width: 100% !important;
+        padding: 0 !important;
       }
       
       .price-label { display: none !important; }
@@ -138,15 +151,16 @@
         font-size: 14px !important; 
         color: #E60000 !important; 
         font-weight: bold !important; 
-        margin-bottom: 8px !important;
+        margin: 0 0 6px 0 !important;
         text-align: left !important;
       }
       
+      /* Nút Chọn Mua */
       .add-btn { 
         width: 100% !important; 
         height: 32px !important; 
         font-size: 12px !important; 
-        border-radius: 6px !important; 
+        border-radius: 4px !important; 
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
@@ -154,6 +168,7 @@
         padding: 0 !important;
       }
       
+      /* Trình điều khiển số lượng (Khi đã bấm mua) */
       .qty-control { 
         width: 100% !important; 
         height: 32px !important; 
@@ -161,13 +176,15 @@
         justify-content: space-between !important; 
         align-items: center !important;
         margin: 0 !important;
+        padding: 0 !important;
       }
       .qty-control button { 
-        width: 28px !important; 
-        height: 28px !important; 
+        width: 30px !important; 
+        height: 30px !important; 
         display: flex !important; 
         align-items: center !important; 
         justify-content: center !important;
+        margin: 0 !important;
       }
       
       .hero-grid { grid-template-columns: 1fr !important; }
@@ -180,7 +197,7 @@
   <header class="site-header">
     <div class="container header-inner">
       <a href="#" class="brand" style="display:flex; align-items:center; text-decoration: none;">
-        <img src="logo-w.jpg" alt="VietPOM Logo" style="height: 45px; width: auto; object-fit: contain;" />
+        <img src="logo-w.jpg" alt="VietPOM Logo" style="height: 40px; width: auto; object-fit: contain;" />
       </a>
       <nav class="desktop-nav">
         <a href="#products">Sản phẩm</a>
@@ -213,12 +230,12 @@
         <aside class="hero-card">
           <div class="promo-box">
             <span>Ưu đãi nhà thuốc</span><h2>Đơn từ 1.200.000đ</h2><p>Miễn phí giao hàng (Freeship)</p>
-            <small>Chương trình có thể điều chỉnh theo chính sách từng nhà thuốc. Cần xác nhận lại trước khi giao hàng.</small>
+            <small>Chương trình có thể điều chỉnh theo chính sách từng nhà thuốc.</small>
           </div>
           
           <style>
             .my-slider-container { width: 100%; aspect-ratio: 16 / 9; position: relative; overflow: hidden; border-radius: 12px; margin-top: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); background-color: #ffffff; }
-            .my-slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; opacity: 0; transition: opacity 0.8s ease-in-out; }
+            .my-slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.8s ease-in-out; }
             .my-slide.show { opacity: 1; }
           </style>
           <div class="my-slider-container">
@@ -235,9 +252,9 @@
     <section id="products" class="section">
       <div class="container">
         <div class="section-head">
-          <div><p class="section-kicker">Ưu Đãi Đơn từ 1.200.000đ</p><h2>Chọn sản phẩm cần mua</h2></div>
+          <div><p class="section-kicker">Sản phẩm chính hãng</p><h2>Danh mục đặt hàng</h2></div>
           <div class="filters">
-            <div class="search-box"><span>🔎</span><input id="searchInput" type="search" placeholder="Tìm sản phẩm..." /></div>
+            <div class="search-box"><span>🔎</span><input id="searchInput" type="search" placeholder="Tìm tên thuốc..." /></div>
             <select id="categorySelect"></select>
           </div>
         </div>
@@ -248,18 +265,17 @@
     <section id="order" class="section order-section">
       <div class="container order-grid">
         <div class="order-card">
-          <div class="order-head"><div><p class="section-kicker">Tổng hợp đơn hàng</p><h2>Sản phẩm đã chọn</h2></div><div class="order-icon">🛒</div></div>
+          <div class="order-head"><div><p class="section-kicker">Kiểm tra giỏ hàng</p><h2>Đơn hàng của Anh/Chị</h2></div><div class="order-icon">🛒</div></div>
           <div id="cartItems"></div>
         </div>
         <aside class="summary-card">
-          <p class="summary-kicker">Tạm tính</p><h3>Chi tiết thanh toán</h3>
+          <p class="summary-kicker">Chi tiết thanh toán</p>
           <div class="summary-lines">
             <div><span>Tiền hàng</span><strong id="subtotalText">0đ</strong></div>
-            <div><span>Phí giao hàng</span><strong id="shippingText">Miễn phí</strong></div>
+            <div><span>Phí ship</span><strong id="shippingText">0đ</strong></div>
           </div>
           <div class="summary-total"><span>Tổng cộng</span><strong id="totalText">0đ</strong></div>
-          <div class="summary-note"><strong>Ưu đãi hiện tại</strong><p>Đơn từ 1.200.000đ được miễn phí giao hàng (Freeship).</p></div>
-          <a href="#buyer" class="btn btn-primary full-width">Tiếp tục điền thông tin 💬</a>
+          <a href="#buyer" class="btn btn-primary full-width">Điền thông tin giao hàng 💬</a>
         </aside>
       </div>
     </section>
@@ -267,7 +283,7 @@
     <section id="buyer" class="section">
       <div class="container buyer-grid">
         <div class="buyer-info">
-          <p class="buyer-kicker">Thông tin mua hàng</p><h2>Điền thông tin xác nhận đơn</h2>
+          <p class="buyer-kicker">Xác nhận đơn</p><h2>Thông tin người mua</h2>
           <div class="info-list">
             <div><span>🛡</span><div><strong>Tuân thủ ngành dược</strong><p>Đúng luật pháp hiện hành.</p></div></div>
             <div><span>☎</span><div><strong>Tư vấn tận tâm</strong><p>Xác nhận đơn bởi dược sĩ.</p></div></div>
@@ -296,6 +312,6 @@
     </div>
   </footer>
 
-  <script src="script.js?v=CHOT_HA_100_PHAN_TRAM"></script>
+  <script src="script.js?v=CHOT_MOBILE_100"></script>
 </body>
 </html>
