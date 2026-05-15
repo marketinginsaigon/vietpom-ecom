@@ -10,15 +10,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VietPOM - Danh Mục Sản Phẩm</title>
   <meta name="description" content="Chọn sản phẩm, tổng hợp đơn hàng và gửi về Google Sheet." />
-  <link rel="stylesheet" href="style.css" />
+  
+  <link rel="stylesheet" href="style.css?v=1" />
   
   <style>
     /* ============================================================
-       BỘ MÃ GIAO DIỆN CHUẨN UX/UI (BẢN SẠCH & BỌC THÉP TOÀN DIỆN)
+       BỘ MÃ GIAO DIỆN CHUẨN UX/UI (BẢN SẠCH & HOÀN HẢO NHẤT)
        ============================================================ */
     .hero-bg, .hero-bg-left, .hero-bg-right { display: none !important; }
 
-    /* Màu sắc thương hiệu */
+    /* Màu sắc thương hiệu VietPOM */
     .btn-outline { background-color: transparent !important; color: #15558D !important; border: 2px solid #15558D !important; font-weight: bold !important; }
     .btn-outline:hover { background-color: #15558D !important; color: #ffffff !important; }
     .btn-primary, .btn-green, .btn-dark, .cart-pill, .label-pill, .add-btn, .checkout-btn, .order-icon { background-color: #15558D !important; color: #ffffff !important; border: none !important; }
@@ -30,26 +31,14 @@
     .summary-card, .cart-summary { background-color: #F8FAFC !important; border: 1px solid #E2E8F0 !important; }
     .summary-card h3, .summary-total strong { color: #15558D !important; }
 
-    /* Định vị Tag (HD, KM...) */
-    .product-img-wrap { position: relative !important; width: 100% !important; }
-    .product-tag, span[class*="absolute"], span[class*="tag"] { 
-        position: absolute !important; 
-        top: 4px !important; 
-        left: 4px !important; 
-        color: #E60000 !important; 
-        font-weight: 800 !important; 
-        background: rgba(255,255,255,0.9) !important; 
-        padding: 2px 6px !important; 
-        border-radius: 4px !important; 
-        font-size: 11px !important;
-        z-index: 10 !important;
-    }
+    /* RESET MỌI LỖI TRÀN KHUNG CỦA BẢN CŨ */
+    .product-card, .product-card * { box-sizing: border-box !important; }
 
     /* ============================================================
-       GIAO DIỆN MOBILE TỐI ƯU (HIỂN THỊ 4 SẢN PHẨM TRÊN MÀN HÌNH)
+       GIAO DIỆN MOBILE TỐI ƯU HIỂN THỊ 4 SẢN PHẨM KHÔNG BAO GIỜ LỖI
        ============================================================ */
     @media (max-width: 768px) {
-      /* Grid 2 cột sắc nét */
+      /* Khung 2 cột chuẩn xác */
       #productGrid { 
         display: grid !important; 
         grid-template-columns: repeat(2, 1fr) !important; 
@@ -57,7 +46,7 @@
         padding: 10px !important;
       }
       
-      /* Thẻ sản phẩm bọc thép */
+      /* Cấu trúc thẻ sản phẩm: Chiều cao co giãn bằng nhau */
       .product-card { 
         display: flex !important; 
         flex-direction: column !important; 
@@ -66,40 +55,64 @@
         border: 1px solid #e2e8f0 !important; 
         border-radius: 8px !important; 
         padding: 8px !important;
-        box-sizing: border-box !important;
-        overflow: hidden !important;
+        position: relative !important;
+        overflow: hidden !important; 
       }
       
+      /* Ruột thẻ sản phẩm: Đẩy giá và nút xuống đáy */
       .product-inner { 
         display: flex !important; 
         flex-direction: column !important; 
-        height: 100% !important; 
-        flex-grow: 1 !important;
+        flex-grow: 1 !important; 
+        height: 100% !important;
       }
       
-      /* Khung ảnh lùn gọn */
+      /* Khung Ảnh: Cố định 100px */
       .product-img-wrap { 
+        position: relative !important;
+        width: 100% !important;
         height: 100px !important; 
-        margin-bottom: 8px !important; 
         display: flex !important; 
         align-items: center !important; 
         justify-content: center !important; 
-        background: #f8fafc !important;
-        border-radius: 4px !important;
+        margin-bottom: 8px !important; 
       }
+      
       .product-card img { 
         max-height: 90px !important; 
-        max-width: 90% !important; 
+        max-width: 100% !important; 
         object-fit: contain !important; 
       }
       
-      .product-meta { font-size: 10px !important; margin-bottom: 4px !important; }
+      /* Tem Sản Phẩm (HD, Mới...) */
+      .product-tag, span[class*="absolute"], span[class*="tag"] { 
+        position: absolute !important; 
+        top: 0 !important; 
+        left: 0 !important; 
+        color: #E60000 !important; 
+        font-weight: 800 !important; 
+        background: rgba(255,255,255,0.9) !important; 
+        padding: 2px 4px !important; 
+        border-radius: 4px !important; 
+        font-size: 10px !important;
+        z-index: 10 !important;
+      }
       
-      /* Tên sản phẩm - Khóa cứng 2 dòng */
+      /* Danh mục Thuốc */
+      .product-meta { 
+        font-size: 10px !important; 
+        color: #64748b !important;
+        margin-bottom: 4px !important; 
+        white-space: nowrap !important; 
+        overflow: hidden !important; 
+        text-overflow: ellipsis !important;
+      }
+      
+      /* Tên Thuốc: Ép cứng tối đa 2 dòng (36px), tự động thêm "..." nếu dài */
       .product-card h3 { 
         font-size: 13px !important; 
         line-height: 1.4 !important; 
-        margin-bottom: 8px !important; 
+        margin: 0 0 8px 0 !important; 
         height: 36px !important; 
         display: -webkit-box !important; 
         -webkit-line-clamp: 2 !important; 
@@ -109,22 +122,25 @@
       
       .product-card .note { display: none !important; }
 
-      /* Phần đáy: Luôn dính xuống dưới cùng */
+      /* KHU VỰC ĐÁY: Giá và Nút (Luôn dính chặt dưới đáy) */
       .product-bottom { 
         margin-top: auto !important; 
         display: flex !important; 
         flex-direction: column !important; 
-        padding-top: 4px !important;
+        width: 100% !important;
       }
+      
       .price-label { display: none !important; }
+      
       .product-card .price { 
         font-size: 14px !important; 
         color: #E60000 !important; 
-        font-weight: 700 !important; 
-        margin-bottom: 6px !important;
+        font-weight: bold !important; 
+        margin-bottom: 8px !important;
+        text-align: left !important;
       }
       
-      /* Nút bấm gọn gàng */
+      /* Nút Chọn Mua */
       .add-btn { 
         width: 100% !important; 
         height: 32px !important; 
@@ -133,15 +149,26 @@
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
+        margin: 0 !important;
+        padding: 0 !important;
       }
+      
+      /* Cụm Tăng/Giảm Số Lượng */
       .qty-control { 
         width: 100% !important; 
         height: 32px !important; 
         display: flex !important; 
         justify-content: space-between !important; 
         align-items: center !important;
+        margin: 0 !important;
       }
-      .qty-control button { width: 28px !important; height: 28px !important; }
+      .qty-control button { 
+        width: 30px !important; 
+        height: 30px !important; 
+        display: flex !important; 
+        align-items: center !important; 
+        justify-content: center !important;
+      }
       
       .hero-grid { grid-template-columns: 1fr !important; }
     }
@@ -214,7 +241,7 @@
         <div class="buyer-info">
           <p class="buyer-kicker">Xác nhận đơn</p><h2>Thông tin người mua</h2>
         </div>
-        <form id="orderForm" class="buyer-form">
+        <form id="orderForm" class="buyer-form" action="https://script.google.com/macros/s/AKfycbxxNhKcTgxtPQCVtl1brMMF0Wr0jtYZex1ueG74WJpRfa6AyabrOuzOZX8bcM5aLFdMVA/exec" method="POST">
           <div class="form-grid">
             <label><span>Họ và tên</span><input id="customerName" name="name" type="text" placeholder="Tên người nhận..." required /></label>
             <label><span>Số điện thoại</span><input id="customerPhone" name="phone" type="tel" placeholder="Số điện thoại..." required /></label>
@@ -234,6 +261,6 @@
     </div>
   </footer>
 
-  <script src="script.js?v=FINAL_BOC_THEP_V2"></script>
+  <script src="script.js?v=PERFECT"></script>
 </body>
 </html>
