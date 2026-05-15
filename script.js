@@ -44,8 +44,7 @@ function processData(data) {
   PRODUCTS = data.filter(item => item.id && item.name).map(item => ({
     id: item.id, name: item.name, price: Number(item.price) || 0, oldPrice: Number(item.oldPrice) || 0,
     unit: item.unit || "Hộp", image: item.image || "", category: item.category || "Tất cả", 
-    tag: item.tag || "", // LẤY TAG TỪ EXCEL LÊN WEB
-    note: item.note || ""
+    tag: item.tag || "", note: item.note || ""
   }));
   renderCategories(); renderProducts();
 }
@@ -102,7 +101,6 @@ function renderProducts() {
       ? `<div style="display: flex; flex-direction: column;"><del style="color: #94a3b8; font-size: 13px; line-height: 1; font-weight: 500;">${formatCurrency(product.oldPrice)}</del><span class="price" style="color: #E60000 !important; font-size: 18px;">${formatCurrency(product.price)}</span></div>`
       : `<span class="price">${formatCurrency(product.price)}</span>`;
 
-    // NẾU CÓ TAG THÌ IN RA MÀN HÌNH, KHÔNG CÓ THÌ ẨN
     const tagDisplay = product.tag ? `<div class="product-tag">${product.tag}</div>` : "";
 
     return `
@@ -156,7 +154,6 @@ async function submitOrder(event) {
   const orderCode = `DH-${Date.now()}`;
   const orderPayload = {
     orderCode, createdAt: new Date().toLocaleString("vi-VN"), customer,
-    // GÓI TAG CỦA SẢN PHẨM Ở ĐÂY ĐỂ GỬI VỀ APPS SCRIPT
     items: cartItems.map((item) => ({ id: item.id, name: item.name, category: item.category, unit: item.unit, price: item.price, quantity: item.quantity, lineTotal: item.price * item.quantity, tag: item.tag || "" })),
     subtotal, shippingFee, discount: 0, total,
   };
@@ -164,7 +161,22 @@ async function submitOrder(event) {
   try {
     state.isSubmitting = true; elements.submitButton.disabled = true; elements.submitButton.textContent = "Đang gửi...";
     await fetch(GOOGLE_SHEET_WEB_APP_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(orderPayload) });
+    
     showSubmitStatus("success", `Đơn hàng ${orderCode} đã đặt thành công. Cảm ơn Anh/Chị!`);
+    
+    // ====================================================================
+    // 🎯 CODE BẮN SỰ KIỆN GTM (TRACKING CHUYỂN ĐỔI)
+    // ====================================================================
+    if (window.dataLayer) {
+      window.dataLayer.push({
+        'event': 'purchase_success',
+        'order_id': orderCode,
+        'order_value': total,
+        'customer_phone': customer.phone // Bắn sđt (tuỳ chọn) để GTM làm tệp đối tượng
+      });
+    }
+    // ====================================================================
+
     state.cart = {}; if(elements.orderForm) elements.orderForm.reset(); renderCartAndTotals();
   } catch (error) { showSubmitStatus("error", "Lỗi mạng. Vui lòng thử lại."); } 
   finally { state.isSubmitting = false; elements.submitButton.disabled = false; elements.submitButton.textContent = "Gửi đơn hàng"; }
