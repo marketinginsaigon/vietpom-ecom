@@ -7,19 +7,18 @@
   'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
   })(window,document,'script','dataLayer','GTM-KBJVVFVV');</script>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>VietPOM - Danh Mục Sản Phẩm</title>
   <meta name="description" content="Chọn sản phẩm, tổng hợp đơn hàng và gửi về Google Sheet." />
   
-  <link rel="stylesheet" href="style.css?v=1" />
+  <link rel="stylesheet" href="style.css?v=2" />
   
   <style>
     /* ============================================================
-       BỘ MÃ GIAO DIỆN CHUẨN UX/UI (BẢN SẠCH & HOÀN HẢO NHẤT)
+       BỘ MÃ GIAO DIỆN CHUẨN UX/UI (BẢN FIX LỖI TRÀN VIỀN MOBILE)
        ============================================================ */
     .hero-bg, .hero-bg-left, .hero-bg-right { display: none !important; }
 
-    /* Màu sắc thương hiệu VietPOM */
     .btn-outline { background-color: transparent !important; color: #15558D !important; border: 2px solid #15558D !important; font-weight: bold !important; }
     .btn-outline:hover { background-color: #15558D !important; color: #ffffff !important; }
     .btn-primary, .btn-green, .btn-dark, .cart-pill, .label-pill, .add-btn, .checkout-btn, .order-icon { background-color: #15558D !important; color: #ffffff !important; border: none !important; }
@@ -31,47 +30,49 @@
     .summary-card, .cart-summary { background-color: #F8FAFC !important; border: 1px solid #E2E8F0 !important; }
     .summary-card h3, .summary-total strong { color: #15558D !important; }
 
-    /* RESET MỌI LỖI TRÀN KHUNG CỦA BẢN CŨ */
-    .product-card, .product-card * { box-sizing: border-box !important; }
+    /* RESET ÉP KHUÔN NGHIÊM NGẶT - CHỐNG TRÀN */
+    *, *::before, *::after { box-sizing: border-box !important; }
+    body { overflow-x: hidden !important; } /* Khóa kéo ngang màn hình */
 
     /* ============================================================
-       GIAO DIỆN MOBILE TỐI ƯU HIỂN THỊ 4 SẢN PHẨM KHÔNG BAO GIỜ LỖI
+       MOBILE: ÉP CHẶT 2 CỘT, NGĂN TRÀN MÀN HÌNH TUYỆT ĐỐI
        ============================================================ */
     @media (max-width: 768px) {
-      /* Khung 2 cột chuẩn xác */
+      /* Dùng minmax(0, 1fr) để bắt các cột không được phình to hơn container */
       #productGrid { 
         display: grid !important; 
-        grid-template-columns: repeat(2, 1fr) !important; 
-        gap: 10px !important; 
-        padding: 10px !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important; 
+        gap: 8px !important; 
+        width: 100% !important;
+        padding: 0 4px !important; /* Gọt sạch padding thừa */
+        margin: 0 !important;
       }
       
-      /* Cấu trúc thẻ sản phẩm: Chiều cao co giãn bằng nhau */
       .product-card { 
         display: flex !important; 
         flex-direction: column !important; 
         height: 100% !important; 
+        width: 100% !important;
         background: #fff !important; 
         border: 1px solid #e2e8f0 !important; 
         border-radius: 8px !important; 
-        padding: 8px !important;
+        padding: 6px !important;
         position: relative !important;
         overflow: hidden !important; 
       }
       
-      /* Ruột thẻ sản phẩm: Đẩy giá và nút xuống đáy */
       .product-inner { 
         display: flex !important; 
         flex-direction: column !important; 
         flex-grow: 1 !important; 
         height: 100% !important;
+        min-width: 0 !important; /* Chìa khóa chống tràn text bên trong */
       }
       
-      /* Khung Ảnh: Cố định 100px */
       .product-img-wrap { 
         position: relative !important;
         width: 100% !important;
-        height: 100px !important; 
+        height: 90px !important; 
         display: flex !important; 
         align-items: center !important; 
         justify-content: center !important; 
@@ -79,12 +80,11 @@
       }
       
       .product-card img { 
-        max-height: 90px !important; 
+        max-height: 80px !important; 
         max-width: 100% !important; 
         object-fit: contain !important; 
       }
       
-      /* Tem Sản Phẩm (HD, Mới...) */
       .product-tag, span[class*="absolute"], span[class*="tag"] { 
         position: absolute !important; 
         top: 0 !important; 
@@ -98,7 +98,6 @@
         z-index: 10 !important;
       }
       
-      /* Danh mục Thuốc */
       .product-meta { 
         font-size: 10px !important; 
         color: #64748b !important;
@@ -106,23 +105,23 @@
         white-space: nowrap !important; 
         overflow: hidden !important; 
         text-overflow: ellipsis !important;
+        width: 100% !important;
       }
       
-      /* Tên Thuốc: Ép cứng tối đa 2 dòng (36px), tự động thêm "..." nếu dài */
       .product-card h3 { 
-        font-size: 13px !important; 
+        font-size: 12px !important; 
         line-height: 1.4 !important; 
         margin: 0 0 8px 0 !important; 
-        height: 36px !important; 
+        height: 34px !important; 
         display: -webkit-box !important; 
         -webkit-line-clamp: 2 !important; 
         -webkit-box-orient: vertical !important; 
         overflow: hidden !important; 
+        word-wrap: break-word !important;
       }
       
       .product-card .note { display: none !important; }
 
-      /* KHU VỰC ĐÁY: Giá và Nút (Luôn dính chặt dưới đáy) */
       .product-bottom { 
         margin-top: auto !important; 
         display: flex !important; 
@@ -140,7 +139,6 @@
         text-align: left !important;
       }
       
-      /* Nút Chọn Mua */
       .add-btn { 
         width: 100% !important; 
         height: 32px !important; 
@@ -153,7 +151,6 @@
         padding: 0 !important;
       }
       
-      /* Cụm Tăng/Giảm Số Lượng */
       .qty-control { 
         width: 100% !important; 
         height: 32px !important; 
@@ -163,8 +160,8 @@
         margin: 0 !important;
       }
       .qty-control button { 
-        width: 30px !important; 
-        height: 30px !important; 
+        width: 28px !important; 
+        height: 28px !important; 
         display: flex !important; 
         align-items: center !important; 
         justify-content: center !important;
@@ -261,6 +258,6 @@
     </div>
   </footer>
 
-  <script src="script.js?v=PERFECT"></script>
+  <script src="script.js?v=CHONG_TRAN_VIEN"></script>
 </body>
 </html>
