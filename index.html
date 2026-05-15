@@ -39,30 +39,40 @@
     .product-card > div:first-child { background-color: #F0F6FA !important; }
     #productGrid span[class*="absolute"], #productGrid span[class*="tag"] { color: #E60000 !important; font-weight: 900 !important; background: rgba(255,255,255,0.9) !important; padding: 2px 6px !important; border-radius: 4px !important; }
 
-    /* ============================================================
-       NÂNG CẤP GIAO DIỆN MOBILE TỐI ƯU HIỂN THỊ 4 SẢN PHẨM / MÀN HÌNH
+   /* ============================================================
+       NÂNG CẤP GIAO DIỆN MOBILE: ÉP LÙN THẺ, HIỂN THỊ 4 SẢN PHẨM
        ============================================================ */
     @media (max-width: 768px) {
+      /* Grid 2 cột, khoảng cách các thẻ sát lại */
       #productGrid { display: grid !important; grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; }
-      .product-card { height: 100% !important; display: flex !important; flex-direction: column !important; padding: 8px !important; }
       
-      /* Ép chiều cao ảnh ngắn lại */
-      .product-card img { height: 90px !important; padding: 2px !important; object-fit: contain !important; transform: scale(1) !important; }
+      /* Gọt sạch viền và padding thừa của thẻ */
+      .product-card { height: 100% !important; padding: 0 !important; overflow: hidden !important; border-radius: 8px !important; }
+      .product-inner { padding: 6px !important; height: 100% !important; display: flex !important; flex-direction: column !important; justify-content: space-between !important; }
       
-      /* Chỉnh chữ nhỏ và gọn lại, tên sản phẩm giới hạn 2 dòng */
-      .product-meta { font-size: 11px !important; margin-top: 4px !important; margin-bottom: 4px !important; }
-      .product-card h3 { font-size: 13px !important; margin-bottom: 4px !important; line-height: 1.3 !important; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+      /* ÉP CÁI HỘP MÀU XANH LÙN TỊT XUỐNG */
+      .product-img-wrap { height: 90px !important; min-height: 90px !important; padding: 0 !important; margin-bottom: 6px !important; display: flex !important; align-items: center !important; justify-content: center !important; }
       
-      /* Giảm kích thước vùng giá và nút bấm */
-      .price-label { font-size: 10px !important; }
-      .product-card .price { font-size: 15px !important; }
-      .add-btn { width: 100% !important; margin-top: 8px !important; margin-left: 0 !important; justify-content: center !important; padding: 6px !important; font-size: 13px !important; }
-      .qty-control { margin-top: 8px !important; height: 32px !important; }
+      /* Ép ảnh vừa vặn gọn gàng trong hộp */
+      .product-card img { height: 80px !important; max-height: 80px !important; width: auto !important; max-width: 100% !important; margin: 0 auto !important; object-fit: contain !important; padding: 0 !important; border-radius: 4px !important; }
+      
+      /* Chỉnh chữ nhỏ lại, tên SP cố định 2 dòng để các thẻ bằng nhau */
+      .product-meta { font-size: 10px !important; margin: 0 0 4px 0 !important; }
+      .product-card h3 { font-size: 12px !important; margin-bottom: 2px !important; line-height: 1.3 !important; height: 31px !important; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+      .product-card .note { display: none !important; } /* Ẩn bớt note dài trên mobile */
+      
+      /* Ép khu vực Nút bấm và Giá tiền sát đáy */
+      .product-bottom { margin-top: auto !important; padding-top: 4px !important; display: flex !important; flex-direction: column !important; }
+      .price-label { display: none !important; } /* Giấu chữ "Giá bán" cho đỡ tốn dòng */
+      .product-card .price { font-size: 14px !important; text-align: left !important; }
+      
+      /* Thu gọn nút Chọn mua */
+      .add-btn { width: 100% !important; margin-top: 6px !important; margin-left: 0 !important; justify-content: center !important; padding: 6px !important; font-size: 13px !important; height: 32px !important; border-radius: 6px !important;}
+      .qty-control { margin-top: 6px !important; height: 32px !important; }
       .qty-control button { width: 28px !important; height: 28px !important; }
       
       .hero-grid { grid-template-columns: 1fr !important; }
     }
-  </style>
 </head>
 <body>
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KBJVVFVV"
