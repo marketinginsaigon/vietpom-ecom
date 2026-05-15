@@ -11,7 +11,7 @@
   <title>VietPOM - Danh Mục Sản Phẩm</title>
   <meta name="description" content="Chọn sản phẩm, tổng hợp đơn hàng và gửi về Google Sheet." />
   
-  <link rel="stylesheet" href="style.css?v=CUONG_CHE_CO_DONG" />
+  <link rel="stylesheet" href="style.css?v=BLOCK_STACK_FINAL" />
   
   <style>
     /* ============================================================
@@ -34,7 +34,7 @@
     body { overflow-x: hidden !important; }
 
     /* ============================================================
-       ĐẶC TRỊ MOBILE: ĐẬP BỎ CẤU TRÚC CHIA CỘT NGANG CỦA SCRIPT.JS
+       ĐẶC TRỊ MOBILE: PHÁ VỠ CẤU TRÚC CHIA CỘT TRÁI/PHẢI
        ============================================================ */
     @media (max-width: 768px) {
       /* Khung lưới bao ngoài */
@@ -47,39 +47,43 @@
         margin: 0 !important;
       }
       
-      /* Thẻ sản phẩm */
+      /* THẺ SẢN PHẨM: DÙNG LỆNH BLOCK ĐỂ BẮT NỘI DUNG XẾP CHỒNG LÊN NHAU */
       .product-card { 
-        display: flex !important; 
-        flex-direction: column !important; 
-        height: auto !important; 
-        min-height: 280px !important; /* Mở khóa không gian hiển thị */
+        display: block !important; 
+        width: 100% !important; 
+        height: 100% !important; 
         background: #fff !important; 
         border: 1px solid #e2e8f0 !important; 
         border-radius: 8px !important; 
         padding: 8px !important;
         position: relative !important;
-        overflow: visible !important; 
+        overflow: hidden !important; 
       }
 
-      /* 1. KHU VỰC ẢNH: Ép buộc 100% chiều ngang, cấm nằm cạnh chữ */
-      .product-img-wrap, .product-card > a:first-child, .product-card > div:first-child { 
+      /* ÉP TẤT CẢ RUỘT BÊN TRONG THÀNH KHỐI VÀ RỘNG 100% */
+      .product-card > * { 
+        display: block !important; 
         width: 100% !important; 
         max-width: 100% !important;
-        flex: 0 0 100% !important; /* Lệnh đập nát chia cột */
-        height: 100px !important; 
-        display: flex !important; 
-        align-items: center !important; 
-        justify-content: center !important; 
-        margin: 0 0 8px 0 !important; 
-        position: relative !important; 
         float: none !important;
+        position: static !important;
+        margin: 0 !important; 
+        padding: 0 !important;
+      }
+
+      /* 1. KHU VỰC ẢNH */
+      .product-img-wrap, .product-card > a:first-child, .product-card > div:first-child { 
+        height: 100px !important; 
+        text-align: center !important;
+        margin-bottom: 8px !important; 
+        position: relative !important; 
       }
       
       .product-card img { 
-        position: static !important;
         max-height: 90px !important; 
         max-width: 100% !important; 
         object-fit: contain !important; 
+        display: inline-block !important; /* Giúp ảnh nằm giữa */
         margin: 0 auto !important; 
       }
 
@@ -93,57 +97,36 @@
         font-size: 10px !important; z-index: 10 !important;
       }
 
-      /* 2. KHU VỰC THÔNG TIN (Chữ, Giá, Nút): Ép xuống dòng, 100% chiều ngang */
-      .product-inner, .product-card > div:nth-child(2), .product-card > form { 
-        width: 100% !important; 
-        max-width: 100% !important;
-        flex: 0 0 100% !important; /* Lệnh đập nát chia cột */
-        display: flex !important; 
-        flex-direction: column !important; 
-        flex-grow: 1 !important; 
-        float: none !important;
-        margin: 0 !important; padding: 0 !important;
-      }
-
-      /* Danh mục */
+      /* 2. KHU VỰC THÔNG TIN */
       .product-meta { 
         display: flex !important; justify-content: space-between !important; 
         font-size: 10px !important; color: #64748b !important;
-        margin: 0 0 4px 0 !important; width: 100% !important;
+        margin-bottom: 4px !important; 
       }
       
-      /* Tên thuốc - Ép về bên trái, 2 dòng */
       .product-card h3 { 
         display: -webkit-box !important; -webkit-line-clamp: 2 !important; -webkit-box-orient: vertical !important; 
-        width: 100% !important; font-size: 13px !important; line-height: 1.4 !important; 
-        margin: 0 0 8px 0 !important; height: 36px !important; overflow: hidden !important; 
+        overflow: hidden !important; font-size: 12px !important; line-height: 1.4 !important; 
+        margin: 0 0 6px 0 !important; height: 34px !important; 
         text-align: left !important; white-space: normal !important; color: #15558D !important;
       }
       .product-card .note { display: none !important; }
 
-      /* 3. KHU VỰC GIÁ & NÚT MUA (Ép sát đáy) */
-      .product-bottom { 
-        width: 100% !important; display: flex !important; flex-direction: column !important; 
-        margin-top: auto !important; 
-      }
-      
+      /* 3. KHU VỰC GIÁ & NÚT */
       .price-label { display: none !important; }
       
       .product-card .price { 
-        width: 100% !important; font-size: 15px !important; color: #E60000 !important; 
-        font-weight: bold !important; margin: 0 0 8px 0 !important; text-align: left !important; 
-        display: block !important;
+        display: block !important; font-size: 14px !important; color: #E60000 !important; 
+        font-weight: bold !important; margin-bottom: 8px !important; text-align: left !important; 
       }
       
-      /* Cụm Nút */
       .add-btn { 
-        display: flex !important; width: 100% !important; height: 34px !important; 
-        font-size: 12px !important; border-radius: 6px !important; 
-        align-items: center !important; justify-content: center !important; margin: 0 !important; 
+        display: flex !important; align-items: center !important; justify-content: center !important; 
+        width: 100% !important; height: 32px !important; font-size: 12px !important; 
+        border-radius: 4px !important; margin: 0 !important; padding: 0 !important; 
       }
       .qty-control { 
-        display: flex !important; flex-direction: row !important; /* Ép hiển thị ngang */
-        width: 100% !important; height: 34px !important; 
+        display: flex !important; width: 100% !important; height: 32px !important; 
         justify-content: space-between !important; align-items: center !important; margin: 0 !important; 
       }
       .qty-control button { width: 30px !important; height: 30px !important; display: flex !important; align-items: center !important; justify-content: center !important; }
@@ -241,7 +224,7 @@
     <section id="buyer" class="section">
       <div class="container buyer-grid">
         <div class="buyer-info">
-          <p class="buyer-kicker">Thông tin mua hàng</p><h2>Điền thông tin xác nhận đơn</h2>
+          <p class="buyer-kicker">Thông Đài mua hàng</p><h2>Điền thông tin xác nhận đơn</h2>
           <div class="info-list">
             <div><span>🛡</span><div><strong>Tuân thủ ngành dược</strong><p>Đúng luật pháp hiện hành.</p></div></div>
             <div><span>☎</span><div><strong>Tư vấn tận tâm</strong><p>Xác nhận đơn bởi dược sĩ.</p></div></div>
@@ -270,6 +253,6 @@
     </div>
   </footer>
 
-  <script src="script.js?v=CUONG_CHE_CO_DONG"></script>
+  <script src="script.js?v=BLOCK_STACK_FINAL"></script>
 </body>
 </html>
