@@ -7,134 +7,38 @@
   'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
   })(window,document,'script','dataLayer','GTM-KBJVVFVV');</script>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VietPOM - Danh Mục Sản Phẩm</title>
   <meta name="description" content="Chọn sản phẩm, tổng hợp đơn hàng và gửi về Google Sheet." />
-  
-  <link rel="stylesheet" href="style.css?v=CHOT_CUOI_CUNG_1000" />
+  <link rel="stylesheet" href="style.css" />
   
   <style>
     /* ============================================================
-       BỘ MÃ GIAO DIỆN CHUẨN UX/UI (BỌC THÉP DESKTOP VÀ MOBILE)
+       BỘ MÃ KHÔI PHỤC: CHỈ GIỮ LẠI MÀU SẮC THƯƠNG HIỆU GỐC
+       XÓA BỎ TOÀN BỘ CODE ÉP KHUNG MOBILE GÂY LỖI
        ============================================================ */
     .hero-bg, .hero-bg-left, .hero-bg-right { display: none !important; }
+
     .btn-outline { background-color: transparent !important; color: #15558D !important; border: 2px solid #15558D !important; font-weight: bold !important; }
     .btn-outline:hover { background-color: #15558D !important; color: #ffffff !important; }
+
     .btn-primary, .btn-green, .btn-dark, .cart-pill, .label-pill, .add-btn, .checkout-btn, .order-icon { background-color: #15558D !important; color: #ffffff !important; border: none !important; }
-    .btn-primary:hover, .add-btn:hover { background-color: #0F4373 !important; }
+    .btn-primary:hover, .add-btn:hover { background-color: #0F4373 !important; box-shadow: 0 4px 12px rgba(21, 85, 141, 0.3) !important; }
     .btn-primary *, .add-btn *, .checkout-btn * { color: #ffffff !important; }
+
     h1, h2, h3, h4, .price, .section-kicker, .buyer-kicker, .summary-kicker, .text-success, .text-green { color: #15558D !important; }
+
     .promo-box, .buyer-info { background: linear-gradient(135deg, #1A6BBA, #0F4373) !important; border: none !important; }
     .promo-box *, .buyer-info * { color: #ffffff !important; }
-    .buyer-info .info-list > div, section[id="buyer"] div.info-list div { background-color: rgba(255, 255, 255, 0.1) !important; border-color: rgba(255, 255, 255, 0.2) !important; }
-    .summary-card, .cart-summary { background-color: #F8FAFC !important; border: 1px solid #E2E8F0 !important; }
-    .summary-card h3, .summary-total strong { color: #15558D !important; }
     
-    *, *::before, *::after { box-sizing: border-box !important; }
-    body { overflow-x: hidden !important; }
+    .buyer-info .info-list > div, section[id="buyer"] div.info-list div { background-color: rgba(255, 255, 255, 0.1) !important; border-color: rgba(255, 255, 255, 0.2) !important; }
 
-    /* ============================================================
-       ĐẶC TRỊ MOBILE: XẾP CHỒNG TUYỆT ĐỐI, CHỐNG MỌI LỖI TRÀN
-       ============================================================ */
-    @media (max-width: 768px) {
-      #productGrid { 
-        display: grid !important; 
-        grid-template-columns: repeat(2, minmax(0, 1fr)) !important; 
-        gap: 8px !important; 
-        padding: 8px !important; 
-        width: 100% !important;
-        margin: 0 !important;
-      }
-      
-      .product-card { 
-        display: flex !important; 
-        flex-direction: column !important; 
-        height: 100% !important; 
-        background: #fff !important; 
-        border: 1px solid #e2e8f0 !important; 
-        border-radius: 8px !important; 
-        padding: 8px !important;
-        position: relative !important;
-        overflow: hidden !important; 
-      }
+    .summary-card, .cart-summary { background-color: #F8FAFC !important; border: 1px solid #E2E8F0 !important; }
+    .summary-card *:not(.btn):not(.btn *), .cart-summary *:not(.btn):not(.btn *) { color: #333333 !important; }
+    .summary-card h3, .summary-total strong { color: #15558D !important; }
 
-      /* Ép ảnh lùn xuống, nằm giữa */
-      .product-img-wrap, .product-card > a, .product-card > div:first-child { 
-        display: flex !important; 
-        align-items: center !important; 
-        justify-content: center !important; 
-        width: 100% !important; 
-        height: 100px !important; 
-        margin-bottom: 8px !important; 
-        position: relative !important; 
-      }
-      
-      .product-card img { 
-        max-height: 90px !important; 
-        max-width: 100% !important; 
-        object-fit: contain !important; 
-        position: static !important; 
-        margin: 0 auto !important; 
-      }
-
-      /* Tem HD */
-      .product-tag, span[class*="absolute"], span[class*="tag"] { 
-        position: absolute !important; 
-        top: 0 !important; left: 0 !important; 
-        color: #E60000 !important; font-weight: bold !important; 
-        background: rgba(255,255,255,0.9) !important; 
-        padding: 2px 4px !important; border-radius: 4px !important; 
-        font-size: 10px !important; z-index: 10 !important;
-      }
-
-      /* Ép cụm chữ và nút rơi xuống dưới */
-      .product-inner { 
-        display: flex !important; 
-        flex-direction: column !important; 
-        width: 100% !important; 
-        flex-grow: 1 !important; 
-      }
-
-      .product-meta { 
-        font-size: 10px !important; color: #64748b !important;
-        margin-bottom: 4px !important; width: 100% !important;
-        white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important;
-      }
-      
-      /* Tên thuốc */
-      .product-card h3 { 
-        display: -webkit-box !important; -webkit-line-clamp: 2 !important; -webkit-box-orient: vertical !important; 
-        overflow: hidden !important; font-size: 13px !important; line-height: 1.4 !important; 
-        margin: 0 0 8px 0 !important; height: 36px !important; color: #15558D !important; 
-        text-align: left !important; white-space: normal !important;
-      }
-      .product-card .note { display: none !important; }
-
-      /* Cụm Đáy: Giá + Nút */
-      .product-bottom { 
-        margin-top: auto !important; 
-        display: flex !important; flex-direction: column !important; 
-        width: 100% !important; 
-      }
-      
-      .price-label { display: none !important; }
-      
-      .product-card .price { 
-        font-size: 15px !important; color: #E60000 !important; 
-        font-weight: bold !important; margin-bottom: 8px !important; text-align: left !important; 
-      }
-      
-      .add-btn { 
-        display: flex !important; width: 100% !important; height: 34px !important; 
-        font-size: 12px !important; border-radius: 6px !important; 
-        align-items: center !important; justify-content: center !important; margin: 0 !important; 
-      }
-      .qty-control { 
-        display: flex !important; width: 100% !important; height: 34px !important; 
-        justify-content: space-between !important; align-items: center !important; margin: 0 !important; 
-      }
-      .qty-control button { width: 32px !important; height: 32px !important; display: flex !important; align-items: center !important; justify-content: center !important; }
-    }
+    .product-card > div:first-child { background-color: #F0F6FA !important; }
+    #productGrid span[class*="absolute"], #productGrid span[class*="tag"] { color: #E60000 !important; font-weight: 900 !important; background: rgba(255,255,255,0.9) !important; padding: 2px 6px !important; border-radius: 4px !important; }
   </style>
 </head>
 <body>
@@ -175,7 +79,7 @@
         <aside class="hero-card">
           <div class="promo-box">
             <span>Ưu đãi nhà thuốc</span><h2>Đơn từ 1.200.000đ</h2><p>Miễn phí giao hàng (Freeship)</p>
-            <small>Chương trình có thể điều chỉnh theo chính sách từng nhà thuốc.</small>
+            <small>Chương trình có thể điều chỉnh theo chính sách từng nhà thuốc. Cần xác nhận lại trước khi giao hàng.</small>
           </div>
           <style>
             .my-slider-container { width: 100%; aspect-ratio: 16 / 9; position: relative; overflow: hidden; border-radius: 12px; margin-top: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); background-color: #ffffff; }
@@ -257,6 +161,6 @@
     </div>
   </footer>
 
-  <script src="script.js?v=CHOT_CUOI_CUNG_1000"></script>
+  <script src="script.js?v=RESTORE_ORIGINAL"></script>
 </body>
 </html>
