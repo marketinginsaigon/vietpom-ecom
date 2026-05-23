@@ -230,7 +230,7 @@ document.getElementById('searchInput')?.addEventListener('input', (e) => {
     renderProducts(filtered);
 });
 
-// 7. SUBMIT FORM ĐƠN HÀNG VỀ GOOGLE SHEET (XỬ LÝ LUỒNG REQ AN TOÀN CHỐNG CORS)
+// 7. SUBMIT FORM ĐƠN HÀNG
 document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -249,29 +249,25 @@ document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     const shippingFee = (subtotalAmount > 0 && subtotalAmount < 1200000) ? 30000 : 0;
     const finalTotalAmount = subtotalAmount + shippingFee;
     
-    // Đóng gói JSON sạch để tránh xung đột FormData Object
-    const postData = {
-        action: 'submitOrder',
-        name: document.getElementById('customerName')?.value || '',
-        phone: document.getElementById('customerPhone')?.value || '',
-        address: document.getElementById('customerAddress')?.value || '',
-        taxId: document.getElementById('customerTaxId')?.value || '',
-        note: document.getElementById('customerNote')?.value || '',
-        items: itemsDetail,
-        shipping: shippingFee === 0 ? "Miễn phí" : `${shippingFee} đ`,
-        total: finalTotalAmount
-    };
+    const params = new URLSearchParams();
+    params.append('action', 'submitOrder');
+    params.append('name', document.getElementById('customerName')?.value || '');
+    params.append('phone', document.getElementById('customerPhone')?.value || '');
+    params.append('address', document.getElementById('customerAddress')?.value || '');
+    params.append('taxId', document.getElementById('customerTaxId')?.value || '');
+    params.append('note', document.getElementById('customerNote')?.value || '');
+    params.append('items', itemsDetail);
+    params.append('shipping', shippingFee === 0 ? "Miễn phí" : `${shippingFee} đ`);
+    params.append('total', `${finalTotalAmount} đ`);
     
     try {
-        // Gửi request bằng phương thức POST kèm theo chuỗi JSON chuẩn hóa
-        const res = await fetch(CONFIG.SHEET_API, {
+        await fetch(CONFIG.SHEET_API, {
             method: 'POST',
-            mode: 'no-cors', // Khóa tính năng no-cors để ép trình duyệt đẩy data đi thông suốt không chặn bảo mật chéo
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(postData)
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: params.toString()
         });
         
-        // Vì dùng chế độ no-cors, trình duyệt sẽ không đọc được cục bộ phản hồi phản hồi, mặc định xem như thành công
         if (status) {
             status.className = "submit-status text-success";
             status.style.color = "#15558D";
@@ -285,12 +281,6 @@ document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
         
     } catch (err) {
         console.error("Lỗi gửi đơn:", err);
-        if (status) {
-            status.className = "submit-status text-danger";
-            status.style.color = "#E60000";
-            status.innerHTML = "❌ <b>Gửi đơn thất bại.</b> Có lỗi kết nối đường truyền, Anh/Chị vui lòng nhấn nút gửi lại nhé.";
-            status.classList.remove('hidden');
-        }
     } finally {
         if (btn) { btn.disabled = false; btn.innerText = "Gửi đơn hàng ngay"; }
     }
