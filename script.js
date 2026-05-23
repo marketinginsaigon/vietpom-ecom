@@ -213,7 +213,7 @@ document.getElementById('searchInput')?.addEventListener('input', (e) => {
     renderProducts(filtered);
 });
 
-// 7. SUBMIT FORM ĐƠN HÀNG (SỬ DỤNG CHUẨN URLSEARCHPARAMS ĐỂ KHÁNG SYNTAXERROR TỰ ĐỘNG)
+// 7. SUBMIT FORM ĐƠN HÀNG (BẢN CẬP NHẬT TỰ ĐỘNG PHÂN LOẠI NHÀ CUNG CẤP)
 document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -226,12 +226,16 @@ document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     const status = document.getElementById('submitStatus');
     if (btn) { btn.disabled = true; btn.innerText = "⏳ Đang gửi đơn hàng..."; }
     
-    const itemsDetail = Object.keys(cart).map(id => `${cart[id].name} (${cart[id].qty} ${cart[id].unit})`).join('\n');
+    // TỰ ĐỘNG ĐÍNH KÈM PHÂN LOẠI [VietPOM] VÀO TRƯỚC MỖI ĐƠN HÀNG TRẢ VỀ
+    const itemsDetail = Object.keys(cart).map(id => {
+        return `[VietPOM] ${cart[id].name} (${cart[id].qty} ${cart[id].unit})`;
+    }).join('\n');
+    
     const subtotalAmount = Object.keys(cart).reduce((sum, id) => sum + (cart[id].price * cart[id].qty), 0);
     const shippingFee = (subtotalAmount > 0 && subtotalAmount < 1200000) ? 30000 : 0;
     const finalTotalAmount = subtotalAmount + shippingFee;
     
-    // Đóng gói bằng URLSearchParams - Trình duyệt tự giải mã ký tự có dấu xuống dòng cực chuẩn
+    // Đóng gói bằng URLSearchParams - Kháng lỗi 100%
     const params = new URLSearchParams();
     params.append('action', 'submitOrder');
     params.append('name', document.getElementById('customerName')?.value || '');
@@ -239,14 +243,14 @@ document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     params.append('address', document.getElementById('customerAddress')?.value || '');
     params.append('taxId', document.getElementById('customerTaxId')?.value || '');
     params.append('note', document.getElementById('customerNote')?.value || '');
-    params.append('items', itemsDetail);
+    params.append('items', itemsDetail); // Chuỗi chi tiết sản phẩm đã có nhãn phân loại
     params.append('shipping', shippingFee === 0 ? "Miễn phí" : `${shippingFee} đ`);
     params.append('total', `${finalTotalAmount.toLocaleString('vi-VN')} đ`);
     
     try {
         await fetch(CONFIG.SHEET_API, {
             method: 'POST',
-            mode: 'no-cors', // Chạy thông suốt qua bộ lọc CORS của Chrome/Zalo
+            mode: 'no-cors',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: params.toString()
         });
