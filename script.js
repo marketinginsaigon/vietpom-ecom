@@ -1,190 +1,251 @@
-const GOOGLE_SHEET_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyBHZZypb8bNGnbC8UenQUWYY5F0xHTJ6kknlcEP9AeGRwBAj_nZhySq_AjA1s6I6R7tQ/exec";
-let PRODUCTS = [];
+/* ============================================================
+   BỘ MÃ LOGIC GIỎ HÀNG CHUẨN XÁC (SỬA LỖI TRÙNG TÊN SẢN PHẨM)
+   ============================================================ */
 
-const state = { cart: {}, search: "", category: "Tất cả", isSubmitting: false };
+// Cấu hình URL Web App từ Google Apps Script của Anh
+const CONFIG = {
+    SHEET_API: "https://script.google.com/macros/s/AKfycbxxNhKcTgxtPQCVtl1brMMF0Wr0jtYZex1ueG74WJpRfa6AyabrOuzOZX8bcM5aLFdMVA/exec"
+};
 
-const getElements = () => ({
-  miniProducts: document.getElementById("miniProducts"), productGrid: document.getElementById("productGrid"),
-  categorySelect: document.getElementById("categorySelect"), searchInput: document.getElementById("searchInput"),
-  cartItems: document.getElementById("cartItems"), headerCartCount: document.getElementById("headerCartCount"),
-  subtotalText: document.getElementById("subtotalText"), shippingText: document.getElementById("shippingText"),
-  totalText: document.getElementById("totalText"), quickProductCount: document.getElementById("quickProductCount"),
-  quickTotalText: document.getElementById("quickTotalText"), orderForm: document.getElementById("orderForm"),
-  submitButton: document.getElementById("submitButton"), submitStatus: document.getElementById("submitStatus"),
-  customerName: document.getElementById("customerName"), customerPhone: document.getElementById("customerPhone"),
-  customerAddress: document.getElementById("customerAddress"), customerTaxId: document.getElementById("customerTaxId"),
-  customerNote: document.getElementById("customerNote"),
-});
-const elements = getElements();
+let allProducts = [];
+let cart = {};
 
+// 1. TẢI DỮ LIỆU SẢN PHẨM TỪ GOOGLE SHEET
 async function fetchProducts() {
-  const CACHE_KEY = "vietpom_products_cache";
-  if(elements.productGrid) {
-    elements.productGrid.innerHTML = `
-      <div style="grid-column: 1/-1; text-align: center; padding: 50px 20px; color: #15558D; font-size: 16px;">
-        <span style="font-size: 24px; display: block; margin-bottom: 10px;">⏳</span>
-        <strong>Đang tải danh sách sản phẩm từ kho...</strong>
-      </div>`;
-  }
-
-  const cachedData = localStorage.getItem(CACHE_KEY);
-  if (cachedData) processData(JSON.parse(cachedData));
-
-  try {
-    const response = await fetch(GOOGLE_SHEET_WEB_APP_URL);
-    const data = await response.json();
-    localStorage.setItem(CACHE_KEY, JSON.stringify(data));
-    processData(data);
-  } catch (error) { 
-    if (!cachedData && elements.productGrid) elements.productGrid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: #E60000; padding: 40px;">❌ Lỗi kết nối. Vui lòng tải lại trang (F5).</div>`;
-  }
-}
-
-function processData(data) {
-  PRODUCTS = data.filter(item => item.id && item.name).map(item => ({
-    id: item.id, name: item.name, price: Number(item.price) || 0, oldPrice: Number(item.oldPrice) || 0,
-    unit: item.unit || "Hộp", image: item.image || "", category: item.category || "Tất cả", 
-    tag: item.tag || "", note: item.note || ""
-  }));
-  renderCategories(); renderProducts();
-}
-
-function formatCurrency(value) { return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(value); }
-
-function getCartItems() {
-  return Object.entries(state.cart).map(([id, quantity]) => {
-    const product = PRODUCTS.find((item) => item.id === id);
-    return product ? { ...product, quantity } : null;
-  }).filter(Boolean);
-}
-
-function getTotals() {
-  const cartItems = getCartItems();
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const shippingFee = subtotal >= 1200000 || subtotal === 0 ? 0 : 30000;
-  const total = subtotal + shippingFee; 
-  return { cartItems, subtotal, shippingFee, discount: 0, total };
-}
-
-function getFilteredProducts() {
-  return PRODUCTS.filter((product) => {
-    const matchSearch = product.name.toLowerCase().includes(state.search.toLowerCase());
-    const matchCategory = state.category === "Tất cả" || product.category === state.category;
-    return matchSearch && matchCategory;
-  });
-}
-
-function increase(id) { state.cart[id] = (state.cart[id] || 0) + 1; renderCartAndTotals(); }
-function decrease(id) {
-  const nextQuantity = (state.cart[id] || 0) - 1;
-  if (nextQuantity <= 0) delete state.cart[id]; else state.cart[id] = nextQuantity;
-  renderCartAndTotals();
-}
-function removeItem(id) { delete state.cart[id]; renderCartAndTotals(); }
-
-function renderCategories() {
-  if(!elements.categorySelect) return;
-  elements.categorySelect.innerHTML = ["Tất cả", ...new Set(PRODUCTS.map((item) => item.category))].map((cat) => `<option value="${cat}">${cat}</option>`).join("");
-  elements.categorySelect.value = state.category;
-}
-
-function renderProducts() {
-  if(!elements.productGrid) return;
-  const products = getFilteredProducts();
-  if (products.length === 0) { elements.productGrid.innerHTML = `<div class="empty-cart" style="grid-column: 1 / -1;"><strong>Không tìm thấy sản phẩm</strong></div>`; return; }
-  
-  elements.productGrid.innerHTML = products.map((product) => {
-    const qty = state.cart[product.id] || 0;
-    const buyControl = qty ? `<div class="qty-control"><button type="button" onclick="decrease('${product.id}')">−</button><span>${qty}</span><button type="button" onclick="increase('${product.id}')">+</button></div>` : `<button type="button" class="add-btn" onclick="increase('${product.id}')">🛒 Chọn mua</button>`;
-      
-    const priceDisplay = (product.oldPrice > product.price) 
-      ? `<div style="display: flex; flex-direction: column;"><del style="color: #94a3b8; font-size: 13px; line-height: 1; font-weight: 500;">${formatCurrency(product.oldPrice)}</del><span class="price" style="color: #E60000 !important; font-size: 18px;">${formatCurrency(product.price)}</span></div>`
-      : `<span class="price">${formatCurrency(product.price)}</span>`;
-
-    const tagDisplay = product.tag ? `<div class="product-tag">${product.tag}</div>` : "";
-
-    return `
-      <article class="product-card">
-        <div class="product-inner">
-          <div class="product-img-wrap">
-            ${tagDisplay}
-            <img src="${product.image}" alt="${product.name}" style="width: 100%; height: 180px; object-fit: contain; border-radius: 8px; padding: 10px; background-color: #ffffff; box-sizing: border-box;">
-          </div>
-          <div class="product-meta"><span class="category-badge">${product.category}</span><span class="product-unit">${product.unit}</span></div>
-          <h3>${product.name}</h3><p class="note">${product.note}</p>
-          <div class="product-bottom"><div style="display: flex; flex-direction: column; justify-content: flex-end;"><span class="price-label" style="margin-bottom: 2px;">Giá bán</span>${priceDisplay}</div>${buyControl}</div>
-        </div>
-      </article>`;
-  }).join("");
-}
-
-function renderCart() {
-  if(!elements.cartItems) return;
-  const { cartItems } = getTotals();
-  if (cartItems.length === 0) { elements.cartItems.innerHTML = `<div class="empty-cart"><strong>Chưa có sản phẩm nào</strong></div>`; return; }
-  elements.cartItems.innerHTML = `<div class="cart-list">${cartItems.map((item) => `<div class="cart-item"><div><strong>${item.name}</strong><small>${item.unit} · ${formatCurrency(item.price)}</small></div><div class="cart-actions"><div class="qty-control"><button type="button" onclick="decrease('${item.id}')">−</button><span>${item.quantity}</span><button type="button" onclick="increase('${item.id}')">+</button></div><div class="line-total">${formatCurrency(item.price * item.quantity)}</div><button type="button" class="remove-btn" onclick="removeItem('${item.id}')">×</button></div></div>`).join("")}</div>`;
-}
-
-function renderTotals() {
-  const { cartItems, subtotal, shippingFee, total } = getTotals();
-  if (elements.headerCartCount) elements.headerCartCount.textContent = cartItems.length;
-  if (elements.subtotalText) elements.subtotalText.textContent = formatCurrency(subtotal);
-  if (elements.shippingText) elements.shippingText.textContent = shippingFee === 0 ? "Miễn phí" : formatCurrency(shippingFee);
-  if (elements.totalText) elements.totalText.textContent = formatCurrency(total);
-  if (elements.quickProductCount) elements.quickProductCount.textContent = cartItems.length;
-  if (elements.quickTotalText) elements.quickTotalText.textContent = formatCurrency(total);
-}
-
-function renderCartAndTotals() { renderCart(); renderTotals(); renderProducts(); }
-
-function showSubmitStatus(type, message) { if(elements.submitStatus) { elements.submitStatus.className = `submit-status ${type}`; elements.submitStatus.textContent = message; } }
-function clearSubmitStatus() { if(elements.submitStatus) { elements.submitStatus.className = "submit-status hidden"; elements.submitStatus.textContent = ""; } }
-
-async function submitOrder(event) {
-  event.preventDefault();
-  const { cartItems, subtotal, shippingFee, total } = getTotals();
-  const customer = { 
-    name: elements.customerName.value.trim(), phone: elements.customerPhone.value.trim(), 
-    address: elements.customerAddress.value.trim(), taxId: elements.customerTaxId ? elements.customerTaxId.value.trim() : "", note: elements.customerNote.value.trim() 
-  };
-  
-  if (cartItems.length === 0) return showSubmitStatus("error", "Vui lòng chọn sản phẩm.");
-  if (!customer.name || !customer.phone || !customer.address) return showSubmitStatus("error", "Vui lòng điền đủ thông tin.");
-  
-  const orderCode = `DH-${Date.now()}`;
-  const orderPayload = {
-    orderCode, createdAt: new Date().toLocaleString("vi-VN"), customer,
-    items: cartItems.map((item) => ({ id: item.id, name: item.name, category: item.category, unit: item.unit, price: item.price, quantity: item.quantity, lineTotal: item.price * item.quantity, tag: item.tag || "" })),
-    subtotal, shippingFee, discount: 0, total,
-  };
-
-  try {
-    state.isSubmitting = true; elements.submitButton.disabled = true; elements.submitButton.textContent = "Đang gửi...";
-    await fetch(GOOGLE_SHEET_WEB_APP_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(orderPayload) });
+    const grid = document.getElementById('productGrid');
+    if (!grid) return;
     
-    showSubmitStatus("success", `Đơn hàng ${orderCode} đã đặt thành công. Cảm ơn Anh/Chị!`);
+    grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:40px; color:#15558D; font-weight:bold;">🔄 Đang tải danh mục sản phẩm chính hãng...</div>';
     
-    // ====================================================================
-    // 🎯 CODE BẮN SỰ KIỆN GTM (TRACKING CHUYỂN ĐỔI)
-    // ====================================================================
-    if (window.dataLayer) {
-      window.dataLayer.push({
-        'event': 'purchase_success',
-        'order_id': orderCode,
-        'order_value': total,
-        'customer_phone': customer.phone // Bắn sđt (tuỳ chọn) để GTM làm tệp đối tượng
-      });
+    try {
+        const res = await fetch(`${CONFIG.SHEET_API}?action=getProducts`);
+        const data = await res.json();
+        
+        // Gán thêm ID duy nhất dựa vào vị trí index nếu sản phẩm không có id riêng
+        allProducts = data.map((p, index) => ({
+            ...p,
+            id: p.id ? String(p.id).trim() : `prod_${index}`,
+            price: parseInt(p.price) || 0
+        }));
+        
+        renderCategories();
+        renderProducts(allProducts);
+    } catch (err) {
+        console.error("Lỗi tải sản phẩm:", err);
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:40px; color:#E60000; font-weight:bold;">❌ Không thể tải danh mục. Anh vui lòng tải lại trang (F5).</div>';
     }
-    // ====================================================================
-
-    state.cart = {}; if(elements.orderForm) elements.orderForm.reset(); renderCartAndTotals();
-  } catch (error) { showSubmitStatus("error", "Lỗi mạng. Vui lòng thử lại."); } 
-  finally { state.isSubmitting = false; elements.submitButton.disabled = false; elements.submitButton.textContent = "Gửi đơn hàng"; }
 }
 
-if(elements.searchInput) elements.searchInput.addEventListener("input", (e) => { state.search = e.target.value; renderProducts(); });
-if(elements.categorySelect) elements.categorySelect.addEventListener("change", (e) => { state.category = e.target.value; renderProducts(); });
-if(elements.orderForm) elements.orderForm.addEventListener("submit", submitOrder);
+// 2. HIỂN THỊ DANH SÁCH DANH MỤC LỌC THUỐC
+function renderCategories() {
+    const select = document.getElementById('categorySelect');
+    if (!select) return;
+    
+    const categories = ['Tất cả', ...new Set(allProducts.map(p => p.category).filter(Boolean))];
+    select.innerHTML = categories.map(c => `<option value="${c}">${c}</option>`).join('');
+    
+    select.addEventListener('change', (e) => {
+        const filter = e.target.value;
+        const filtered = filter === 'Tất cả' ? allProducts : allProducts.filter(p => p.category === filter);
+        renderProducts(filtered);
+    });
+}
 
-window.increase = increase; window.decrease = decrease; window.removeItem = removeItem;
-fetchProducts(); renderCartAndTotals(); clearSubmitStatus();
+// 3. RENDER DANH SÁCH SẢN PHẨM LÊN GIAO DIỆN
+function renderProducts(products) {
+    const grid = document.getElementById('productGrid');
+    if (!grid) return;
+    
+    if (products.length === 0) {
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:40px; color:#64748b;">Không tìm thấy sản phẩm phù hợp.</div>';
+        return;
+    }
+    
+    grid.innerHTML = products.map(p => {
+        const currentQty = cart[p.id] ? cart[p.id].qty : 0;
+        
+        // Đoạn code sinh thẻ HTML chuẩn cấu trúc để CSS bọc thép ăn khớp
+        return `
+            <div class="product-card" data-id="${p.id}">
+                <a href="#products" onclick="return false;">
+                    <div class="product-img-wrap">
+                        <span class="product-tag">HD</span>
+                        <img src="${p.image || 'placeholder.jpg'}" alt="${p.name}">
+                    </div>
+                    <div class="product-meta">
+                        <span class="category-badge">${p.category || 'Dược phẩm'}</span>
+                        <span class="unit-badge">${p.unit || 'Hộp'}</span>
+                    </div>
+                    <h3>${p.name}</h3>
+                    <div class="price">${p.price.toLocaleString('vi-VN')} đ</div>
+                </a>
+                <div class="product-bottom">
+                    ${currentQty === 0 ? `
+                        <button class="add-btn" onclick="updateCartItem('${p.id}', 1)">🛒 Chọn mua</button>
+                    ` : `
+                        <div class="qty-control">
+                            <button onclick="updateCartItem('${p.id}', ${currentQty - 1})">-</button>
+                            <span style="font-weight:bold; color:#15558D; font-size:14px;">${currentQty}</span>
+                            <button onclick="updateCartItem('${p.id}', ${currentQty + 1})">+</button>
+                        </div>
+                    `}
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// 4. HÀM CẬP NHẬT GIỎ HÀNG CHUẨN XÁC THEO ID (SỬA TRIỆT ĐỂ LỖI CALCIUM)
+window.updateCartItem = function(id, qty) {
+    const product = allProducts.find(p => p.id === id);
+    if (!product) return;
+    
+    if (qty <= 0) {
+        delete cart[id];
+    } else {
+        cart[id] = {
+            name: product.name,
+            price: product.price,
+            qty: qty,
+            unit: product.unit || 'Hộp'
+        };
+    }
+    
+    // Chỉ render cục bộ lại đúng những thẻ sản phẩm bị thay đổi số lượng, chống đứng trang
+    updateSingleProductUI(id, qty);
+    updateCartSummary();
+};
+
+// Cập nhật giao diện nút bấm cục bộ cho riêng sản phẩm vừa ấn
+function updateSingleProductUI(id, qty) {
+    const card = document.querySelector(`.product-card[data-id="${id}"]`);
+    if (!card) return;
+    
+    const bottom = card.querySelector('.product-bottom');
+    if (!bottom) return;
+    
+    if (qty <= 0) {
+        bottom.innerHTML = `<button class="add-btn" onclick="updateCartItem('${id}', 1)">🛒 Chọn mua</button>`;
+    } else {
+        bottom.innerHTML = `
+            <div class="qty-control">
+                <button onclick="updateCartItem('${id}', ${qty - 1})">-</button>
+                <span style="font-weight:bold; color:#15558D; font-size:14px;">${qty}</span>
+                <button onclick="updateCartItem('${id}', ${qty + 1})">+</button>
+            </div>
+        `;
+    }
+}
+
+// 5. CẬP NHẬT KHỐI TỔNG HỢP ĐƠN HÀNG VÀ DETAIL THANH TOÁN
+function updateCartSummary() {
+    const cartItems = document.getElementById('cartItems');
+    const headerCount = document.getElementById('headerCartCount');
+    const subtotalText = document.getElementById('subtotalText');
+    const totalText = document.getElementById('totalText');
+    const quickCount = document.getElementById('quickProductCount');
+    const quickTotalText = document.getElementById('quickTotalText');
+    
+    let totalItems = 0;
+    let subtotal = 0;
+    let html = '';
+    
+    for (const id in cart) {
+        const item = cart[id];
+        totalItems += item.qty;
+        subtotal += item.price * item.qty;
+        
+        html += `
+            <div class="cart-item" style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #e2e8f0;">
+                <div style="flex-grow:1; padding-right:10px;">
+                    <div style="font-weight:bold; font-size:14px; color:#333;">${item.name}</div>
+                    <div style="font-size:12px; color:#64748b;">${item.price.toLocaleString('vi-VN')} đ x ${item.qty} ${item.unit}</div>
+                </div>
+                <div style="font-weight:bold; color:#15558D; min-width:80px; text-align:right;">
+                    ${(item.price * item.qty).toLocaleString('vi-VN')} đ
+                </div>
+            </div>
+        `;
+    }
+    
+    if (cartItems) cartItems.innerHTML = html || '<div style="text-align:center; padding:20px; color:#64748b;">Anh/Chị chưa chọn sản phẩm nào.</div>';
+    if (headerCount) headerCount.innerText = totalItems;
+    if (quickCount) quickCount.innerText = totalItems;
+    
+    if (subtotalText) subtotalText.innerText = `${subtotal.toLocaleString('vi-VN')} đ`;
+    if (totalText) totalText.innerText = `${subtotal.toLocaleString('vi-VN')} đ`;
+    if (quickTotalText) quickTotalText.innerText = `${subtotal.toLocaleString('vi-VN')} đ`;
+}
+
+// 6. XỬ LÝ LỌC TÌM KIẾM THEO TÊN
+document.getElementById('searchInput')?.addEventListener('input', (e) => {
+    const keyword = e.target.value.toLowerCase().trim();
+    const select = document.getElementById('categorySelect');
+    const currentCat = select ? select.value : 'Tất cả';
+    
+    let filtered = allProducts;
+    if (currentCat !== 'Tất cả') {
+        filtered = filtered.filter(p => p.category === currentCat);
+    }
+    
+    if (keyword !== '') {
+        filtered = filtered.filter(p => p.name.toLowerCase().includes(keyword));
+    }
+    renderProducts(filtered);
+});
+
+// 7. GỬI ĐƠN HÀNG VỀ GOOGLE SHEET KHI SUBMIT FORM
+document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    if (Object.keys(cart).length === 0) {
+        alert("Giỏ hàng đang trống, Anh/Chị vui lòng chọn ít nhất 1 sản phẩm trước khi gửi đơn nha.");
+        return;
+    }
+    
+    const btn = document.getElementById('submitButton');
+    const status = document.getElementById('submitStatus');
+    if (btn) { btn.disabled = true; btn.innerText = "⏳ Đang gửi đơn hàng..."; }
+    
+    // Gom danh sách sản phẩm thành chuỗi văn bản dễ đọc trên Sheet
+    const itemsDetail = Object.keys(cart).map(id => `${cart[id].name} (${cart[id].qty} ${cart[id].unit})`).join('\n');
+    const totalAmount = Object.keys(cart).reduce((sum, id) => sum + (cart[id].price * cart[id].qty), 0);
+    
+    const formData = new FormData(e.target);
+    formData.append('action', 'submitOrder');
+    formData.append('items', itemsDetail);
+    formData.append('total', totalAmount);
+    
+    try {
+        const res = await fetch(CONFIG.SHEET_API, { method: 'POST', body: formData });
+        const result = await res.json();
+        
+        if (result.status === 'success') {
+            if (status) {
+                status.className = "submit-status text-success";
+                status.style.color = "#15558D";
+                status.innerHTML = "🎉 <b>Gửi đơn thành công!</b> Hệ thống VietPOM đã ghi nhận đơn hàng. Dược sĩ sẽ liên hệ xác nhận cho Anh/Chị ngay.";
+                status.classList.remove('hidden');
+            }
+            cart = {}; // Xóa giỏ hàng sau khi đặt thành công
+            updateCartSummary();
+            renderProducts(allProducts);
+            e.target.reset();
+        } else {
+            throw new Error(result.message);
+        }
+    } catch (err) {
+        console.error("Lỗi gửi đơn:", err);
+        if (status) {
+            status.className = "submit-status text-danger";
+            status.style.color = "#E60000";
+            status.innerHTML = "❌ <b>Gửi đơn thất bại.</b> Có lỗi kết nối đường truyền, Anh/Chị vui lòng nhấn nút gửi lại nhé.";
+            status.classList.remove('hidden');
+        }
+    } finally {
+        if (btn) { btn.disabled = false; btn.innerText = "Gửi đơn hàng ngay"; }
+    }
+});
+
+// KHỞI CHẠY HỆ THỐNG KHI TẢI TRANG SẴN SÀNG
+document.addEventListener('DOMContentLoaded', fetchProducts);
