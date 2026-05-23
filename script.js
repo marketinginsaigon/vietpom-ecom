@@ -1,5 +1,5 @@
 /* ============================================================
-   BỘ MÃ LOGIC GIỎ HÀNG CHUẨN XÁC (SỬA LỖI TRÙNG TÊN SẢN PHẨM)
+   BỘ MÃ LOGIC GIỎ HÀNG CHUẨN XÁC - ĐÃ VÁ LỖI CẬP NHẬT GIAO DIỆN CỤC BỘ
    ============================================================ */
 
 // Cấu hình URL Web App từ Google Apps Script của Anh
@@ -21,7 +21,7 @@ async function fetchProducts() {
         const res = await fetch(`${CONFIG.SHEET_API}?action=getProducts`);
         const data = await res.json();
         
-        // Gán thêm ID duy nhất dựa vào vị trí index nếu sản phẩm không có id riêng
+        // Gán thêm ID duy nhất dựa vào vị trí dòng (index) để đảm bảo không bao giờ trùng định danh
         allProducts = data.map((p, index) => ({
             ...p,
             id: p.id ? String(p.id).trim() : `prod_${index}`,
@@ -64,7 +64,6 @@ function renderProducts(products) {
     grid.innerHTML = products.map(p => {
         const currentQty = cart[p.id] ? cart[p.id].qty : 0;
         
-        // Đoạn code sinh thẻ HTML chuẩn cấu trúc để CSS bọc thép ăn khớp
         return `
             <div class="product-card" data-id="${p.id}">
                 <a href="#products" onclick="return false;">
@@ -95,7 +94,7 @@ function renderProducts(products) {
     }).join('');
 }
 
-// 4. HÀM CẬP NHẬT GIỎ HÀNG CHUẨN XÁC THEO ID (SỬA TRIỆT ĐỂ LỖI CALCIUM)
+// 4. HÀM CẬP NHẬT GIỎ HÀNG CHUẨN XÁC THEO ID DUY NHẤT
 window.updateCartItem = function(id, qty) {
     const product = allProducts.find(p => p.id === id);
     if (!product) return;
@@ -111,13 +110,14 @@ window.updateCartItem = function(id, qty) {
         };
     }
     
-    // Chỉ render cục bộ lại đúng những thẻ sản phẩm bị thay đổi số lượng, chống đứng trang
+    // VÁ LỖI TẠI ĐÂY: Chỉ định vị và sửa đúng cụm nút bấm của thẻ có data-id trùng khớp
     updateSingleProductUI(id, qty);
     updateCartSummary();
 };
 
-// Cập nhật giao diện nút bấm cục bộ cho riêng sản phẩm vừa ấn
+// Cập nhật nút bấm cục bộ dựa theo bộ chọn data-id chính xác tuyệt đối
 function updateSingleProductUI(id, qty) {
+    // Tìm chính xác thẻ product-card chứa ID này, không sợ bị lẫn sang các thẻ Calcium khác
     const card = document.querySelector(`.product-card[data-id="${id}"]`);
     if (!card) return;
     
@@ -207,7 +207,6 @@ document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     const status = document.getElementById('submitStatus');
     if (btn) { btn.disabled = true; btn.innerText = "⏳ Đang gửi đơn hàng..."; }
     
-    // Gom danh sách sản phẩm thành chuỗi văn bản dễ đọc trên Sheet
     const itemsDetail = Object.keys(cart).map(id => `${cart[id].name} (${cart[id].qty} ${cart[id].unit})`).join('\n');
     const totalAmount = Object.keys(cart).reduce((sum, id) => sum + (cart[id].price * cart[id].qty), 0);
     
@@ -227,7 +226,7 @@ document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
                 status.innerHTML = "🎉 <b>Gửi đơn thành công!</b> Hệ thống VietPOM đã ghi nhận đơn hàng. Dược sĩ sẽ liên hệ xác nhận cho Anh/Chị ngay.";
                 status.classList.remove('hidden');
             }
-            cart = {}; // Xóa giỏ hàng sau khi đặt thành công
+            cart = {};
             updateCartSummary();
             renderProducts(allProducts);
             e.target.reset();
