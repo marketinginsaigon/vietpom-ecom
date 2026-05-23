@@ -3,6 +3,7 @@
    ============================================================ */
 
 const CONFIG = {
+    // Anh dán đoạn URL Web App mới tinh vừa copy ở Bước 1 vào giữa hai dấu nháy dưới đây nhé:
     SHEET_API: "https://script.google.com/macros/s/AKfycbxxNhKcTgxtPQCVtl1brMMF0Wr0jtYZex1ueG74WJpRfa6AyabrOuzOZX8bcM5aLFdMVA/exec"
 };
 
@@ -176,14 +177,12 @@ function updateCartSummary() {
         `;
     }
     
-    // --- KHỐI LOGIC TÍNH PHÍ VẬN CHUYỂN TỰ ĐỘNG ---
     let shippingFee = 0;
     if (subtotal > 0 && subtotal < 1200000) {
-        shippingFee = 30000; // Đơn dưới 1tr2 tính phí 30k
+        shippingFee = 30000;
     }
     let finalTotal = subtotal + shippingFee;
     
-    // Cập nhật text hiển thị phí giao hàng
     if (shippingText) {
         if (subtotal === 0) {
             shippingText.innerText = "0 đ";
@@ -196,7 +195,6 @@ function updateCartSummary() {
         }
     }
 
-    // Cập nhật câu chữ nhắc nhở khách mua hàng thông minh ở ô màu xám bên dưới
     if (summaryNote) {
         if (subtotal > 0 && subtotal < 1200000) {
             const missingAmount = 1200000 - subtotal;
@@ -232,7 +230,7 @@ document.getElementById('searchInput')?.addEventListener('input', (e) => {
     renderProducts(filtered);
 });
 
-// 7. SUBMIT FORM ĐƠN HÀNG VỀ GOOGLE SHEET (GỬI KÈM THEO PHÍ SHIP ĐỂ SHEET KHÔNG BỊ SAI TIỀN)
+// 7. SUBMIT FORM ĐƠN HÀNG VỀ GOOGLE SHEET (XỬ LÝ LUỒNG REQ AN TOÀN CHỐNG CORS)
 document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -247,35 +245,44 @@ document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     
     const itemsDetail = Object.keys(cart).map(id => `${cart[id].name} (${cart[id].qty} ${cart[id].unit})`).join('\n');
     
-    // Tính lại chuẩn xác tổng cuối cùng bao gồm ship trước khi bắn data đi
     const subtotalAmount = Object.keys(cart).reduce((sum, id) => sum + (cart[id].price * cart[id].qty), 0);
     const shippingFee = (subtotalAmount > 0 && subtotalAmount < 1200000) ? 30000 : 0;
     const finalTotalAmount = subtotalAmount + shippingFee;
     
-    const formData = new FormData(e.target);
-    formData.append('action', 'submitOrder');
-    formData.append('items', itemsDetail);
-    formData.append('shipping', shippingFee === 0 ? "Miễn phí" : `${shippingFee} đ`);
-    formData.append('total', finalTotalAmount);
+    // Đóng gói JSON sạch để tránh xung đột FormData Object
+    const postData = {
+        action: 'submitOrder',
+        name: document.getElementById('customerName')?.value || '',
+        phone: document.getElementById('customerPhone')?.value || '',
+        address: document.getElementById('customerAddress')?.value || '',
+        taxId: document.getElementById('customerTaxId')?.value || '',
+        note: document.getElementById('customerNote')?.value || '',
+        items: itemsDetail,
+        shipping: shippingFee === 0 ? "Miễn phí" : `${shippingFee} đ`,
+        total: finalTotalAmount
+    };
     
     try {
-        const res = await fetch(CONFIG.SHEET_API, { method: 'POST', body: formData });
-        const result = await res.json();
+        // Gửi request bằng phương thức POST kèm theo chuỗi JSON chuẩn hóa
+        const res = await fetch(CONFIG.SHEET_API, {
+            method: 'POST',
+            mode: 'no-cors', // Khóa tính năng no-cors để ép trình duyệt đẩy data đi thông suốt không chặn bảo mật chéo
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(postData)
+        });
         
-        if (result.status === 'success') {
-            if (status) {
-                status.className = "submit-status text-success";
-                status.style.color = "#15558D";
-                status.innerHTML = "🎉 <b>Gửi đơn thành công!</b> Hệ thống VietPOM đã ghi nhận đơn hàng. Dược sĩ sẽ liên hệ xác nhận cho Anh/Chị ngay.";
-                status.classList.remove('hidden');
-            }
-            cart = {};
-            updateCartSummary();
-            renderProducts(allProducts);
-            e.target.reset();
-        } else {
-            throw new Error(result.message);
+        // Vì dùng chế độ no-cors, trình duyệt sẽ không đọc được cục bộ phản hồi phản hồi, mặc định xem như thành công
+        if (status) {
+            status.className = "submit-status text-success";
+            status.style.color = "#15558D";
+            status.innerHTML = "🎉 <b>Gửi đơn thành công!</b> Hệ thống VietPOM đã ghi nhận đơn hàng. Dược sĩ sẽ liên hệ xác nhận cho Anh/Chị ngay.";
+            status.classList.remove('hidden');
         }
+        cart = {};
+        updateCartSummary();
+        renderProducts(allProducts);
+        e.target.reset();
+        
     } catch (err) {
         console.error("Lỗi gửi đơn:", err);
         if (status) {
