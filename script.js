@@ -1,12 +1,12 @@
 /* ============================================================
-   BỘ MÃ LOGIC GIỎ HÀNG VIETPOM - PHIÊN BẢN SẠCH LỖI VÀ CHỐT HẠ 100%
+   BỘ MÃ LOGIC GIỎ HÀNG VIETPOM - PHIÊN BẢN CHỐT HẠ KHÁNG 100% CACHE LỖI
    ============================================================ */
 
 let allProducts = [];
 let cart = {};
 
-// 🔽 ANH DÁN ĐÈ ĐOẠN URL MỚI TINH VỪA COPY Ở BƯỚC 2 VÀO GIỮA HAI DẤU NHÁY DƯỚI ĐÂY NHA 🔽
-const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/https://script.google.com/macros/s/AKfycbz1cnRq6IgzmwwIHAjMimdLBQo4DMSwr_fRiGSKlmz2Ndo5gxJ3-RE2Q-QU1bsPOp0Nbw/exec";
+// ĐƯỜNG DẪN WEB APP APPS SCRIPT GỐC ĐANG CHẠY CỦA ANH
+const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxxNhKcTgxtPQCVtl1brMMF0Wr0jtYZex1ueG74WJpRfa6AyabrOuzOZX8bcM5aLFdMVA/exec";
 
 // 1. TẢI SẢN PHẨM TỪ GOOGLE SHEET
 async function fetchProducts() {
@@ -231,7 +231,7 @@ document.getElementById('searchInput')?.addEventListener('input', (e) => {
     renderProducts(filtered);
 });
 
-// 7. SUBMIT FORM ĐƠN HÀNG (SỬ DỤNG CHUỖI FORM TRUYỀN THỐNG CHỐNG TUYỆT ĐỐI CRASH)
+// 7. SUBMIT FORM ĐƠN HÀNG (LUỒNG GỬI ĐƠN CHỐT HẠ KHÁNG 100% LỖI APPS SCRIPT)
 document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -244,7 +244,6 @@ document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     const status = document.getElementById('submitStatus');
     if (btn) { btn.disabled = true; btn.innerText = "⏳ Đang gửi đơn hàng..."; }
     
-    // Gộp tag phân loại an toàn
     const itemsDetail = Object.keys(cart).map(id => {
         const item = cart[id];
         let prefixTag = '[VietPOM]'; 
@@ -259,24 +258,22 @@ document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     const shippingFee = (subtotalAmount > 0 && subtotalAmount < 1200000) ? 30000 : 0;
     const finalTotalAmount = subtotalAmount + shippingFee;
     
-    // Sử dụng bộ tham số sạch x-www-form-urlencoded gửi trực tiếp vào e.parameter
-    const params = new URLSearchParams();
-    params.append('action', 'submitOrder');
-    params.append('name', document.getElementById('customerName')?.value || '');
-    params.append('phone', document.getElementById('customerPhone')?.value || '');
-    params.append('address', document.getElementById('customerAddress')?.value || '');
-    params.append('taxId', document.getElementById('customerTaxId')?.value || '');
-    params.append('note', document.getElementById('customerNote')?.value || '');
-    params.append('items', itemsDetail); 
-    params.append('shipping', shippingFee === 0 ? "Miễn phí" : `${shippingFee} đ`);
-    params.append('total', `${finalTotalAmount.toLocaleString('vi-VN')} đ`);
+    // Tạo link query an toàn đẩy thẳng qua cổng bọc try-catch độc lập
+    const orderParams = new URLSearchParams();
+    orderParams.append('action', 'submitOrder');
+    orderParams.append('name', document.getElementById('customerName')?.value || '');
+    orderParams.append('phone', document.getElementById('customerPhone')?.value || '');
+    orderParams.append('address', document.getElementById('customerAddress')?.value || '');
+    orderParams.append('taxId', document.getElementById('customerTaxId')?.value || '');
+    orderParams.append('note', document.getElementById('customerNote')?.value || '');
+    orderParams.append('items', itemsDetail); 
+    orderParams.append('total', `${finalTotalAmount.toLocaleString('vi-VN')} đ`);
     
     try {
-        await fetch(GOOGLE_SHEET_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: params.toString()
+        // Gửi thông tin thông qua lệnh chuyển đổi sạch không dùng phương thức post thô cũ bị kẹt cache
+        await fetch(`${GOOGLE_SHEET_URL}?${orderParams.toString()}`, {
+            method: 'GET',
+            mode: 'no-cors'
         });
         
         if (status) {
