@@ -217,7 +217,7 @@ document.getElementById('searchInput')?.addEventListener('input', (e) => {
     renderProducts(filtered);
 });
 
-// 7. SUBMIT FORM ĐƠN HÀNG (MÃ HÓA BIẾN CHUẨN X-WWW-FORM-URLENCODED)
+// 7. SUBMIT FORM ĐƠN HÀNG (BẢN CHỐT HẠ KHÁNG LỖI UNDEFINED VÀO SHEET)
 document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -230,18 +230,23 @@ document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     const status = document.getElementById('submitStatus');
     if (btn) { btn.disabled = true; btn.innerText = "⏳ Đang gửi đơn hàng..."; }
     
-    // TỰ ĐỘNG GHÉP TAG ĐỘNG TỪNG SẢN PHẨM (Ví dụ: [KA] Amoxicillin... hoặc [HD] Berocca...)
+    // KIỂM TRA TAG AN TOÀN TUYỆT ĐỐI - NẾU LỖI HOẶC TRỐNG TỰ ĐỘNG THAY BẰNG [VietPOM]
     const itemsDetail = Object.keys(cart).map(id => {
         const item = cart[id];
-        const prefixTag = item.tag ? (item.tag.startsWith('[') ? item.tag : `[${item.tag}]`) : '[VietPOM]';
-        return `${prefixTag} ${item.name} (${item.qty} ${item.unit})`;
+        let prefixTag = '[VietPOM]'; // Nhãn mặc định phòng hờ
+        
+        if (item.tag && String(item.tag).trim() !== "" && String(item.tag).trim() !== "undefined") {
+            const cleanTag = String(item.tag).trim();
+            prefixTag = cleanTag.startsWith('[') ? cleanTag : `[${cleanTag}]`;
+        }
+        
+        return `${prefixTag} ${item.name || 'Sản phẩm'} (${item.qty} ${item.unit || 'Hộp'})`;
     }).join('\n');
     
     const subtotalAmount = Object.keys(cart).reduce((sum, id) => sum + (cart[id].price * cart[id].qty), 0);
     const shippingFee = (subtotalAmount > 0 && subtotalAmount < 1200000) ? 30000 : 0;
     const finalTotalAmount = subtotalAmount + shippingFee;
     
-    // Tạo chuỗi tham số mã hóa an toàn bằng URLSearchParams gốc của trình duyệt
     const params = new URLSearchParams();
     params.append('action', 'submitOrder');
     params.append('name', document.getElementById('customerName')?.value || '');
