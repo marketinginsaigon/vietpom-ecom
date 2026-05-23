@@ -1,5 +1,5 @@
 /* ============================================================
-   BỘ MÃ LOGIC GIỎ HÀNG VIETPOM - PHIÊN BẢN KHÁNG LỖI SẬP REPLACE 100%
+   BỘ MÃ LOGIC GIỎ HÀNG VIETPOM - BẢN FIX DỨT ĐIỂM LỖI REPLACE
    ============================================================ */
 
 let allProducts = [];
@@ -26,8 +26,11 @@ async function fetchProducts() {
             const unitStr = p.unit ? String(p.unit).trim() : (p.đơnvị ? String(p.đơnvị).trim() : "Hộp");
             const imageStr = p.image ? String(p.image).trim() : (p.hìnhảnh ? String(p.hìnhảnh).trim() : "");
             
-            // Ép kiểu chuỗi ngay từ lúc nhận dữ liệu
-            const tagStr = (p.tag !== null && p.tag !== undefined) ? String(p.tag).trim() : "";
+            // Ép kiểu chuỗi sạch sẽ, chống undefined ngay từ đầu vào
+            let tagStr = "";
+            if (p.tag !== null && p.tag !== undefined) {
+                tagStr = String(p.tag).trim().replace(/[\[\]]/g, ''); // Xóa ngoặc vuông ngay tại đây luôn cho an toàn
+            }
 
             return {
                 id: `line_item_${index}`,
@@ -76,8 +79,11 @@ function renderProducts(products) {
     grid.innerHTML = products.map(p => {
         const currentQty = cart[p.id] ? cart[p.id].qty : 0;
         
-        // SỬA LỖI TẠI ĐÂY: Bảo vệ an toàn tuyệt đối bằng cách kiểm tra chuỗi rỗng trước khi xử lý replace
-        const displayTag = (p.tag && p.tag !== "undefined" && p.tag !== "") ? p.tag.replace(/[\[\]]/g, '') : 'HD'; 
+        // 🛠️ SỬA TRIỆT ĐỂ TẠI ĐÂY: Không gọi hàm .replace() nữa, chỉ check xem chuỗi có dữ liệu không
+        let displayTag = 'HD';
+        if (p.tag && p.tag !== "undefined" && p.tag !== "") {
+            displayTag = p.tag;
+        }
         
         return `
             <div class="product-card" data-id="${p.id}">
