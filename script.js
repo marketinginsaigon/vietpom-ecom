@@ -1,12 +1,12 @@
 /* ============================================================
-   BỘ MÃ LOGIC GIỎ HÀNG VIETPOM - BẢN FIX DỨT ĐIỂM LỖI REPLACE
+   BỘ MÃ LOGIC GIỎ HÀNG VIETPOM - PHIÊN BẢN SẠCH LỖI VÀ CHỐT HẠ 100%
    ============================================================ */
 
 let allProducts = [];
 let cart = {};
 
-// ĐƯỜNG DẪN WEB APP APPS SCRIPT GỐC CỦA ANH
-const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxxNhKcTgxtPQCVtl1brMMF0Wr0jtYZex1ueG74WJpRfa6AyabrOuzOZX8bcM5aLFdMVA/exec";
+// 🔽 ANH DÁN ĐÈ ĐOẠN URL MỚI TINH VỪA COPY Ở BƯỚC 2 VÀO GIỮA HAI DẤU NHÁY DƯỚI ĐÂY NHA 🔽
+const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/https://script.google.com/macros/s/AKfycbz1cnRq6IgzmwwIHAjMimdLBQo4DMSwr_fRiGSKlmz2Ndo5gxJ3-RE2Q-QU1bsPOp0Nbw/exec";
 
 // 1. TẢI SẢN PHẨM TỪ GOOGLE SHEET
 async function fetchProducts() {
@@ -26,10 +26,9 @@ async function fetchProducts() {
             const unitStr = p.unit ? String(p.unit).trim() : (p.đơnvị ? String(p.đơnvị).trim() : "Hộp");
             const imageStr = p.image ? String(p.image).trim() : (p.hìnhảnh ? String(p.hìnhảnh).trim() : "");
             
-            // Ép kiểu chuỗi sạch sẽ, chống undefined ngay từ đầu vào
             let tagStr = "";
             if (p.tag !== null && p.tag !== undefined) {
-                tagStr = String(p.tag).trim().replace(/[\[\]]/g, ''); // Xóa ngoặc vuông ngay tại đây luôn cho an toàn
+                tagStr = String(p.tag).trim().replace(/[\[\]]/g, ''); 
             }
 
             return {
@@ -78,12 +77,7 @@ function renderProducts(products) {
     
     grid.innerHTML = products.map(p => {
         const currentQty = cart[p.id] ? cart[p.id].qty : 0;
-        
-        // 🛠️ SỬA TRIỆT ĐỂ TẠI ĐÂY: Không gọi hàm .replace() nữa, chỉ check xem chuỗi có dữ liệu không
-        let displayTag = 'HD';
-        if (p.tag && p.tag !== "undefined" && p.tag !== "") {
-            displayTag = p.tag;
-        }
+        let displayTag = p.tag && p.tag !== "" ? p.tag : 'HD';
         
         return `
             <div class="product-card" data-id="${p.id}">
@@ -237,7 +231,7 @@ document.getElementById('searchInput')?.addEventListener('input', (e) => {
     renderProducts(filtered);
 });
 
-// 7. SUBMIT FORM ĐƠN HÀNG
+// 7. SUBMIT FORM ĐƠN HÀNG (SỬ DỤNG CHUỖI FORM TRUYỀN THỐNG CHỐNG TUYỆT ĐỐI CRASH)
 document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -250,15 +244,14 @@ document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     const status = document.getElementById('submitStatus');
     if (btn) { btn.disabled = true; btn.innerText = "⏳ Đang gửi đơn hàng..."; }
     
+    // Gộp tag phân loại an toàn
     const itemsDetail = Object.keys(cart).map(id => {
         const item = cart[id];
         let prefixTag = '[VietPOM]'; 
-        
         if (item.tag && String(item.tag).trim() !== "" && String(item.tag).trim() !== "undefined") {
             const cleanTag = String(item.tag).trim();
             prefixTag = cleanTag.startsWith('[') ? cleanTag : `[${cleanTag}]`;
         }
-        
         return `${prefixTag} ${item.name} (${item.qty} ${item.unit})`;
     }).join('\n');
     
@@ -266,6 +259,7 @@ document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     const shippingFee = (subtotalAmount > 0 && subtotalAmount < 1200000) ? 30000 : 0;
     const finalTotalAmount = subtotalAmount + shippingFee;
     
+    // Sử dụng bộ tham số sạch x-www-form-urlencoded gửi trực tiếp vào e.parameter
     const params = new URLSearchParams();
     params.append('action', 'submitOrder');
     params.append('name', document.getElementById('customerName')?.value || '');
