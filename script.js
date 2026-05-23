@@ -1,9 +1,10 @@
 /* ============================================================
-   BỘ MÃ LOGIC GIỎ HÀNG VIETPOM - BẢN LÀM GỌN BỌC THÉP 100%
+   BỘ MÃ LOGIC GIỎ HÀNG VIETPOM - PHIÊN BẢN HIỂN THỊ TAG ĐỘNG
    ============================================================ */
 
 const CONFIG = {
-    SHEET_API: "https://script.google.com/macros/s/AKfycbwOwGRzzvpbEgY8OIjwZb0XfwiEI1I7MqRSWkrnXafXIJv6EO5is26xruw6kxtJwmtMNQ/exec"
+    // Anh dán URL Apps Script mới chạy ở Bước 1 của anh vào đây nhé
+    SHEET_API: "https://script.google.com/macros/s/AKfycbxxNhKcTgxtPQCVtl1brMMF0Wr0jtYZex1ueG74WJpRfa6AyabrOuzOZX8bcM5aLFdMVA/exec"
 };
 
 let allProducts = [];
@@ -23,7 +24,8 @@ async function fetchProducts() {
         allProducts = data.map((p, index) => ({
             ...p,
             id: `line_item_${index}`,
-            price: parseInt(p.price) || 0
+            price: parseInt(p.price) || 0,
+            tag: p.tag ? String(p.tag).trim() : "" // Đọc cột tag động từ Google Sheet
         }));
         
         renderCategories();
@@ -49,7 +51,7 @@ function renderCategories() {
     });
 }
 
-// 3. RENDER DANH SÁCH RA LƯỚI
+// 3. RENDER DANH SÁCH RA LƯỚI (HIỂN THỊ TAG LÊN ẢNH SẢN PHẨM)
 function renderProducts(products) {
     const grid = document.getElementById('productGrid');
     if (!grid) return;
@@ -61,12 +63,14 @@ function renderProducts(products) {
     
     grid.innerHTML = products.map(p => {
         const currentQty = cart[p.id] ? cart[p.id].qty : 0;
+        // Nếu trên sheet anh nhập tag có hoặc không có dấu ngoặc [], web tự động hiển thị sạch đẹp
+        const displayTag = p.tag ? p.tag.replace(/[\[\]]/g, '') : 'HD'; 
         
         return `
             <div class="product-card" data-id="${p.id}">
                 <a href="#products" onclick="return false;">
                     <div class="product-img-wrap">
-                        <span class="product-tag">HD</span>
+                        <span class="product-tag">${displayTag}</span>
                         <img src="${p.image || 'placeholder.jpg'}" alt="${p.name}">
                     </div>
                     <div class="product-meta">
@@ -106,7 +110,8 @@ window.updateCartItem = function(id, qty) {
             name: product.name,
             price: product.price,
             qty: qty,
-            unit: product.unit || 'Hộp'
+            unit: product.unit || 'Hộp',
+            tag: product.tag // Lưu kèm tag nhà cung cấp riêng của sản phẩm này vào giỏ
         };
     }
     
@@ -134,7 +139,7 @@ function updateSingleProductUI(id, qty) {
     }
 }
 
-// 5. TỔNG HỢP GIỎ HÀNG VÀ TÍNH SHIP TỰ ĐỘNG
+// 5. TỔNG HỢP GIỎ HÀNG VÀ TÍNH SHIP
 function updateCartSummary() {
     const cartItems = document.getElementById('cartItems');
     const headerCount = document.getElementById('headerCartCount');
@@ -213,7 +218,7 @@ document.getElementById('searchInput')?.addEventListener('input', (e) => {
     renderProducts(filtered);
 });
 
-// 7. SUBMIT FORM ĐƠN HÀNG (BẢN CẬP NHẬT TỰ ĐỘNG PHÂN LOẠI NHÀ CUNG CẤP)
+// 7. SUBMIT FORM ĐƠN HÀNG (TỰ ĐỘNG LẤY TAG ĐỘNG TỪNG SẢN PHẨM GHÉP VÀO ĐƠN TRẢ VỀ)
 document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -226,16 +231,17 @@ document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     const status = document.getElementById('submitStatus');
     if (btn) { btn.disabled = true; btn.innerText = "⏳ Đang gửi đơn hàng..."; }
     
-    // TỰ ĐỘNG ĐÍNH KÈM PHÂN LOẠI [VietPOM] VÀO TRƯỚC MỖI ĐƠN HÀNG TRẢ VỀ
+    // TỰ ĐỘNG GHÉP TAG TỪNG SẢN PHẨM (Ví dụ: [VietPOM] Tên SP hoặc [HoneyLand] Tên SP)
     const itemsDetail = Object.keys(cart).map(id => {
-        return `[VietPOM] ${cart[id].name} (${cart[id].qty} ${cart[id].unit})`;
+        const item = cart[id];
+        const prefixTag = item.tag ? (item.tag.startsWith('[') ? item.tag : `[${item.tag}]`) : '[VietPOM]';
+        return `${prefixTag} ${item.name} (${item.qty} ${item.unit})`;
     }).join('\n');
     
     const subtotalAmount = Object.keys(cart).reduce((sum, id) => sum + (cart[id].price * cart[id].qty), 0);
     const shippingFee = (subtotalAmount > 0 && subtotalAmount < 1200000) ? 30000 : 0;
     const finalTotalAmount = subtotalAmount + shippingFee;
     
-    // Đóng gói bằng URLSearchParams - Kháng lỗi 100%
     const params = new URLSearchParams();
     params.append('action', 'submitOrder');
     params.append('name', document.getElementById('customerName')?.value || '');
@@ -243,7 +249,7 @@ document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     params.append('address', document.getElementById('customerAddress')?.value || '');
     params.append('taxId', document.getElementById('customerTaxId')?.value || '');
     params.append('note', document.getElementById('customerNote')?.value || '');
-    params.append('items', itemsDetail); // Chuỗi chi tiết sản phẩm đã có nhãn phân loại
+    params.append('items', itemsDetail); 
     params.append('shipping', shippingFee === 0 ? "Miễn phí" : `${shippingFee} đ`);
     params.append('total', `${finalTotalAmount.toLocaleString('vi-VN')} đ`);
     
@@ -258,7 +264,7 @@ document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
         if (status) {
             status.className = "submit-status text-success";
             status.style.color = "#15558D";
-            status.innerHTML = "🎉 <b>Gửi đơn thành công!</b> Hệ thống VietPOM đã ghi nhận đơn hàng. Dược sĩ sẽ liên hệ xác nhận cho Anh/Chị ngay.";
+            status.innerHTML = "🎉 <b>Gửi đơn thành công!</b> Hệ thống đã ghi nhận đơn hàng của Anh/Chị.";
             status.classList.remove('hidden');
         }
         cart = {};
