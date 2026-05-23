@@ -1,5 +1,5 @@
 /* ============================================================
-   BỘ MÃ LOGIC GIỎ HÀNG VIETPOM CHUẨN XÁC NỀN TẢNG (GỬI FORMDATA CHUẨN)
+   BỘ MÃ LOGIC GIỎ HÀNG VIETPOM CHUẨN XÁC - PHIÊN BẢN LÀM GỌN TỐI ƯU
    ============================================================ */
 
 const CONFIG = {
@@ -134,7 +134,7 @@ function updateSingleProductUI(id, qty) {
     }
 }
 
-// 5. TỔNG HỢP GIỎ HÀNG VÀ TỰ ĐỘNG TÍNH SHIP CHUẨN XÁC
+// 5. TỔNG HỢP GIỎ HÀNG VÀ TÍNH SHIP TỰ ĐỘNG
 function updateCartSummary() {
     const cartItems = document.getElementById('cartItems');
     const headerCount = document.getElementById('headerCartCount');
@@ -174,22 +174,13 @@ function updateCartSummary() {
         `;
     }
     
-    let shippingFee = 0;
-    if (subtotal > 0 && subtotal < 1200000) {
-        shippingFee = 30000;
-    }
+    let shippingFee = (subtotal > 0 && subtotal < 1200000) ? 30000 : 0;
     let finalTotal = subtotal + shippingFee;
     
     if (shippingText) {
-        if (subtotal === 0) {
-            shippingText.innerText = "0 đ";
-        } else if (shippingFee === 0) {
-            shippingText.innerText = "Miễn phí";
-            shippingText.style.color = "#15558D";
-        } else {
-            shippingText.innerText = `${shippingFee.toLocaleString('vi-VN')} đ`;
-            shippingText.style.color = "#333333";
-        }
+        if (subtotal === 0) shippingText.innerText = "0 đ";
+        else if (shippingFee === 0) { shippingText.innerText = "Miễn phí"; shippingText.style.color = "#15558D"; }
+        else { shippingText.innerText = `${shippingFee.toLocaleString('vi-VN')} đ`; shippingText.style.color = "#333333"; }
     }
 
     if (summaryNote) {
@@ -217,17 +208,12 @@ document.getElementById('searchInput')?.addEventListener('input', (e) => {
     const currentCat = select ? select.value : 'Tất cả';
     
     let filtered = allProducts;
-    if (currentCat !== 'Tất cả') {
-        filtered = filtered.filter(p => p.category === currentCat);
-    }
-    
-    if (keyword !== '') {
-        filtered = filtered.filter(p => p.name.toLowerCase().includes(keyword));
-    }
+    if (currentCat !== 'Tất cả') filtered = filtered.filter(p => p.category === currentCat);
+    if (keyword !== '') filtered = filtered.filter(p => p.name.toLowerCase().includes(keyword));
     renderProducts(filtered);
 });
 
-// 7. SUBMIT FORM ĐƠN HÀNG (ĐÓNG GÓI CHUỖI TEXT THÔ URL-ENCODED AN TOÀN)
+// 7. SUBMIT FORM ĐƠN HÀNG (MÃ HÓA TỪNG BIẾN CHUẨN - CHỐNG TRỐNG CỘT)
 document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -245,25 +231,24 @@ document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     const shippingFee = (subtotalAmount > 0 && subtotalAmount < 1200000) ? 30000 : 0;
     const finalTotalAmount = subtotalAmount + shippingFee;
     
-    // Đóng gói dạng URLSearchParams để ép trình duyệt gửi chuỗi text sạch
-    const params = new URLSearchParams();
-    params.append('action', 'submitOrder');
-    params.append('name', document.getElementById('customerName')?.value || '');
-    params.append('phone', document.getElementById('customerPhone')?.value || '');
-    params.append('address', document.getElementById('customerAddress')?.value || '');
-    params.append('taxId', document.getElementById('customerTaxId')?.value || '');
-    params.append('note', document.getElementById('customerNote')?.value || '');
-    params.append('items', itemsDetail);
-    params.append('shipping', shippingFee === 0 ? "Miễn phí" : `${shippingFee} đ`);
-    params.append('total', `${finalTotalAmount} đ`);
+    // Đóng gói chuỗi query bằng mã hóa từng thành phần an toàn tuyệt đối
+    const queryParts = [
+        `action=submitOrder`,
+        `name=${encodeURIComponent(document.getElementById('customerName')?.value || '')}`,
+        `phone=${encodeURIComponent(document.getElementById('customerPhone')?.value || '')}`,
+        `address=${encodeURIComponent(document.getElementById('customerAddress')?.value || '')}`,
+        `taxId=${encodeURIComponent(document.getElementById('customerTaxId')?.value || '')}`,
+        `note=${encodeURIComponent(document.getElementById('customerNote')?.value || '')}`,
+        `items=${encodeURIComponent(itemsDetail)}`,
+        `total=${encodeURIComponent(finalTotalAmount.toLocaleString('vi-VN') + ' đ')}`
+    ];
     
     try {
-        // Gửi fetch chế độ no-cors kèm header text thô thông suốt
         await fetch(CONFIG.SHEET_API, {
             method: 'POST',
             mode: 'no-cors',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: params.toString()
+            body: queryParts.join('&')
         });
         
         if (status) {
@@ -283,4 +268,5 @@ document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
         if (btn) { btn.disabled = false; btn.innerText = "Gửi đơn hàng ngay"; }
     }
 });
+
 document.addEventListener('DOMContentLoaded', fetchProducts);
