@@ -227,7 +227,7 @@ document.getElementById('searchInput')?.addEventListener('input', (e) => {
     renderProducts(filtered);
 });
 
-// 7. SUBMIT FORM ĐƠN HÀNG (SỬ DỤNG FORMDATA GỐC - KHÔNG SỢ SYNTAXERROR)
+// 7. SUBMIT FORM ĐƠN HÀNG (ĐÓNG GÓI CHUỖI TEXT THÔ URL-ENCODED AN TOÀN)
 document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -245,24 +245,25 @@ document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     const shippingFee = (subtotalAmount > 0 && subtotalAmount < 1200000) ? 30000 : 0;
     const finalTotalAmount = subtotalAmount + shippingFee;
     
-    // Tạo FormData truyền thống
-    const formData = new FormData();
-    formData.append('action', 'submitOrder');
-    formData.append('name', document.getElementById('customerName')?.value || '');
-    formData.append('phone', document.getElementById('customerPhone')?.value || '');
-    formData.append('address', document.getElementById('customerAddress')?.value || '');
-    formData.append('taxId', document.getElementById('customerTaxId')?.value || '');
-    formData.append('note', document.getElementById('customerNote')?.value || '');
-    formData.append('items', itemsDetail);
-    formData.append('shipping', shippingFee === 0 ? "Miễn phí" : `${shippingFee} đ`);
-    formData.append('total', `${finalTotalAmount} đ`);
+    // Đóng gói dạng URLSearchParams để ép trình duyệt gửi chuỗi text sạch
+    const params = new URLSearchParams();
+    params.append('action', 'submitOrder');
+    params.append('name', document.getElementById('customerName')?.value || '');
+    params.append('phone', document.getElementById('customerPhone')?.value || '');
+    params.append('address', document.getElementById('customerAddress')?.value || '');
+    params.append('taxId', document.getElementById('customerTaxId')?.value || '');
+    params.append('note', document.getElementById('customerNote')?.value || '');
+    params.append('items', itemsDetail);
+    params.append('shipping', shippingFee === 0 ? "Miễn phí" : `${shippingFee} đ`);
+    params.append('total', `${finalTotalAmount} đ`);
     
     try {
-        // Gửi bằng FormData giúp trình duyệt tự xử lý mã hóa ký tự đặc biệt cực chuẩn
+        // Gửi fetch chế độ no-cors kèm header text thô thông suốt
         await fetch(CONFIG.SHEET_API, {
             method: 'POST',
             mode: 'no-cors',
-            body: formData
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: params.toString()
         });
         
         if (status) {
@@ -282,5 +283,4 @@ document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
         if (btn) { btn.disabled = false; btn.innerText = "Gửi đơn hàng ngay"; }
     }
 });
-
 document.addEventListener('DOMContentLoaded', fetchProducts);
