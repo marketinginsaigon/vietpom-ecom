@@ -7,38 +7,191 @@
   'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
   })(window,document,'script','dataLayer','GTM-KBJVVFVV');</script>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>VietPOM - Danh Mục Sản Phẩm</title>
   <meta name="description" content="Chọn sản phẩm, tổng hợp đơn hàng và gửi về Google Sheet." />
-  <link rel="stylesheet" href="style.css" />
+  
+  <link rel="stylesheet" href="style.css?v=VIETPOM_TOTAL_V1" />
   
   <style>
     /* ============================================================
-       BỘ MÃ KHÔI PHỤC: CHỈ GIỮ LẠI MÀU SẮC THƯƠNG HIỆU GỐC
-       XÓA BỎ TOÀN BỘ CODE ÉP KHUNG MOBILE GÂY LỖI
+       BỘ MÃ GIAO DIỆN CHUẨN UX/UI ĐỒNG BỘ (BẢN TỔNG HỢP SACH)
        ============================================================ */
     .hero-bg, .hero-bg-left, .hero-bg-right { display: none !important; }
 
+    /* Đồng bộ màu sắc thương hiệu VietPOM */
     .btn-outline { background-color: transparent !important; color: #15558D !important; border: 2px solid #15558D !important; font-weight: bold !important; }
     .btn-outline:hover { background-color: #15558D !important; color: #ffffff !important; }
-
     .btn-primary, .btn-green, .btn-dark, .cart-pill, .label-pill, .add-btn, .checkout-btn, .order-icon { background-color: #15558D !important; color: #ffffff !important; border: none !important; }
-    .btn-primary:hover, .add-btn:hover { background-color: #0F4373 !important; box-shadow: 0 4px 12px rgba(21, 85, 141, 0.3) !important; }
+    .btn-primary:hover, .add-btn:hover { background-color: #0F4373 !important; }
     .btn-primary *, .add-btn *, .checkout-btn * { color: #ffffff !important; }
-
     h1, h2, h3, h4, .price, .section-kicker, .buyer-kicker, .summary-kicker, .text-success, .text-green { color: #15558D !important; }
-
     .promo-box, .buyer-info { background: linear-gradient(135deg, #1A6BBA, #0F4373) !important; border: none !important; }
     .promo-box *, .buyer-info * { color: #ffffff !important; }
-    
     .buyer-info .info-list > div, section[id="buyer"] div.info-list div { background-color: rgba(255, 255, 255, 0.1) !important; border-color: rgba(255, 255, 255, 0.2) !important; }
-
     .summary-card, .cart-summary { background-color: #F8FAFC !important; border: 1px solid #E2E8F0 !important; }
-    .summary-card *:not(.btn):not(.btn *), .cart-summary *:not(.btn):not(.btn *) { color: #333333 !important; }
     .summary-card h3, .summary-total strong { color: #15558D !important; }
+    
+    *, *::before, *::after { box-sizing: border-box !important; }
+    body { overflow-x: hidden !important; }
 
-    .product-card > div:first-child { background-color: #F0F6FA !important; }
-    #productGrid span[class*="absolute"], #productGrid span[class*="tag"] { color: #E60000 !important; font-weight: 900 !important; background: rgba(255,255,255,0.9) !important; padding: 2px 6px !important; border-radius: 4px !important; }
+    /* CSS Khối Đăng ký Đại lý mới dưới Banner */
+    .banner-register-box {
+      margin-top: 15px;
+      padding: 15px;
+      background: #F0F6FA;
+      border: 1px solid #E2E8F0;
+      border-radius: 12px;
+      text-align: center;
+      box-sizing: border-box !important;
+      width: 100% !important;
+    }
+    .banner-register-box h4 {
+      font-size: 15px !important;
+      margin: 0 0 6px 0 !important;
+      color: #15558D !important;
+      font-weight: bold !important;
+    }
+    .banner-register-box p {
+      font-size: 13px !important;
+      color: #475569 !important;
+      margin: 0 0 12px 0 !important;
+      line-height: 1.4;
+    }
+    .btn-banner-reg {
+      display: inline-flex !important;
+      align-items: center;
+      justify-content: center;
+      width: 100% !important;
+      height: 40px !important;
+      background-color: #15558D !important;
+      color: #ffffff !important;
+      font-weight: bold !important;
+      border-radius: 6px !important;
+      text-decoration: none !important;
+      font-size: 14px !important;
+      transition: background 0.2s;
+      box-sizing: border-box !important;
+    }
+    .btn-banner-reg:hover { background-color: #0F4373 !important; }
+
+    /* ============================================================
+       ĐẶC TRỊ MOBILE: PHÁ VỠ CHIÊN CỘT NGANG - ÉP CHẶT HIỂN THỊ
+       ============================================================ */
+    @media (max-width: 768px) {
+      /* Khối đăng ký tối ưu font trên mobile */
+      .banner-register-box { padding: 12px; margin-top: 12px; }
+      .banner-register-box h4 { font-size: 14px !important; }
+      .banner-register-box p { font-size: 12px !important; margin: 0 0 10px 0 !important; }
+      .btn-banner-reg { height: 36px !important; font-size: 13px !important; }
+
+      /* Khung lưới Grid sản phẩm */
+      #productGrid {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 8px !important;
+        padding: 8px !important;
+      }
+
+      /* Thẻ sản phẩm mở rộng co giãn tự nhiên */
+      .product-card {
+        display: flex !important;
+        flex-direction: column !important;
+        height: 100% !important;
+        background: #fff !important;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 8px !important;
+        padding: 8px !important;
+        position: relative !important;
+        overflow: hidden !important;
+      }
+
+      /* Đập tan mọi cấu trúc chia cột ngang của div bọc sinh ra từ script.js */
+      .product-card > div, .product-card > a, .product-inner {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        height: auto !important;
+        min-height: 0 !important;
+        flex-grow: 1 !important;
+      }
+
+      /* Khung ảnh cố định lùn gọn */
+      .product-card img {
+        display: block !important;
+        width: 100% !important;
+        height: 100px !important;
+        object-fit: contain !important;
+        margin: 0 auto 8px auto !important;
+      }
+
+      /* Tên sản phẩm khóa 2 dòng đều tăm tắp */
+      .product-card h3 {
+        font-size: 13px !important;
+        line-height: 1.4 !important;
+        margin: 0 0 8px 0 !important;
+        color: #15558D !important;
+        text-align: left !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 2 !important;
+        -webkit-box-orient: vertical !important;
+        overflow: hidden !important;
+        white-space: normal !important;
+      }
+
+      /* Giá tiền ép cứng xuống đáy thẻ */
+      .product-card .price {
+        font-size: 15px !important;
+        color: #E60000 !important;
+        font-weight: bold !important;
+        margin-top: auto !important;
+        margin-bottom: 8px !important;
+        text-align: left !important;
+        display: block !important;
+      }
+
+      /* Nút mua hàng trên mobile */
+      .product-card button, .add-btn {
+        width: 100% !important;
+        height: 34px !important;
+        font-size: 13px !important;
+        border-radius: 6px !important;
+        background-color: #15558D !important;
+        color: #fff !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin: 0 !important;
+        border: none !important;
+      }
+
+      /* Trình tăng giảm số lượng số lượng */
+      .qty-control {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        width: 100% !important;
+        height: 34px !important;
+      }
+      .qty-control button { width: 32px !important; }
+
+      /* Tem nhãn HD góc trái */
+      .product-tag, span[class*="absolute"] {
+        position: absolute !important;
+        top: 4px !important; left: 4px !important;
+        background: rgba(255,255,255,0.9) !important;
+        color: #E60000 !important;
+        font-weight: bold !important;
+        font-size: 10px !important;
+        padding: 2px 6px !important;
+        border-radius: 4px !important;
+        z-index: 10 !important;
+      }
+
+      .product-card .note, .price-label, .product-card::before, .product-card::after { display: none !important; }
+      .product-meta { font-size: 11px !important; color: #64748b !important; margin-bottom: 4px !important; }
+      .hero-grid { grid-template-columns: 1fr !important; }
+    }
   </style>
 </head>
 <body>
@@ -79,7 +232,7 @@
         <aside class="hero-card">
           <div class="promo-box">
             <span>Ưu đãi nhà thuốc</span><h2>Đơn từ 1.200.000đ</h2><p>Miễn phí giao hàng (Freeship)</p>
-            <small>Chương trình có thể điều chỉnh theo chính sách từng nhà thuốc. Cần xác nhận lại trước khi giao hàng.</small>
+            <small>Chương trình có thể điều chỉnh theo chính sách từng nhà thuốc.</small>
           </div>
           <style>
             .my-slider-container { width: 100%; aspect-ratio: 16 / 9; position: relative; overflow: hidden; border-radius: 12px; margin-top: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); background-color: #ffffff; }
@@ -89,6 +242,13 @@
           <div class="my-slider-container">
             <img class="my-slide show" src="https://i.postimg.cc/FKdnqL2H/banner-1.jpg">
           </div>
+
+          <div class="banner-register-box">
+            <h4>Trở thành Đối tác phân phối VietPOM</h4>
+            <p>Đăng ký tài khoản để cập nhật chính sách chiết khấu, chương trình khuyến mãi và bảng giá sỉ mới nhất dành riêng cho Nhà thuốc.</p>
+            <a href="#buyer" class="btn-banner-reg">Đăng ký đại lý ngay 📝</a>
+          </div>
+
           <script>
             let myIndex = 0; const mySlides = document.querySelectorAll('.my-slide');
             if(mySlides.length > 0) setInterval(() => { mySlides[myIndex].classList.remove('show'); myIndex = (myIndex + 1) % mySlides.length; mySlides[myIndex].classList.add('show'); }, 3000);
@@ -161,6 +321,6 @@
     </div>
   </footer>
 
-  <script src="script.js?v=RESTORE_ORIGINAL"></script>
+  <script src="script.js?v=VIETPOM_TOTAL_V1"></script>
 </body>
 </html>
