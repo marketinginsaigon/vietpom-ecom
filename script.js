@@ -1,5 +1,5 @@
 /* ============================================================
-   BỘ MÃ LOGIC GIỎ HÀNG CHUẨN XÁC - KHÓA CHẶT ID THEO DÒNG SHEET
+   BỘ MÃ LOGIC GIỎ HÀNG VIETPOM CHUẨN XÁC NỀN TẢNG
    ============================================================ */
 
 const CONFIG = {
@@ -20,16 +20,12 @@ async function fetchProducts() {
         const res = await fetch(`${CONFIG.SHEET_API}?action=getProducts`);
         const data = await res.json();
         
-        // DÙNG CHÍNH TÊN SẢN PHẨM HOẶC INDEX ĐỂ LÀM ID KHÓA CỨNG TUYỆT ĐỐI
-        allProducts = data.map((p, index) => {
-            // Tạo ra một chuỗi ID chuẩn sạch, không lo bị dính ký tự lạ hay trùng lặp chuỗi con
-            const safeId = p.id ? String(p.id).trim() : `line_${index}_${encodeURIComponent(p.name.substring(0,10))}`;
-            return {
-                ...p,
-                id: safeId,
-                price: parseInt(p.price) || 0
-            };
-        });
+        // ĐỊNH DANH ID THEO DÒNG ĐỂ SỬA LỖI TRÙNG TÊN CALCIUM TUYỆT ĐỐI
+        allProducts = data.map((p, index) => ({
+            ...p,
+            id: `line_item_${index}`,
+            price: parseInt(p.price) || 0
+        }));
         
         renderCategories();
         renderProducts(allProducts);
@@ -39,7 +35,7 @@ async function fetchProducts() {
     }
 }
 
-// 2. HIỂN THỊ DANH MỤC
+// 2. HIỂN THỊ DANH MỤC LỌC
 function renderCategories() {
     const select = document.getElementById('categorySelect');
     if (!select) return;
@@ -54,7 +50,7 @@ function renderCategories() {
     });
 }
 
-// 3. XUẤT SẢN PHẨM RA LƯỚI 4 CỘT
+// 3. RENDER DANH SÁCH RA LƯỚI
 function renderProducts(products) {
     const grid = document.getElementById('productGrid');
     if (!grid) return;
@@ -99,7 +95,7 @@ function renderProducts(products) {
     }).join('');
 }
 
-// 4. CẬP NHẬT GIỎ HÀNG CHUẨN XÁC THEO MÃ ID KHÓA CỨNG
+// 4. CẬP NHẬT GIỎ HÀNG
 window.updateCartItem = function(id, qty) {
     const product = allProducts.find(p => p.id === id);
     if (!product) return;
@@ -119,7 +115,7 @@ window.updateCartItem = function(id, qty) {
     updateCartSummary();
 };
 
-// Cập nhật giao diện nút bấm cục bộ dựa theo bộ chọn ID duy nhất
+// Cập nhật giao diện nút bấm theo ID khóa cứng
 function updateSingleProductUI(id, qty) {
     const card = document.querySelector(`.product-card[data-id="${id}"]`);
     if (!card) return;
@@ -140,7 +136,7 @@ function updateSingleProductUI(id, qty) {
     }
 }
 
-// 5. TỔNG HỢP GIỎ HÀNG CHUẨN XÁC
+// 5. TỔNG HỢP GIỎ HÀNG
 function updateCartSummary() {
     const cartItems = document.getElementById('cartItems');
     const headerCount = document.getElementById('headerCartCount');
@@ -197,7 +193,7 @@ document.getElementById('searchInput')?.addEventListener('input', (e) => {
     renderProducts(filtered);
 });
 
-// 7. GỬI ĐƠN HÀNG VỀ SHEET
+// 7. SUBMIT FORM ĐƠN HÀNG
 document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -211,4 +207,42 @@ document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     if (btn) { btn.disabled = true; btn.innerText = "⏳ Đang gửi đơn hàng..."; }
     
     const itemsDetail = Object.keys(cart).map(id => `${cart[id].name} (${cart[id].qty} ${cart[id].unit})`).join('\n');
-    const totalAmount = Object.keys(cart).
+    const totalAmount = Object.keys(cart).reduce((sum, id) => sum + (cart[id].price * cart[id].qty), 0);
+    
+    const formData = new FormData(e.target);
+    formData.append('action', 'submitOrder');
+    formData.append('items', itemsDetail);
+    formData.append('total', totalAmount);
+    
+    try {
+        const res = await fetch(CONFIG.SHEET_API, { method: 'POST', body: formData });
+        const result = await res.json();
+        
+        if (result.status === 'success') {
+            if (status) {
+                status.className = "submit-status text-success";
+                status.style.color = "#15558D";
+                status.innerHTML = "🎉 <b>Gửi đơn thành công!</b> Hệ thống VietPOM đã ghi nhận đơn hàng. Dược sĩ sẽ liên hệ xác nhận cho Anh/Chị ngay.";
+                status.classList.remove('hidden');
+            }
+            cart = {};
+            updateCartSummary();
+            renderProducts(allProducts);
+            e.target.reset();
+        } else {
+            throw new Error(result.message);
+        }
+    } catch (err) {
+        console.error("Lỗi gửi đơn:", err);
+        if (status) {
+            status.className = "submit-status text-danger";
+            status.style.color = "#E60000";
+            status.innerHTML = "❌ <b>Gửi đơn thất bại.</b> Có lỗi kết nối đường truyền, Anh/Chị vui lòng nhấn nút gửi lại nhé.";
+            status.classList.remove('hidden');
+        }
+    } finally {
+        if (btn) { btn.disabled = false; btn.innerText = "Gửi đơn hàng ngay"; }
+    }
+});
+
+document.addEventListener('DOMContentLoaded', fetchProducts);
