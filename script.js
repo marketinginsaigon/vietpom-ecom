@@ -1,14 +1,12 @@
 /* ============================================================
-   BỘ MÃ LOGIC GIỎ HÀNG VIETPOM - PHIÊN BẢN HIỂN THỊ TAG ĐỘNG CHUẨN XÁC
+   BỘ MÃ LOGIC GIỎ HÀNG VIETPOM - BẢN SỬA LỖI CONFIG IS NOT DEFINED
    ============================================================ */
-
-const CONFIG = {
-    // Anh dán URL Apps Script mới chạy ở Bước 1 của anh vào giữa 2 dấu nháy dưới đây nhé
-    SHEET_API: "https://script.google.com/macros/s/AKfycbxxNhKcTgxtPQCVtl1brMMF0Wr0jtYZex1ueG74WJpRfa6AyabrOuzOZX8bcM5aLFdMVA/exec"
-};
 
 let allProducts = [];
 let cart = {};
+
+// ĐƯỜNG DẪN WEB APP APPS SCRIPT GỐC CỦA ANH
+const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxxNhKcTgxtPQCVtl1brMMF0Wr0jtYZex1ueG74WJpRfa6AyabrOuzOZX8bcM5aLFdMVA/exec";
 
 // 1. TẢI SẢN PHẨM TỪ GOOGLE SHEET
 async function fetchProducts() {
@@ -18,15 +16,28 @@ async function fetchProducts() {
     grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:40px; color:#15558D; font-weight:bold;">🔄 Đang tải danh mục sản phẩm chính hãng...</div>';
     
     try {
-        const res = await fetch(`${CONFIG.SHEET_API}?action=getProducts`);
+        // Gọi trực tiếp URL không qua biến CONFIG trung gian
+        const res = await fetch(`${GOOGLE_SHEET_URL}?action=getProducts`);
         const data = await res.json();
         
-        allProducts = data.map((p, index) => ({
-            ...p,
-            id: `line_item_${index}`,
-            price: parseInt(p.price) || 0,
-            tag: p.tag ? String(p.tag).trim() : "" // Nhận diện cột tag từ Google Sheet
-        }));
+        allProducts = data.map((p, index) => {
+            const nameStr = p.name ? String(p.name).trim() : (p.tên ? String(p.tên).trim() : "");
+            const priceNum = parseInt(p.price) || parseInt(p.giá) || 0;
+            const categoryStr = p.category ? String(p.category).trim() : (p.danhmục ? String(p.danhmục).trim() : "Dược phẩm");
+            const unitStr = p.unit ? String(p.unit).trim() : (p.đơnvị ? String(p.đơnvị).trim() : "Hộp");
+            const imageStr = p.image ? String(p.image).trim() : (p.hìnhảnh ? String(p.hìnhảnh).trim() : "");
+            const tagStr = p.tag ? String(p.tag).trim() : "";
+
+            return {
+                id: `line_item_${index}`,
+                name: nameStr,
+                price: priceNum,
+                category: categoryStr,
+                unit: unitStr,
+                image: imageStr,
+                tag: tagStr
+            };
+        }).filter(p => p.name !== ""); 
         
         renderCategories();
         renderProducts(allProducts);
@@ -70,13 +81,13 @@ function renderProducts(products) {
                 <a href="#products" onclick="return false;">
                     <div class="product-img-wrap">
                         <span class="product-tag">${displayTag}</span>
-                        <img src="${p.image || 'placeholder.jpg'}" alt="${p.name}">
+                        <img src="${p.image || 'placeholder.jpg'}" alt="${p.name || 'Sản phẩm'}">
                     </div>
                     <div class="product-meta">
                         <span class="category-badge">${p.category || 'Dược phẩm'}</span>
                         <span class="unit-badge">${p.unit || 'Hộp'}</span>
                     </div>
-                    <h3>${p.name}</h3>
+                    <h3>${p.name || 'Sản phẩm không tên'}</h3>
                 </a>
                 <div class="product-bottom">
                     <div class="price">${p.price.toLocaleString('vi-VN')} đ</div>
@@ -109,7 +120,7 @@ window.updateCartItem = function(id, qty) {
             name: product.name,
             price: product.price,
             qty: qty,
-            unit: product.unit || 'Hộp',
+            unit: product.unit,
             tag: product.tag
         };
     }
@@ -217,7 +228,7 @@ document.getElementById('searchInput')?.addEventListener('input', (e) => {
     renderProducts(filtered);
 });
 
-// 7. SUBMIT FORM ĐƠN HÀNG (BẢN CHỐT HẠ KHÁNG LỖI UNDEFINED VÀO SHEET)
+// 7. SUBMIT FORM ĐƠN HÀNG
 document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -230,17 +241,16 @@ document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     const status = document.getElementById('submitStatus');
     if (btn) { btn.disabled = true; btn.innerText = "⏳ Đang gửi đơn hàng..."; }
     
-    // KIỂM TRA TAG AN TOÀN TUYỆT ĐỐI - NẾU LỖI HOẶC TRỐNG TỰ ĐỘNG THAY BẰNG [VietPOM]
     const itemsDetail = Object.keys(cart).map(id => {
         const item = cart[id];
-        let prefixTag = '[VietPOM]'; // Nhãn mặc định phòng hờ
+        let prefixTag = '[VietPOM]'; 
         
         if (item.tag && String(item.tag).trim() !== "" && String(item.tag).trim() !== "undefined") {
             const cleanTag = String(item.tag).trim();
             prefixTag = cleanTag.startsWith('[') ? cleanTag : `[${cleanTag}]`;
         }
         
-        return `${prefixTag} ${item.name || 'Sản phẩm'} (${item.qty} ${item.unit || 'Hộp'})`;
+        return `${prefixTag} ${item.name} (${item.qty} ${item.unit})`;
     }).join('\n');
     
     const subtotalAmount = Object.keys(cart).reduce((sum, id) => sum + (cart[id].price * cart[id].qty), 0);
@@ -259,7 +269,7 @@ document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     params.append('total', `${finalTotalAmount.toLocaleString('vi-VN')} đ`);
     
     try {
-        await fetch(CONFIG.SHEET_API, {
+        await fetch(GOOGLE_SHEET_URL, {
             method: 'POST',
             mode: 'no-cors',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
