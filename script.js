@@ -1,9 +1,8 @@
 /* ============================================================
-   BỘ MÃ LOGIC GIỎ HÀNG VIETPOM CHUẨN XÁC NỀN TẢNG (TỰ ĐỘNG TÍNH PHÍ SHIP)
+   BỘ MÃ LOGIC GIỎ HÀNG VIETPOM CHUẨN XÁC NỀN TẢNG (GỬI FORMDATA CHUẨN)
    ============================================================ */
 
 const CONFIG = {
-    // Anh dán đoạn URL Web App mới tinh vừa copy ở Bước 1 vào giữa hai dấu nháy dưới đây nhé:
     SHEET_API: "https://script.google.com/macros/s/AKfycbxxNhKcTgxtPQCVtl1brMMF0Wr0jtYZex1ueG74WJpRfa6AyabrOuzOZX8bcM5aLFdMVA/exec"
 };
 
@@ -21,7 +20,6 @@ async function fetchProducts() {
         const res = await fetch(`${CONFIG.SHEET_API}?action=getProducts`);
         const data = await res.json();
         
-        // ĐỊNH DANH ID THEO DÒNG ĐỂ SỬA LỖI TRÙNG TÊN CALCIUM TUYỆT ĐỐI
         allProducts = data.map((p, index) => ({
             ...p,
             id: `line_item_${index}`,
@@ -116,7 +114,6 @@ window.updateCartItem = function(id, qty) {
     updateCartSummary();
 };
 
-// Cập nhật giao diện nút bấm theo ID khóa cứng ngoài danh sách
 function updateSingleProductUI(id, qty) {
     const card = document.querySelector(`.product-card[data-id="${id}"]`);
     if (!card) return;
@@ -230,7 +227,7 @@ document.getElementById('searchInput')?.addEventListener('input', (e) => {
     renderProducts(filtered);
 });
 
-// 7. SUBMIT FORM ĐƠN HÀNG
+// 7. SUBMIT FORM ĐƠN HÀNG (SỬ DỤNG FORMDATA GỐC - KHÔNG SỢ SYNTAXERROR)
 document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -244,28 +241,28 @@ document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     if (btn) { btn.disabled = true; btn.innerText = "⏳ Đang gửi đơn hàng..."; }
     
     const itemsDetail = Object.keys(cart).map(id => `${cart[id].name} (${cart[id].qty} ${cart[id].unit})`).join('\n');
-    
     const subtotalAmount = Object.keys(cart).reduce((sum, id) => sum + (cart[id].price * cart[id].qty), 0);
     const shippingFee = (subtotalAmount > 0 && subtotalAmount < 1200000) ? 30000 : 0;
     const finalTotalAmount = subtotalAmount + shippingFee;
     
-    const params = new URLSearchParams();
-    params.append('action', 'submitOrder');
-    params.append('name', document.getElementById('customerName')?.value || '');
-    params.append('phone', document.getElementById('customerPhone')?.value || '');
-    params.append('address', document.getElementById('customerAddress')?.value || '');
-    params.append('taxId', document.getElementById('customerTaxId')?.value || '');
-    params.append('note', document.getElementById('customerNote')?.value || '');
-    params.append('items', itemsDetail);
-    params.append('shipping', shippingFee === 0 ? "Miễn phí" : `${shippingFee} đ`);
-    params.append('total', `${finalTotalAmount} đ`);
+    // Tạo FormData truyền thống
+    const formData = new FormData();
+    formData.append('action', 'submitOrder');
+    formData.append('name', document.getElementById('customerName')?.value || '');
+    formData.append('phone', document.getElementById('customerPhone')?.value || '');
+    formData.append('address', document.getElementById('customerAddress')?.value || '');
+    formData.append('taxId', document.getElementById('customerTaxId')?.value || '');
+    formData.append('note', document.getElementById('customerNote')?.value || '');
+    formData.append('items', itemsDetail);
+    formData.append('shipping', shippingFee === 0 ? "Miễn phí" : `${shippingFee} đ`);
+    formData.append('total', `${finalTotalAmount} đ`);
     
     try {
+        // Gửi bằng FormData giúp trình duyệt tự xử lý mã hóa ký tự đặc biệt cực chuẩn
         await fetch(CONFIG.SHEET_API, {
             method: 'POST',
             mode: 'no-cors',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: params.toString()
+            body: formData
         });
         
         if (status) {
