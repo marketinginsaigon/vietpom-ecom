@@ -1,5 +1,5 @@
 /* ============================================================
-   BỘ MÃ LOGIC GIỎ HÀNG VIETPOM CHUẨN XÁC NỀN TẢNG (CÓ NÚT TĂNG GIẢM TRONG GIỎ)
+   BỘ MÃ LOGIC GIỎ HÀNG VIETPOM CHUẨN XÁC NỀN TẢNG (TỰ ĐỘNG TÍNH PHÍ SHIP)
    ============================================================ */
 
 const CONFIG = {
@@ -136,14 +136,16 @@ function updateSingleProductUI(id, qty) {
     }
 }
 
-// 5. TỔNG HỢP GIỎ HÀNG (ĐÃ THÊM BỘ NÚT TĂNG GIẢM ĐỒNG BỘ CHUẨN ĐẸP)
+// 5. TỔNG HỢP GIỎ HÀNG VÀ TỰ ĐỘNG TÍNH SHIP CHUẨN XÁC
 function updateCartSummary() {
     const cartItems = document.getElementById('cartItems');
     const headerCount = document.getElementById('headerCartCount');
     const subtotalText = document.getElementById('subtotalText');
+    const shippingText = document.getElementById('shippingText');
     const totalText = document.getElementById('totalText');
     const quickCount = document.getElementById('quickProductCount');
     const quickTotalText = document.getElementById('quickTotalText');
+    const summaryNote = document.querySelector('.summary-note');
     
     let totalItems = 0;
     let subtotal = 0;
@@ -154,7 +156,6 @@ function updateCartSummary() {
         totalItems += item.qty;
         subtotal += item.price * item.qty;
         
-        // Đoạn HTML tích hợp thêm bộ tăng giảm số lượng mini gọn đẹp ngay bên phải tên thuốc
         html += `
             <div class="cart-item" style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid #e2e8f0;">
                 <div style="flex-grow:1; padding-right:10px;">
@@ -175,13 +176,43 @@ function updateCartSummary() {
         `;
     }
     
+    // --- KHỐI LOGIC TÍNH PHÍ VẬN CHUYỂN TỰ ĐỘNG ---
+    let shippingFee = 0;
+    if (subtotal > 0 && subtotal < 1200000) {
+        shippingFee = 30000; // Đơn dưới 1tr2 tính phí 30k
+    }
+    let finalTotal = subtotal + shippingFee;
+    
+    // Cập nhật text hiển thị phí giao hàng
+    if (shippingText) {
+        if (subtotal === 0) {
+            shippingText.innerText = "0 đ";
+        } else if (shippingFee === 0) {
+            shippingText.innerText = "Miễn phí";
+            shippingText.style.color = "#15558D";
+        } else {
+            shippingText.innerText = `${shippingFee.toLocaleString('vi-VN')} đ`;
+            shippingText.style.color = "#333333";
+        }
+    }
+
+    // Cập nhật câu chữ nhắc nhở khách mua hàng thông minh ở ô màu xám bên dưới
+    if (summaryNote) {
+        if (subtotal > 0 && subtotal < 1200000) {
+            const missingAmount = 1200000 - subtotal;
+            summaryNote.innerHTML = `<strong>Ưu đãi hiện tại</strong><p>Mua thêm <b>${missingAmount.toLocaleString('vi-VN')} đ</b> để được <b>Miễn phí giao hàng (Freeship)</b>.</p>`;
+        } else {
+            summaryNote.innerHTML = `<strong>Ưu đãi hiện tại</strong><p>Đơn từ 1.200.000đ được miễn phí giao hàng (Freeship).</p>`;
+        }
+    }
+    
     if (cartItems) cartItems.innerHTML = html || '<div style="text-align:center; padding:30px; color:#64748b; font-size:14px;">Anh/Chị chưa chọn sản phẩm nào.</div>';
     if (headerCount) headerCount.innerText = totalItems;
     if (quickCount) quickCount.innerText = totalItems;
     
     if (subtotalText) subtotalText.innerText = `${subtotal.toLocaleString('vi-VN')} đ`;
-    if (totalText) totalText.innerText = `${subtotal.toLocaleString('vi-VN')} đ`;
-    if (quickTotalText) quickTotalText.innerText = `${subtotal.toLocaleString('vi-VN')} đ`;
+    if (totalText) totalText.innerText = `${finalTotal.toLocaleString('vi-VN')} đ`;
+    if (quickTotalText) quickTotalText.innerText = `${finalTotal.toLocaleString('vi-VN')} đ`;
 }
 
 // 6. TÌM KIẾM SẢN PHẨM
@@ -201,7 +232,7 @@ document.getElementById('searchInput')?.addEventListener('input', (e) => {
     renderProducts(filtered);
 });
 
-// 7. SUBMIT FORM ĐƠN HÀNG
+// 7. SUBMIT FORM ĐƠN HÀNG VỀ GOOGLE SHEET (GỬI KÈM THEO PHÍ SHIP ĐỂ SHEET KHÔNG BỊ SAI TIỀN)
 document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -215,12 +246,17 @@ document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     if (btn) { btn.disabled = true; btn.innerText = "⏳ Đang gửi đơn hàng..."; }
     
     const itemsDetail = Object.keys(cart).map(id => `${cart[id].name} (${cart[id].qty} ${cart[id].unit})`).join('\n');
-    const totalAmount = Object.keys(cart).reduce((sum, id) => sum + (cart[id].price * cart[id].qty), 0);
+    
+    // Tính lại chuẩn xác tổng cuối cùng bao gồm ship trước khi bắn data đi
+    const subtotalAmount = Object.keys(cart).reduce((sum, id) => sum + (cart[id].price * cart[id].qty), 0);
+    const shippingFee = (subtotalAmount > 0 && subtotalAmount < 1200000) ? 30000 : 0;
+    const finalTotalAmount = subtotalAmount + shippingFee;
     
     const formData = new FormData(e.target);
     formData.append('action', 'submitOrder');
     formData.append('items', itemsDetail);
-    formData.append('total', totalAmount);
+    formData.append('shipping', shippingFee === 0 ? "Miễn phí" : `${shippingFee} đ`);
+    formData.append('total', finalTotalAmount);
     
     try {
         const res = await fetch(CONFIG.SHEET_API, { method: 'POST', body: formData });
