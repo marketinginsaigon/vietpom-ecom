@@ -1,5 +1,5 @@
 /* ============================================================
-   BỘ MÃ LOGIC GIỎ HÀNG VIETPOM CHUẨN XÁC NỀN TẢNG
+   BỘ MÃ LOGIC GIỎ HÀNG VIETPOM CHUẨN XÁC NỀN TẢNG (CÓ NÚT TĂNG GIẢM TRONG GIỎ)
    ============================================================ */
 
 const CONFIG = {
@@ -115,7 +115,7 @@ window.updateCartItem = function(id, qty) {
     updateCartSummary();
 };
 
-// Cập nhật giao diện nút bấm theo ID khóa cứng
+// Cập nhật giao diện nút bấm theo ID khóa cứng ngoài danh sách
 function updateSingleProductUI(id, qty) {
     const card = document.querySelector(`.product-card[data-id="${id}"]`);
     if (!card) return;
@@ -136,7 +136,7 @@ function updateSingleProductUI(id, qty) {
     }
 }
 
-// 5. TỔNG HỢP GIỎ HÀNG
+// 5. TỔNG HỢP GIỎ HÀNG (ĐÃ THÊM BỘ NÚT TĂNG GIẢM ĐỒNG BỘ CHUẨN ĐẸP)
 function updateCartSummary() {
     const cartItems = document.getElementById('cartItems');
     const headerCount = document.getElementById('headerCartCount');
@@ -154,20 +154,28 @@ function updateCartSummary() {
         totalItems += item.qty;
         subtotal += item.price * item.qty;
         
+        // Đoạn HTML tích hợp thêm bộ tăng giảm số lượng mini gọn đẹp ngay bên phải tên thuốc
         html += `
-            <div class="cart-item" style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #e2e8f0;">
+            <div class="cart-item" style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid #e2e8f0;">
                 <div style="flex-grow:1; padding-right:10px;">
-                    <div style="font-weight:bold; font-size:14px; color:#333;">${item.name}</div>
-                    <div style="font-size:12px; color:#64748b;">${item.price.toLocaleString('vi-VN')} đ x ${item.qty} ${item.unit}</div>
+                    <div style="font-weight:bold; font-size:14px; color:#15558D;">${item.name}</div>
+                    <div style="font-size:12px; color:#64748b; margin-top:2px;">${item.price.toLocaleString('vi-VN')} đ / ${item.unit}</div>
                 </div>
-                <div style="font-weight:bold; color:#15558D; min-width:80px; text-align:right;">
+                
+                <div style="display:flex; align-items:center; gap:8px; margin-right:15px; flex-shrink:0;">
+                    <button onclick="updateCartItem('${id}', ${item.qty - 1})" style="width:24px; height:24px; background:#e2e8f0; border:none; border-radius:4px; font-weight:bold; cursor:pointer; color:#475569; display:flex; align-items:center; justify-content:center;">-</button>
+                    <span style="font-weight:bold; font-size:14px; color:#15558D; min-width:16px; text-align:center;">${item.qty}</span>
+                    <button onclick="updateCartItem('${id}', ${item.qty + 1})" style="width:24px; height:24px; background:#15558D; border:none; border-radius:4px; font-weight:bold; cursor:pointer; color:#fff; display:flex; align-items:center; justify-content:center;">+</button>
+                </div>
+
+                <div style="font-weight:bold; color:#15558D; min-width:85px; text-align:right; flex-shrink:0; font-size:14px;">
                     ${(item.price * item.qty).toLocaleString('vi-VN')} đ
                 </div>
             </div>
         `;
     }
     
-    if (cartItems) cartItems.innerHTML = html || '<div style="text-align:center; padding:20px; color:#64748b;">Anh/Chị chưa chọn sản phẩm nào.</div>';
+    if (cartItems) cartItems.innerHTML = html || '<div style="text-align:center; padding:30px; color:#64748b; font-size:14px;">Anh/Chị chưa chọn sản phẩm nào.</div>';
     if (headerCount) headerCount.innerText = totalItems;
     if (quickCount) quickCount.innerText = totalItems;
     
