@@ -1,9 +1,9 @@
 /* ============================================================
-   BỘ MÃ LOGIC GIỎ HÀNG VIETPOM - PHIÊN BẢN HIỂN THỊ TAG ĐỘNG
+   BỘ MÃ LOGIC GIỎ HÀNG VIETPOM - PHIÊN BẢN HIỂN THỊ TAG ĐỘNG CHUẨN XÁC
    ============================================================ */
 
 const CONFIG = {
-    // Anh dán URL Apps Script mới chạy ở Bước 1 của anh vào đây nhé
+    // Anh dán URL Apps Script mới chạy ở Bước 1 của anh vào giữa 2 dấu nháy dưới đây nhé
     SHEET_API: "https://script.google.com/macros/s/AKfycbxxNhKcTgxtPQCVtl1brMMF0Wr0jtYZex1ueG74WJpRfa6AyabrOuzOZX8bcM5aLFdMVA/exec"
 };
 
@@ -25,7 +25,7 @@ async function fetchProducts() {
             ...p,
             id: `line_item_${index}`,
             price: parseInt(p.price) || 0,
-            tag: p.tag ? String(p.tag).trim() : "" // Đọc cột tag động từ Google Sheet
+            tag: p.tag ? String(p.tag).trim() : "" // Nhận diện cột tag từ Google Sheet
         }));
         
         renderCategories();
@@ -51,7 +51,7 @@ function renderCategories() {
     });
 }
 
-// 3. RENDER DANH SÁCH RA LƯỚI (HIỂN THỊ TAG LÊN ẢNH SẢN PHẨM)
+// 3. RENDER DANH SÁCH RA LƯỚI
 function renderProducts(products) {
     const grid = document.getElementById('productGrid');
     if (!grid) return;
@@ -63,7 +63,6 @@ function renderProducts(products) {
     
     grid.innerHTML = products.map(p => {
         const currentQty = cart[p.id] ? cart[p.id].qty : 0;
-        // Nếu trên sheet anh nhập tag có hoặc không có dấu ngoặc [], web tự động hiển thị sạch đẹp
         const displayTag = p.tag ? p.tag.replace(/[\[\]]/g, '') : 'HD'; 
         
         return `
@@ -111,7 +110,7 @@ window.updateCartItem = function(id, qty) {
             price: product.price,
             qty: qty,
             unit: product.unit || 'Hộp',
-            tag: product.tag // Lưu kèm tag nhà cung cấp riêng của sản phẩm này vào giỏ
+            tag: product.tag
         };
     }
     
@@ -218,7 +217,7 @@ document.getElementById('searchInput')?.addEventListener('input', (e) => {
     renderProducts(filtered);
 });
 
-// 7. SUBMIT FORM ĐƠN HÀNG (TỰ ĐỘNG LẤY TAG ĐỘNG TỪNG SẢN PHẨM GHÉP VÀO ĐƠN TRẢ VỀ)
+// 7. SUBMIT FORM ĐƠN HÀNG (MÃ HÓA BIẾN CHUẨN X-WWW-FORM-URLENCODED)
 document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -231,7 +230,7 @@ document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     const status = document.getElementById('submitStatus');
     if (btn) { btn.disabled = true; btn.innerText = "⏳ Đang gửi đơn hàng..."; }
     
-    // TỰ ĐỘNG GHÉP TAG TỪNG SẢN PHẨM (Ví dụ: [VietPOM] Tên SP hoặc [HoneyLand] Tên SP)
+    // TỰ ĐỘNG GHÉP TAG ĐỘNG TỪNG SẢN PHẨM (Ví dụ: [KA] Amoxicillin... hoặc [HD] Berocca...)
     const itemsDetail = Object.keys(cart).map(id => {
         const item = cart[id];
         const prefixTag = item.tag ? (item.tag.startsWith('[') ? item.tag : `[${item.tag}]`) : '[VietPOM]';
@@ -242,6 +241,7 @@ document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     const shippingFee = (subtotalAmount > 0 && subtotalAmount < 1200000) ? 30000 : 0;
     const finalTotalAmount = subtotalAmount + shippingFee;
     
+    // Tạo chuỗi tham số mã hóa an toàn bằng URLSearchParams gốc của trình duyệt
     const params = new URLSearchParams();
     params.append('action', 'submitOrder');
     params.append('name', document.getElementById('customerName')?.value || '');
