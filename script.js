@@ -3,7 +3,7 @@
    ============================================================ */
 
 const CONFIG = {
-    SHEET_API: "https://script.google.com/macros/s/AKfycbxxNhKcTgxtPQCVtl1brMMF0Wr0jtYZex1ueG74WJpRfa6AyabrOuzOZX8bcM5aLFdMVA/exec"
+    SHEET_API: "https://script.google.com/macros/s/AKfycbxRJ5F7lJ4uBkZZ0mRGIhQjbcNKqvwetmJoRfAQgihFqJSlYXRXAWEvFMoDc-v8QflQPg/exec"
 };
 
 let allProducts = [];
