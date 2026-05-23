@@ -1,5 +1,5 @@
 /* ============================================================
-   BỘ MÃ LOGIC GIỎ HÀNG VIETPOM - PHIÊN BẢN TRUYỀN DỮ LIỆU POST CHUẨN
+   BỘ MÃ LOGIC GIỎ HÀNG VIETPOM - PHIÊN BẢN CHỐNG LỖI VALUE 100%
    ============================================================ */
 
 let allProducts = [];
@@ -7,6 +7,12 @@ let cart = {};
 
 // ĐƯỜNG DẪN WEB APP APPS SCRIPT ĐANG CHẠY CỦA ANH
 const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxxNhKcTgxtPQCVtl1brMMF0Wr0jtYZex1ueG74WJpRfa6AyabrOuzOZX8bcM5aLFdMVA/exec";
+
+// Hàm lấy giá trị an toàn từ các ô input, nếu không có ô đó thì trả về chuỗi rỗng chứ không sập code
+function getInputValueSafely(id) {
+    const element = document.getElementById(id);
+    return element ? element.value : '';
+}
 
 // 1. TẢI SẢN PHẨM TỪ GOOGLE SHEET
 async function fetchProducts() {
@@ -231,7 +237,7 @@ document.getElementById('searchInput')?.addEventListener('input', (e) => {
     renderProducts(filtered);
 });
 
-// 7. SUBMIT FORM ĐƠN HÀNG (ĐỒNG BỘ PHƯƠNG THỨC POST CHUẨN X-WWW-FORM)
+// 7. SUBMIT FORM ĐƠN HÀNG (SỬ DỤNG HÀM LẤY GIÁ TRỊ AN TOÀN CHỐNG LỖI VALUE)
 document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -258,30 +264,32 @@ document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     const shippingFee = (subtotalAmount > 0 && subtotalAmount < 1200000) ? 30000 : 0;
     const finalTotalAmount = subtotalAmount + shippingFee;
     
-    // Đóng gói tham số dạng Form URL-encoded truyền thống gửi thẳng vào POST body
-    const formParams = new URLSearchParams();
-    formParams.append('action', 'submitOrder');
-    formParams.append('name', document.getElementById('customerName')?.value || '');
-    formParams.append('phone', document.getElementById('customerPhone')?.value || '');
-    formParams.append('address', document.getElementById('customerAddress')?.value || '');
-    formParams.append('taxId', document.getElementById('customerTaxId')?.value || '');
-    formParams.append('note', document.getElementById('customerNote')?.value || '');
-    formParams.append('items', itemsDetail); 
-    formParams.append('total', `${finalTotalAmount.toLocaleString('vi-VN')} đ`);
+    // Đóng gói tham số an toàn bằng hàm bọc bảo vệ getInputValueSafely
+    const urlParams = new URLSearchParams();
+    urlParams.append('action', 'submitOrder');
+    urlParams.append('name', getInputValueSafely('customerName'));
+    urlParams.append('phone', getInputValueSafely('customerPhone'));
+    urlParams.append('address', getInputValueSafely('customerAddress'));
+    urlParams.append('taxId', getInputValueSafely('customerTaxId'));
+    urlParams.append('note', getInputValueSafely('customerNote'));
+    urlParams.append('items', itemsDetail); 
+    urlParams.append('total', `${finalTotalAmount.toLocaleString('vi-VN')} đ`);
     
     try {
-        await fetch(GOOGLE_SHEET_URL, {
+        const logStatus = document.getElementById('submitStatus');
+        if (logStatus) { logStatus.innerText = "⏳ Hệ thống đang kết nối đường truyền..."; logStatus.classList.remove('hidden'); }
+
+        await fetch(`${GOOGLE_SHEET_URL}?${urlParams.toString()}`, {
             method: 'POST',
-            mode: 'no-cors', // Cho phép gửi xuyên miền an toàn sang script.google
+            mode: 'no-cors',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: formParams.toString()
+            body: urlParams.toString()
         });
         
         if (status) {
             status.className = "submit-status text-success";
             status.style.color = "#15558D";
             status.innerHTML = "🎉 <b>Gửi đơn thành công!</b> Hệ thống đã ghi nhận đơn hàng của Anh/Chị.";
-            status.classList.remove('hidden');
         }
         cart = {};
         updateCartSummary();
@@ -290,6 +298,11 @@ document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
         
     } catch (err) {
         console.error("Lỗi gửi đơn:", err);
+        if (status) {
+            status.className = "submit-status text-danger";
+            status.style.color = "red";
+            status.innerText = "Lỗi đường truyền giao diện: " + err.toString();
+        }
     } finally {
         if (btn) { btn.disabled = false; btn.innerText = "Gửi đơn hàng ngay"; }
     }
