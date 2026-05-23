@@ -1,5 +1,5 @@
 /* ============================================================
-   BỘ MÃ LOGIC GIỎ HÀNG VIETPOM - BẢN SỬA LỖI CONFIG IS NOT DEFINED
+   BỘ MÃ LOGIC GIỎ HÀNG VIETPOM - PHIÊN BẢN KHÁNG LỖI SẬP REPLACE 100%
    ============================================================ */
 
 let allProducts = [];
@@ -16,7 +16,6 @@ async function fetchProducts() {
     grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:40px; color:#15558D; font-weight:bold;">🔄 Đang tải danh mục sản phẩm chính hãng...</div>';
     
     try {
-        // Gọi trực tiếp URL không qua biến CONFIG trung gian
         const res = await fetch(`${GOOGLE_SHEET_URL}?action=getProducts`);
         const data = await res.json();
         
@@ -26,7 +25,9 @@ async function fetchProducts() {
             const categoryStr = p.category ? String(p.category).trim() : (p.danhmục ? String(p.danhmục).trim() : "Dược phẩm");
             const unitStr = p.unit ? String(p.unit).trim() : (p.đơnvị ? String(p.đơnvị).trim() : "Hộp");
             const imageStr = p.image ? String(p.image).trim() : (p.hìnhảnh ? String(p.hìnhảnh).trim() : "");
-            const tagStr = p.tag ? String(p.tag).trim() : "";
+            
+            // Ép kiểu chuỗi ngay từ lúc nhận dữ liệu
+            const tagStr = (p.tag !== null && p.tag !== undefined) ? String(p.tag).trim() : "";
 
             return {
                 id: `line_item_${index}`,
@@ -74,7 +75,9 @@ function renderProducts(products) {
     
     grid.innerHTML = products.map(p => {
         const currentQty = cart[p.id] ? cart[p.id].qty : 0;
-        const displayTag = p.tag ? p.tag.replace(/[\[\]]/g, '') : 'HD'; 
+        
+        // SỬA LỖI TẠI ĐÂY: Bảo vệ an toàn tuyệt đối bằng cách kiểm tra chuỗi rỗng trước khi xử lý replace
+        const displayTag = (p.tag && p.tag !== "undefined" && p.tag !== "") ? p.tag.replace(/[\[\]]/g, '') : 'HD'; 
         
         return `
             <div class="product-card" data-id="${p.id}">
