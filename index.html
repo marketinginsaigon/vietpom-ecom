@@ -11,7 +11,7 @@
   <title>VietPOM - Danh Mục Sản Phẩm</title>
   <meta name="description" content="Chọn sản phẩm, tổng hợp đơn hàng và gửi về Google Sheet." />
   
-  <link rel="stylesheet" href="style.css?v=FIX_SPACE_AND_MOBILE_GRID" />
+  <link rel="stylesheet" href="style.css?v=DESKTOP_4_COLUMNS" />
   
   <style>
     /* ============================================================
@@ -35,21 +35,37 @@
     *, *::before, *::after { box-sizing: border-box !important; }
     body { overflow-x: hidden !important; }
 
-    /* TRIỆT TIÊU KHOẢNG TRẮNG DƯ THỪA TRÊN DESKTOP */
+    /* ============================================================
+       CẤU HÌNH LƯỚI 4 SẢN PHẨM / HÀNG TRÊN DESKTOP (MÀN HÌNH LỚN)
+       ============================================================ */
+    #productGrid {
+      display: grid !important;
+      grid-template-columns: repeat(4, minmax(0, 1fr)) !important; /* Ép cứng 4 cột đều nhau */
+      gap: 16px !important; /* Khoảng cách giữa các thẻ trên desktop */
+      width: 100% !important;
+    }
+
+    /* Tối ưu hóa thẻ sản phẩm chống khoảng trống, ôm sát nội dung */
     .product-card {
       display: flex !important;
       flex-direction: column !important;
       height: 100% !important;
+      background: #fff !important;
+      border: 1px solid #e2e8f0 !important;
+      border-radius: 8px !important;
+      padding: 12px !important;
     }
     .product-card > a {
       display: flex !important;
       flex-direction: column !important;
       flex-grow: 1 !important;
+      text-decoration: none !important;
     }
-    /* Ép phần giá và nút luôn áp sát lên trên, triệt tiêu khoảng trống của thẻ note đã ẩn */
+    /* Đẩy phần giá tiền và các dòng tính toán xuống sát đáy thẻ */
     .product-card .price-row, .product-card .price {
       margin-top: auto !important; 
     }
+    /* Triệt tiêu hoàn toàn khoảng trắng của các phần tử mô tả đã ẩn */
     .product-card .note, .product-card p[class*="note"], .product-card span[class*="note"] {
       display: none !important;
       height: 0 !important;
@@ -57,7 +73,7 @@
       padding: 0 !important;
     }
 
-    /* CSS Khối Đăng ký Đại lý mới dưới Banner */
+    /* CSS Khối Đăng ký Đại lý dưới Banner */
     .banner-register-box {
       margin-top: 15px;
       padding: 15px;
@@ -97,7 +113,7 @@
     .btn-banner-reg:hover { background-color: #0F4373 !important; }
 
     /* ============================================================
-       ĐẶC TRỊ MOBILE: 2 CỘT NỀN TẢNG - XẾP LỌC ĐỀU 4 SẢN PHẨM
+       ĐẶC TRỊ MOBILE: CO GIÃN 2 CỘT TỰ NHIÊN - CẤU TRÚC DỌC KHÔNG LỖI
        ============================================================ */
     @media (max-width: 768px) {
       .banner-register-box { padding: 12px; margin-top: 12px; }
@@ -105,43 +121,30 @@
       .banner-register-box p { font-size: 12px !important; margin: 0 0 10px 0 !important; }
       .btn-banner-reg { height: 36px !important; font-size: 13px !important; }
 
-      /* Khung lưới Grid cố định 2 cột hoàn hảo */
+      /* Khung lưới trên mobile giữ vững phong độ 2 cột gọn đẹp */
       #productGrid {
-        display: grid !important;
         grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
         gap: 8px !important;
         padding: 8px !important;
-        width: 100% !important;
-        margin: 0 !important;
       }
 
-      /* Thẻ sản phẩm co giãn theo trục dọc */
       .product-card {
-        display: flex !important;
-        flex-direction: column !important;
-        height: 100% !important;
-        background: #fff !important;
-        border: 1px solid #e2e8f0 !important;
-        border-radius: 8px !important;
         padding: 8px !important;
         position: relative !important;
         overflow: hidden !important;
       }
 
-      /* Bẻ gãy hoàn toàn hàng ngang của thẻ a bên trong do script chi phối */
+      /* Bẻ gãy hoàn toàn hàng ngang của thẻ a do script chi phối */
       .product-card > a {
-        display: flex !important;
         flex-direction: column !important; 
-        flex-grow: 1 !important;
         width: 100% !important;
         height: auto !important;
-        text-decoration: none !important;
         background: transparent !important;
         padding: 0 !important;
         margin: 0 !important;
       }
 
-      /* Khung ảnh */
+      /* Khung ảnh trên mobile */
       .product-img-wrap {
         width: 100% !important;
         height: 100px !important;
@@ -151,7 +154,6 @@
         margin: 0 0 8px 0 !important;
         position: relative !important;
         background: transparent !important;
-        padding: 0 !important;
       }
       .product-card img {
         max-height: 90px !important;
@@ -161,7 +163,7 @@
         margin: 0 auto !important;
       }
 
-      /* Phần meta danh mục/đơn vị */
+      /* Phần meta đơn vị */
       .product-meta {
         display: flex !important;
         justify-content: space-between !important;
@@ -171,7 +173,7 @@
         width: 100% !important;
       }
 
-      /* Tên thuốc: Khóa cứng tối đa 2 dòng để 4 sản phẩm luôn cao bằng nhau */
+      /* Tên thuốc khóa chuẩn 2 dòng */
       .product-card h3 {
         font-size: 13px !important;
         line-height: 1.3 !important;
@@ -186,7 +188,7 @@
         height: 34px !important;
       }
 
-      /* Giá tiền ép chặt xuống đáy */
+      /* Giá tiền ép cứng dưới đáy */
       .product-card .price {
         font-size: 14px !important;
         color: #E60000 !important;
@@ -198,7 +200,7 @@
         position: static !important;
       }
 
-      /* Nút chọn mua */
+      /* Nút bấm trên mobile */
       .add-btn, .product-card button {
         width: 100% !important;
         height: 34px !important;
@@ -214,7 +216,7 @@
         position: static !important;
       }
 
-      /* Cụm tăng giảm (+ -) */
+      /* Bộ tăng giảm số lượng (+ -) */
       .qty-control {
         display: flex !important;
         flex-direction: row !important;
@@ -371,6 +373,6 @@
     </div>
   </footer>
 
-  <script src="script.js?v=FIX_SPACE_AND_MOBILE_GRID"></script>
+  <script src="script.js?v=DESKTOP_4_COLUMNS"></script>
 </body>
 </html>
