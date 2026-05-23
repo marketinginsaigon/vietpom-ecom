@@ -1,17 +1,16 @@
 /* ============================================================
-   BỘ MÃ LOGIC GIỎ HÀNG VIETPOM - PHIÊN BẢN CHỐNG LỖI VALUE 100%
+   BỘ MÃ LOGIC GIỎ HÀNG VIETPOM - PHIÊN BẢN ĐỒNG BỘ TOÀN DIỆN CHỐT HẠ
    ============================================================ */
 
 let allProducts = [];
 let cart = {};
 
-// ĐƯỜNG DẪN WEB APP APPS SCRIPT ĐANG CHẠY CỦA ANH
+// ĐƯỜNG DẪN WEB APP APPS SCRIPT GỐC ĐANG CHẠY CỦA ANH
 const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxxNhKcTgxtPQCVtl1brMMF0Wr0jtYZex1ueG74WJpRfa6AyabrOuzOZX8bcM5aLFdMVA/exec";
 
-// Hàm lấy giá trị an toàn từ các ô input, nếu không có ô đó thì trả về chuỗi rỗng chứ không sập code
 function getInputValueSafely(id) {
     const element = document.getElementById(id);
-    return element ? element.value : '';
+    return element ? element.value.trim() : '';
 }
 
 // 1. TẢI SẢN PHẨM TỪ GOOGLE SHEET
@@ -26,15 +25,17 @@ async function fetchProducts() {
         const data = await res.json();
         
         allProducts = data.map((p, index) => {
-            const nameStr = p.name ? String(p.name).trim() : (p.tên ? String(p.tên).trim() : "");
-            const priceNum = parseInt(p.price) || parseInt(p.giá) || 0;
-            const categoryStr = p.category ? String(p.category).trim() : (p.danhmục ? String(p.danhmục).trim() : "Dược phẩm");
-            const unitStr = p.unit ? String(p.unit).trim() : (p.đơnvị ? String(p.đơnvị).trim() : "Hộp");
-            const imageStr = p.image ? String(p.image).trim() : (p.hìnhảnh ? String(p.hìnhảnh).trim() : "");
+            // Đồng bộ lọc mọi kiểu chữ Hoa/thường từ file Excel của anh đổ về
+            const nameStr = p.name ? String(p.name).trim() : (p.Name ? String(p.Name).trim() : (p.tên ? String(p.tên).trim() : ""));
+            const priceNum = parseInt(p.price) || parseInt(p.Price) || parseInt(p.giá) || 0;
+            const categoryStr = p.category ? String(p.category).trim() : (p.Category ? String(p.Category).trim() : (p.danhmục ? String(p.danhmục).trim() : "Dược phẩm"));
+            const unitStr = p.unit ? String(p.unit).trim() : (p.Unit ? String(p.Unit).trim() : (p.đơnvị ? String(p.đơnvị).trim() : "Hộp"));
+            const imageStr = p.image ? String(p.image).trim() : (p.Image ? String(p.Image).trim() : (p.hìnhảnh ? String(p.hìnhảnh).trim() : ""));
             
             let tagStr = "";
-            if (p.tag !== null && p.tag !== undefined) {
-                tagStr = String(p.tag).trim().replace(/[\[\]]/g, ''); 
+            let rawTag = p.tag || p.Tag || "";
+            if (rawTag !== null && rawTag !== undefined) {
+                tagStr = String(rawTag).trim().replace(/[\[\]]/g, ''); 
             }
 
             return {
@@ -71,7 +72,7 @@ function renderCategories() {
     });
 }
 
-// 3. RENDER DANH SÁCH RA LƯỚI
+// 3. RENDER DANH SÁCH RA LƯỚI (KHÔI PHỤC NÚT TĂNG GIẢM GỐC 100%)
 function renderProducts(products) {
     const grid = document.getElementById('productGrid');
     if (!grid) return;
@@ -158,7 +159,7 @@ function updateSingleProductUI(id, qty) {
     }
 }
 
-// 5. TỔNG HỢP GIỎ HÀNG VÀ TÍNH SHIP
+// 5. TỔNG HỢP GIỎ HÀNG VÀ TÍNH FREESHIP CHUẨN XÁC GIỮ NGUYÊN GIAO DIỆN GỐC
 function updateCartSummary() {
     const cartItems = document.getElementById('cartItems');
     const headerCount = document.getElementById('headerCartCount');
@@ -207,6 +208,7 @@ function updateCartSummary() {
         else { shippingText.innerText = `${shippingFee.toLocaleString('vi-VN')} đ`; shippingText.style.color = "#333333"; }
     }
 
+    // HIỂN THỊ CÂU CHỮ TÍNH TOÁN FREESHIP GỐC
     if (summaryNote) {
         if (subtotal > 0 && subtotal < 1200000) {
             const missingAmount = 1200000 - subtotal;
@@ -237,14 +239,10 @@ document.getElementById('searchInput')?.addEventListener('input', (e) => {
     renderProducts(filtered);
 });
 
-// 7. SUBMIT FORM ĐƠN HÀNG (SỬ DỤNG HÀM LẤY GIÁ TRỊ AN TOÀN CHỐNG LỖI VALUE)
+// 7. SUBMIT FORM ĐƠN HÀNG
 document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
-    
-    if (Object.keys(cart).length === 0) {
-        alert("Giỏ hàng đang trống, Anh/Chị vui lòng chọn ít nhất 1 sản phẩm trước khi gửi đơn nha.");
-        return;
-    }
+    if (Object.keys(cart).length === 0) { alert("Giỏ hàng đang trống nha anh!"); return; }
     
     const btn = document.getElementById('submitButton');
     const status = document.getElementById('submitStatus');
@@ -264,45 +262,36 @@ document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     const shippingFee = (subtotalAmount > 0 && subtotalAmount < 1200000) ? 30000 : 0;
     const finalTotalAmount = subtotalAmount + shippingFee;
     
-    // Đóng gói tham số an toàn bằng hàm bọc bảo vệ getInputValueSafely
-    const urlParams = new URLSearchParams();
-    urlParams.append('action', 'submitOrder');
-    urlParams.append('name', getInputValueSafely('customerName'));
-    urlParams.append('phone', getInputValueSafely('customerPhone'));
-    urlParams.append('address', getInputValueSafely('customerAddress'));
-    urlParams.append('taxId', getInputValueSafely('customerTaxId'));
-    urlParams.append('note', getInputValueSafely('customerNote'));
-    urlParams.append('items', itemsDetail); 
-    urlParams.append('total', `${finalTotalAmount.toLocaleString('vi-VN')} đ`);
+    const formParams = new URLSearchParams();
+    formParams.append('action', 'submitOrder');
+    formParams.append('name', getInputValueSafely('customerName') || getInputValueSafely('name'));
+    formParams.append('phone', getInputValueSafely('customerPhone') || getInputValueSafely('phone'));
+    formParams.append('address', getInputValueSafely('customerAddress') || getInputValueSafely('address'));
+    formParams.append('taxId', getInputValueSafely('customerTaxId') || getInputValueSafely('taxId'));
+    formParams.append('note', getInputValueSafely('customerNote') || getInputValueSafely('note'));
+    formParams.append('items', itemsDetail); 
+    formParams.append('total', `${finalTotalAmount}`); // Chỉ truyền số thuần túy sang để cứu tóm tắt Sheet
     
     try {
-        const logStatus = document.getElementById('submitStatus');
-        if (logStatus) { logStatus.innerText = "⏳ Hệ thống đang kết nối đường truyền..."; logStatus.classList.remove('hidden'); }
-
-        await fetch(`${GOOGLE_SHEET_URL}?${urlParams.toString()}`, {
+        await fetch(GOOGLE_SHEET_URL, {
             method: 'POST',
             mode: 'no-cors',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: urlParams.toString()
+            body: formParams.toString()
         });
         
         if (status) {
             status.className = "submit-status text-success";
             status.style.color = "#15558D";
             status.innerHTML = "🎉 <b>Gửi đơn thành công!</b> Hệ thống đã ghi nhận đơn hàng của Anh/Chị.";
+            status.classList.remove('hidden');
         }
         cart = {};
         updateCartSummary();
         renderProducts(allProducts);
         e.target.reset();
-        
     } catch (err) {
         console.error("Lỗi gửi đơn:", err);
-        if (status) {
-            status.className = "submit-status text-danger";
-            status.style.color = "red";
-            status.innerText = "Lỗi đường truyền giao diện: " + err.toString();
-        }
     } finally {
         if (btn) { btn.disabled = false; btn.innerText = "Gửi đơn hàng ngay"; }
     }
