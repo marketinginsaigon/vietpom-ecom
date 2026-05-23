@@ -1,5 +1,5 @@
 /* ============================================================
-   BỘ MÃ LOGIC GIỎ HÀNG VIETPOM CHUẨN XÁC - PHIÊN BẢN LÀM GỌN TỐI ƯU
+   BỘ MÃ LOGIC GIỎ HÀNG VIETPOM - BẢN LÀM GỌN BỌC THÉP 100%
    ============================================================ */
 
 const CONFIG = {
@@ -213,7 +213,7 @@ document.getElementById('searchInput')?.addEventListener('input', (e) => {
     renderProducts(filtered);
 });
 
-// 7. SUBMIT FORM ĐƠN HÀNG (MÃ HÓA TỪNG BIẾN CHUẨN - CHỐNG TRỐNG CỘT)
+// 7. SUBMIT FORM ĐƠN HÀNG (SỬ DỤNG CHUẨN URLSEARCHPARAMS ĐỂ KHÁNG SYNTAXERROR TỰ ĐỘNG)
 document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -231,24 +231,24 @@ document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     const shippingFee = (subtotalAmount > 0 && subtotalAmount < 1200000) ? 30000 : 0;
     const finalTotalAmount = subtotalAmount + shippingFee;
     
-    // Đóng gói chuỗi query bằng mã hóa từng thành phần an toàn tuyệt đối
-    const queryParts = [
-        `action=submitOrder`,
-        `name=${encodeURIComponent(document.getElementById('customerName')?.value || '')}`,
-        `phone=${encodeURIComponent(document.getElementById('customerPhone')?.value || '')}`,
-        `address=${encodeURIComponent(document.getElementById('customerAddress')?.value || '')}`,
-        `taxId=${encodeURIComponent(document.getElementById('customerTaxId')?.value || '')}`,
-        `note=${encodeURIComponent(document.getElementById('customerNote')?.value || '')}`,
-        `items=${encodeURIComponent(itemsDetail)}`,
-        `total=${encodeURIComponent(finalTotalAmount.toLocaleString('vi-VN') + ' đ')}`
-    ];
+    // Đóng gói bằng URLSearchParams - Trình duyệt tự giải mã ký tự có dấu xuống dòng cực chuẩn
+    const params = new URLSearchParams();
+    params.append('action', 'submitOrder');
+    params.append('name', document.getElementById('customerName')?.value || '');
+    params.append('phone', document.getElementById('customerPhone')?.value || '');
+    params.append('address', document.getElementById('customerAddress')?.value || '');
+    params.append('taxId', document.getElementById('customerTaxId')?.value || '');
+    params.append('note', document.getElementById('customerNote')?.value || '');
+    params.append('items', itemsDetail);
+    params.append('shipping', shippingFee === 0 ? "Miễn phí" : `${shippingFee} đ`);
+    params.append('total', `${finalTotalAmount.toLocaleString('vi-VN')} đ`);
     
     try {
         await fetch(CONFIG.SHEET_API, {
             method: 'POST',
-            mode: 'no-cors',
+            mode: 'no-cors', // Chạy thông suốt qua bộ lọc CORS của Chrome/Zalo
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: queryParts.join('&')
+            body: params.toString()
         });
         
         if (status) {
