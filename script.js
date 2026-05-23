@@ -1,11 +1,11 @@
 /* ============================================================
-   BỘ MÃ LOGIC GIỎ HÀNG VIETPOM - PHIÊN BẢN CHỐT HẠ KHÁNG 100% CACHE LỖI
+   BỘ MÃ LOGIC GIỎ HÀNG VIETPOM - PHIÊN BẢN TRUYỀN DỮ LIỆU POST CHUẨN
    ============================================================ */
 
 let allProducts = [];
 let cart = {};
 
-// ĐƯỜNG DẪN WEB APP APPS SCRIPT GỐC ĐANG CHẠY CỦA ANH
+// ĐƯỜNG DẪN WEB APP APPS SCRIPT ĐANG CHẠY CỦA ANH
 const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxxNhKcTgxtPQCVtl1brMMF0Wr0jtYZex1ueG74WJpRfa6AyabrOuzOZX8bcM5aLFdMVA/exec";
 
 // 1. TẢI SẢN PHẨM TỪ GOOGLE SHEET
@@ -231,7 +231,7 @@ document.getElementById('searchInput')?.addEventListener('input', (e) => {
     renderProducts(filtered);
 });
 
-// 7. SUBMIT FORM ĐƠN HÀNG (LUỒNG GỬI ĐƠN CHỐT HẠ KHÁNG 100% LỖI APPS SCRIPT)
+// 7. SUBMIT FORM ĐƠN HÀNG (ĐỒNG BỘ PHƯƠNG THỨC POST CHUẨN X-WWW-FORM)
 document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -258,22 +258,23 @@ document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     const shippingFee = (subtotalAmount > 0 && subtotalAmount < 1200000) ? 30000 : 0;
     const finalTotalAmount = subtotalAmount + shippingFee;
     
-    // Tạo link query an toàn đẩy thẳng qua cổng bọc try-catch độc lập
-    const orderParams = new URLSearchParams();
-    orderParams.append('action', 'submitOrder');
-    orderParams.append('name', document.getElementById('customerName')?.value || '');
-    orderParams.append('phone', document.getElementById('customerPhone')?.value || '');
-    orderParams.append('address', document.getElementById('customerAddress')?.value || '');
-    orderParams.append('taxId', document.getElementById('customerTaxId')?.value || '');
-    orderParams.append('note', document.getElementById('customerNote')?.value || '');
-    orderParams.append('items', itemsDetail); 
-    orderParams.append('total', `${finalTotalAmount.toLocaleString('vi-VN')} đ`);
+    // Đóng gói tham số dạng Form URL-encoded truyền thống gửi thẳng vào POST body
+    const formParams = new URLSearchParams();
+    formParams.append('action', 'submitOrder');
+    formParams.append('name', document.getElementById('customerName')?.value || '');
+    formParams.append('phone', document.getElementById('customerPhone')?.value || '');
+    formParams.append('address', document.getElementById('customerAddress')?.value || '');
+    formParams.append('taxId', document.getElementById('customerTaxId')?.value || '');
+    formParams.append('note', document.getElementById('customerNote')?.value || '');
+    formParams.append('items', itemsDetail); 
+    formParams.append('total', `${finalTotalAmount.toLocaleString('vi-VN')} đ`);
     
     try {
-        // Gửi thông tin thông qua lệnh chuyển đổi sạch không dùng phương thức post thô cũ bị kẹt cache
-        await fetch(`${GOOGLE_SHEET_URL}?${orderParams.toString()}`, {
-            method: 'GET',
-            mode: 'no-cors'
+        await fetch(GOOGLE_SHEET_URL, {
+            method: 'POST',
+            mode: 'no-cors', // Cho phép gửi xuyên miền an toàn sang script.google
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: formParams.toString()
         });
         
         if (status) {
