@@ -1,11 +1,11 @@
 /* ============================================================
-   BỘ MÃ LOGIC GIỎ HÀNG VIETPOM - PHIÊN BẢN ĐỒNG BỘ TOÀN DIỆN CHỐT HẠ
+   BỘ MÃ LOGIC GIỎ HÀNG VIETPOM - PHIÊN BẢN SỬA LỖI PHẠM VI BIẾN V8
    ============================================================ */
 
 let allProducts = [];
 let cart = {};
 
-// ĐƯỜNG DẪN WEB APP APPS SCRIPT GỐC ĐANG CHẠY CỦA ANH
+// ĐƯỜNG DẪN WEB APP APPS SCRIPT ĐANG CHẠY CỦA ANH
 const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxxNhKcTgxtPQCVtl1brMMF0Wr0jtYZex1ueG74WJpRfa6AyabrOuzOZX8bcM5aLFdMVA/exec";
 
 function getInputValueSafely(id) {
@@ -25,7 +25,6 @@ async function fetchProducts() {
         const data = await res.json();
         
         allProducts = data.map((p, index) => {
-            // Đồng bộ lọc mọi kiểu chữ Hoa/thường từ file Excel của anh đổ về
             const nameStr = p.name ? String(p.name).trim() : (p.Name ? String(p.Name).trim() : (p.tên ? String(p.tên).trim() : ""));
             const priceNum = parseInt(p.price) || parseInt(p.Price) || parseInt(p.giá) || 0;
             const categoryStr = p.category ? String(p.category).trim() : (p.Category ? String(p.Category).trim() : (p.danhmục ? String(p.danhmục).trim() : "Dược phẩm"));
@@ -72,7 +71,7 @@ function renderCategories() {
     });
 }
 
-// 3. RENDER DANH SÁCH RA LƯỚI (KHÔI PHỤC NÚT TĂNG GIẢM GỐC 100%)
+// 3. RENDER DANH SÁCH RA LƯỚI
 function renderProducts(products) {
     const grid = document.getElementById('productGrid');
     if (!grid) return;
@@ -118,8 +117,8 @@ function renderProducts(products) {
     }).join('');
 }
 
-// 4. CẬP NHẬT GIỎ HÀNG
-window.updateCartItem = function(id, qty) {
+// 4. KHAI BÁO TOÀN CỤC PHẠM VI BIẾN - SỬA LỖI UNCAUGHT REFERENCEERROR
+function updateCartItem(id, qty) {
     const product = allProducts.find(p => p.id === id);
     if (!product) return;
     
@@ -137,7 +136,9 @@ window.updateCartItem = function(id, qty) {
     
     updateSingleProductUI(id, qty);
     updateCartSummary();
-};
+}
+// Đẩy trực tiếp ra window để HTML nhận diện được hàm ngay lập tức
+window.updateCartItem = updateCartItem;
 
 function updateSingleProductUI(id, qty) {
     const card = document.querySelector(`.product-card[data-id="${id}"]`);
@@ -159,7 +160,7 @@ function updateSingleProductUI(id, qty) {
     }
 }
 
-// 5. TỔNG HỢP GIỎ HÀNG VÀ TÍNH FREESHIP CHUẨN XÁC GIỮ NGUYÊN GIAO DIỆN GỐC
+// 5. TỔNG HỢP GIỎ HÀNG VÀ TÍNH FREESHIP CHUẨN XÁC
 function updateCartSummary() {
     const cartItems = document.getElementById('cartItems');
     const headerCount = document.getElementById('headerCartCount');
@@ -208,7 +209,6 @@ function updateCartSummary() {
         else { shippingText.innerText = `${shippingFee.toLocaleString('vi-VN')} đ`; shippingText.style.color = "#333333"; }
     }
 
-    // HIỂN THỊ CÂU CHỮ TÍNH TOÁN FREESHIP GỐC
     if (summaryNote) {
         if (subtotal > 0 && subtotal < 1200000) {
             const missingAmount = 1200000 - subtotal;
@@ -239,7 +239,7 @@ document.getElementById('searchInput')?.addEventListener('input', (e) => {
     renderProducts(filtered);
 });
 
-// 7. SUBMIT FORM ĐƠN HÀNG
+// 7. SUBMIT FORM ĐƠN HÀNG VỀ GOOGLE SHEET
 document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (Object.keys(cart).length === 0) { alert("Giỏ hàng đang trống nha anh!"); return; }
