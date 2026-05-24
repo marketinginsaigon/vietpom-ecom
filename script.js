@@ -6,7 +6,7 @@ let allProducts = [];
 let cart = {};
 
 // ĐƯỜNG DẪN WEB APP APPS SCRIPT CHUẨN CỦA ANH
-const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxxNhKcTgxtPQCVtl1brMMF0Wr0jtYZex1ueG74WJpRfa6AyabrOuzOZX8bcM5aLFdMVA/exec";
+const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbx5CaGpJcwUNLO56RiugkU7aWL3xMlMlHVRkNRSF-tnDuyLAvkRCkMaXUnS80mGXahaAw/exec";
 
 function getInputValueSafely(id) {
     const element = document.getElementById(id);
