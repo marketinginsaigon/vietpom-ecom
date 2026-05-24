@@ -1,5 +1,5 @@
 /* ============================================================
-   BỘ MÃ LOGIC GIỎ HÀNG VIETPOM - PHIÊN BẢN CHUẨN JSON KHỬ SYNTAXERROR
+   BỘ MÃ LOGIC GIỎ HÀNG VIETPOM - PHIÊN BẢN KHÔI PHỤC HIỂN THỊ V10
    ============================================================ */
 
 let allProducts = [];
@@ -13,7 +13,7 @@ function getInputValueSafely(id) {
     return element ? element.value.trim() : '';
 }
 
-// 1. TẢI SẢN PHẨM TỪ GOOGLE SHEET
+// 1. TẢI SẢN PHẨM TỪ GOOGLE SHEET (Dùng GET thuần để luôn luôn hiển thị)
 async function fetchProducts() {
     const grid = document.getElementById('productGrid');
     if (!grid) return;
@@ -238,7 +238,7 @@ document.getElementById('searchInput')?.addEventListener('input', (e) => {
     renderProducts(filtered);
 });
 
-// 7. SUBMIT FORM ĐƠN HÀNG - ĐÓNG GÓI CHUẨN ĐỊNH DẠNG ĐỐI TƯỢNG JSON 
+// 7. SUBMIT FORM ĐƠN HÀNG - DÙNG URLSEARCHPARAMS CHUẨN ĐỂ ĐỒNG BỘ 100% TRÌNH DUYỆT
 document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (Object.keys(cart).length === 0) { alert("Giỏ hàng đang trống nha anh!"); return; }
@@ -261,25 +261,22 @@ document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     const shippingFee = (subtotalAmount > 0 && subtotalAmount < 1200000) ? 30000 : 0;
     const finalTotalAmount = subtotalAmount + shippingFee;
     
-    // 🛠️ THAY ĐỔI QUYẾT ĐỊNH: Đóng gói dạng Object sạch để gửi chuỗi JSON sang Apps Script
-    const payloadData = {
-        action: "submitOrder",
-        name: getInputValueSafely('customerName') || getInputValueSafely('name'),
-        phone: getInputValueSafely('customerPhone') || getInputValueSafely('phone'),
-        address: getInputValueSafely('customerAddress') || getInputValueSafely('address'),
-        taxId: getInputValueSafely('customerTaxId') || getInputValueSafely('taxId'),
-        note: getInputValueSafely('customerNote') || getInputValueSafely('note'),
-        items: itemsDetail,
-        total: String(finalTotalAmount) // Số nguyên thô giúp Sheet tính toán tổng hợp tự động
-    };
+    const formParams = new URLSearchParams();
+    formParams.append('action', 'submitOrder');
+    formParams.append('name', getInputValueSafely('customerName') || getInputValueSafely('name'));
+    formParams.append('phone', getInputValueSafely('customerPhone') || getInputValueSafely('phone'));
+    formParams.append('address', getInputValueSafely('customerAddress') || getInputValueSafely('address'));
+    formParams.append('taxId', getInputValueSafely('customerTaxId') || getInputValueSafely('taxId'));
+    formParams.append('note', getInputValueSafely('customerNote') || getInputValueSafely('note'));
+    formParams.append('items', itemsDetail); 
+    formParams.append('total', String(finalTotalAmount)); // Truyền số thô để Sheet xử lý
     
     try {
-        // Gửi POST dạng text/plain chứa chuỗi JSON để loại bỏ hoàn toàn lỗi chặn CORS và SyntaxError
         await fetch(GOOGLE_SHEET_URL, {
             method: 'POST',
             mode: 'no-cors',
-            headers: { 'Content-Type': 'text/plain' },
-            body: JSON.stringify(payloadData)
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: formParams.toString()
         });
         
         if (status) {
