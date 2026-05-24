@@ -1,11 +1,11 @@
 /* ============================================================
-   BỘ MÃ LOGIC GIỎ HÀNG VIETPOM - PHIÊN BẢN SỬA LỖI PHẠM VI BIẾN V8
+   BỘ MÃ LOGIC GIỎ HÀNG VIETPOM - PHIÊN BẢN CHUẨN JSON KHỬ SYNTAXERROR
    ============================================================ */
 
 let allProducts = [];
 let cart = {};
 
-// ĐƯỜNG DẪN WEB APP APPS SCRIPT ĐANG CHẠY CỦA ANH
+// ĐƯỜNG DẪN WEB APP APPS SCRIPT CHUẨN CỦA ANH
 const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxxNhKcTgxtPQCVtl1brMMF0Wr0jtYZex1ueG74WJpRfa6AyabrOuzOZX8bcM5aLFdMVA/exec";
 
 function getInputValueSafely(id) {
@@ -71,7 +71,7 @@ function renderCategories() {
     });
 }
 
-// 3. RENDER DANH SÁCH RA LƯỚI
+// 3. RENDER DANH SÁCH RA LƯỚI GIAO DIỆN
 function renderProducts(products) {
     const grid = document.getElementById('productGrid');
     if (!grid) return;
@@ -117,8 +117,8 @@ function renderProducts(products) {
     }).join('');
 }
 
-// 4. ĐƯA HÀM RA TOÀN CỤC (GLOBAL) ĐỂ HTML ONCLICK LUÔN LUÔN NHẬN ĐƯỢC
-window.updateCartItem = function(id, qty) {
+// 4. KHAI BÁO HÀM TOÀN CỤC CHO NÚT BẤM HTML
+function updateCartItem(id, qty) {
     const product = allProducts.find(p => p.id === id);
     if (!product) return;
     
@@ -136,7 +136,8 @@ window.updateCartItem = function(id, qty) {
     
     updateSingleProductUI(id, qty);
     updateCartSummary();
-};
+}
+window.updateCartItem = updateCartItem;
 
 function updateSingleProductUI(id, qty) {
     const card = document.querySelector(`.product-card[data-id="${id}"]`);
@@ -237,7 +238,7 @@ document.getElementById('searchInput')?.addEventListener('input', (e) => {
     renderProducts(filtered);
 });
 
-// 7. SUBMIT FORM ĐƠN HÀNG VỀ GOOGLE SHEET
+// 7. SUBMIT FORM ĐƠN HÀNG - ĐÓNG GÓI CHUẨN ĐỊNH DẠNG ĐỐI TƯỢNG JSON 
 document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (Object.keys(cart).length === 0) { alert("Giỏ hàng đang trống nha anh!"); return; }
@@ -260,22 +261,25 @@ document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     const shippingFee = (subtotalAmount > 0 && subtotalAmount < 1200000) ? 30000 : 0;
     const finalTotalAmount = subtotalAmount + shippingFee;
     
-    const formParams = new URLSearchParams();
-    formParams.append('action', 'submitOrder');
-    formParams.append('name', getInputValueSafely('customerName') || getInputValueSafely('name'));
-    formParams.append('phone', getInputValueSafely('customerPhone') || getInputValueSafely('phone'));
-    formParams.append('address', getInputValueSafely('customerAddress') || getInputValueSafely('address'));
-    formParams.append('taxId', getInputValueSafely('customerTaxId') || getInputValueSafely('taxId'));
-    formParams.append('note', getInputValueSafely('customerNote') || getInputValueSafely('note'));
-    formParams.append('items', itemsDetail); 
-    formParams.append('total', `${finalTotalAmount}`); // Chỉ truyền số thuần túy sang để cứu tóm tắt Sheet
+    // 🛠️ THAY ĐỔI QUYẾT ĐỊNH: Đóng gói dạng Object sạch để gửi chuỗi JSON sang Apps Script
+    const payloadData = {
+        action: "submitOrder",
+        name: getInputValueSafely('customerName') || getInputValueSafely('name'),
+        phone: getInputValueSafely('customerPhone') || getInputValueSafely('phone'),
+        address: getInputValueSafely('customerAddress') || getInputValueSafely('address'),
+        taxId: getInputValueSafely('customerTaxId') || getInputValueSafely('taxId'),
+        note: getInputValueSafely('customerNote') || getInputValueSafely('note'),
+        items: itemsDetail,
+        total: String(finalTotalAmount) // Số nguyên thô giúp Sheet tính toán tổng hợp tự động
+    };
     
     try {
+        // Gửi POST dạng text/plain chứa chuỗi JSON để loại bỏ hoàn toàn lỗi chặn CORS và SyntaxError
         await fetch(GOOGLE_SHEET_URL, {
             method: 'POST',
             mode: 'no-cors',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: formParams.toString()
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify(payloadData)
         });
         
         if (status) {
