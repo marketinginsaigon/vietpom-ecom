@@ -1,5 +1,5 @@
 /* ============================================================
-   BỘ MÃ LOGIC GIỎ HÀNG VIETPOM - PHIÊN BẢN KHÔI PHỤC HIỂN THỊ V10
+   BỘ MÃ LOGIC GIỎ HÀNG VIETPOM - PHIÊN BẢN KHÔI PHỤC V2 CHUẨN ĐÃ CHẠY ĐƯỢC
    ============================================================ */
 
 let allProducts = [];
@@ -13,7 +13,7 @@ function getInputValueSafely(id) {
     return element ? element.value.trim() : '';
 }
 
-// 1. TẢI SẢN PHẨM TỪ GOOGLE SHEET (Dùng GET thuần để luôn luôn hiển thị)
+// 1. TẢI SẢN PHẨM TỪ GOOGLE SHEET
 async function fetchProducts() {
     const grid = document.getElementById('productGrid');
     if (!grid) return;
@@ -117,7 +117,7 @@ function renderProducts(products) {
     }).join('');
 }
 
-// 4. KHAI BÁO HÀM TOÀN CỤC CHO NÚT BẤM HTML
+// 4. CẬP NHẬT GIỎ HÀNG
 function updateCartItem(id, qty) {
     const product = allProducts.find(p => p.id === id);
     if (!product) return;
@@ -238,7 +238,7 @@ document.getElementById('searchInput')?.addEventListener('input', (e) => {
     renderProducts(filtered);
 });
 
-// 7. SUBMIT FORM ĐƠN HÀNG - DÙNG URLSEARCHPARAMS CHUẨN ĐỂ ĐỒNG BỘ 100% TRÌNH DUYỆT
+// 7. SUBMIT FORM ĐƠN HÀNG - ĐÓNG GÓI LUỒNG GỐC 100% ĐÃ CHẠY ĐƯỢC
 document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (Object.keys(cart).length === 0) { alert("Giỏ hàng đang trống nha anh!"); return; }
@@ -261,22 +261,23 @@ document.getElementById('orderForm')?.addEventListener('submit', async (e) => {
     const shippingFee = (subtotalAmount > 0 && subtotalAmount < 1200000) ? 30000 : 0;
     const finalTotalAmount = subtotalAmount + shippingFee;
     
-    const formParams = new URLSearchParams();
-    formParams.append('action', 'submitOrder');
-    formParams.append('name', getInputValueSafely('customerName') || getInputValueSafely('name'));
-    formParams.append('phone', getInputValueSafely('customerPhone') || getInputValueSafely('phone'));
-    formParams.append('address', getInputValueSafely('customerAddress') || getInputValueSafely('address'));
-    formParams.append('taxId', getInputValueSafely('customerTaxId') || getInputValueSafely('taxId'));
-    formParams.append('note', getInputValueSafely('customerNote') || getInputValueSafely('note'));
-    formParams.append('items', itemsDetail); 
-    formParams.append('total', String(finalTotalAmount)); // Truyền số thô để Sheet xử lý
+    // Đóng gói tham số đính thẳng lên URL chuẩn luồng v2 cũ
+    const urlParams = new URLSearchParams();
+    urlParams.append('action', 'submitOrder');
+    urlParams.append('name', getInputValueSafely('customerName') || getInputValueSafely('name'));
+    urlParams.append('phone', getInputValueSafely('customerPhone') || getInputValueSafely('phone'));
+    urlParams.append('address', getInputValueSafely('customerAddress') || getInputValueSafely('address'));
+    urlParams.append('taxId', getInputValueSafely('customerTaxId') || getInputValueSafely('taxId'));
+    urlParams.append('note', getInputValueSafely('customerNote') || getInputValueSafely('note'));
+    urlParams.append('items', itemsDetail); 
+    urlParams.append('total', `${finalTotalAmount}`); // Đẩy chuỗi số thô sang
     
     try {
-        await fetch(GOOGLE_SHEET_URL, {
+        await fetch(`${GOOGLE_SHEET_URL}?${urlParams.toString()}`, {
             method: 'POST',
             mode: 'no-cors',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: formParams.toString()
+            body: urlParams.toString()
         });
         
         if (status) {
