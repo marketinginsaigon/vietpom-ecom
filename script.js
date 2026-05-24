@@ -117,8 +117,8 @@ function renderProducts(products) {
     }).join('');
 }
 
-// 4. KHAI BÁO TOÀN CỤC PHẠM VI BIẾN - SỬA LỖI UNCAUGHT REFERENCEERROR
-function updateCartItem(id, qty) {
+// 4. ĐƯA HÀM RA TOÀN CỤC (GLOBAL) ĐỂ HTML ONCLICK LUÔN LUÔN NHẬN ĐƯỢC
+window.updateCartItem = function(id, qty) {
     const product = allProducts.find(p => p.id === id);
     if (!product) return;
     
@@ -136,9 +136,7 @@ function updateCartItem(id, qty) {
     
     updateSingleProductUI(id, qty);
     updateCartSummary();
-}
-// Đẩy trực tiếp ra window để HTML nhận diện được hàm ngay lập tức
-window.updateCartItem = updateCartItem;
+};
 
 function updateSingleProductUI(id, qty) {
     const card = document.querySelector(`.product-card[data-id="${id}"]`);
